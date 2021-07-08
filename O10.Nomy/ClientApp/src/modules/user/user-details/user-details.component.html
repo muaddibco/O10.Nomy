@@ -1,0 +1,40 @@
+<p *ngIf="!isLoaded"><em>Loading...</em></p>
+<div *ngIf="isLoaded">
+  <div class="main-view">
+    <h5>My info:</h5>
+    <table mat-table class="myinfo">
+      <tr>
+        <td class="caption">Email:</td>
+        <td class="value">{{user.email}}</td>
+      </tr>
+      <tr>
+        <td class="caption">First Name:</td>
+        <td class="value">{{user.firstName}}</td>
+      </tr>
+      <tr>
+        <td class="caption">Last Name:</td>
+        <td class="value">{{user.lastName}}</td>
+      </tr>
+      <tr>
+        <td class="caption">Wallet ID:</td>
+        <td class="value">{{user.walletId}}</td>
+      </tr>
+    </table>
+    <div *ngIf="isInSession">
+      <mat-card *ngIf="!isSessionStarted"><em>Waiting for session '{{sessionInfo.sessionId}}' starting...</em></mat-card>
+      <mat-card *ngIf="isSessionStarted"><em>Session '{{sessionInfo.sessionId}}' started</em></mat-card>
+    </div>
+  </div>
+  <div class="footer">
+    <table>
+      <tr>
+        <td>
+          <button (click)="gotoExperts()">anonymously find an expert for your needs</button>
+        </td>
+        <td>
+          find confidential communities with anonymous decision making
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

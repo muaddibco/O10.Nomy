@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "angularx-qrcode": "^11.0.0",
+    "ngx-webcam": "^0.3.2"
+  }
+}

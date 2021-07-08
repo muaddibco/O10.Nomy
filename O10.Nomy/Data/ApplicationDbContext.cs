@@ -1,0 +1,26 @@
+﻿using IdentityServer4.EntityFramework.Options;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using O10.Nomy.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace O10.Nomy.Data
+{
+    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
+    {
+        public ApplicationDbContext(
+            DbContextOptions options,
+            IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
+        {
+        }
+
+        public DbSet<ExpertiseArea> ExpertiseAreas { get; set; }
+        public DbSet<ExpertiseSubArea> ExpertiseSubAreas { get; set; }
+        public DbSet<ExpertProfile> Experts { get; set; }
+        public DbSet<NomyUser> ConsumerUsers { get; set; }
+    }
+}

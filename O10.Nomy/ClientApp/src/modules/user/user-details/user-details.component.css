@@ -1,0 +1,29 @@
+.o10-container-mobile .mat-expansion-panel-header-title {
+  font-size: small
+}
+
+.o10-container-mobile .mat-expansion-panel-header-description {
+  font-size: x-small
+}
+
+.o10-container-mobile .mat-expansion-panel-header {
+    height: 64px;
+}
+
+.o10-container-mobile h5 {
+    margin: 5px;
+}
+
+.o10-container-mobile .myinfo {
+  margin: 10px 5px;
+}
+
+.o10-container-mobile .caption {
+  font-size: x-small;
+  font-weight: 500;
+}
+
+.o10-container-mobile .value {
+  font-size: x-small;
+  font-weight: 200;
+}

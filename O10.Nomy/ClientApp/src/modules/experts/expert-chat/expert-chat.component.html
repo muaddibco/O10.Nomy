@@ -1,0 +1,8 @@
+<p *ngIf="!isLoaded"><em>Loading...</em></p>
+<div *ngIf="isLoaded">
+  <mat-card *ngIf="initiatingChat && !isChatConfirmed">Initiating chat with {{expertProfile.firstName}} {{expertProfile.lastName}}...</mat-card>
+  <mat-card *ngIf="initiatingChat && isChatConfirmed">Chat with {{expertProfile.firstName}} {{expertProfile.lastName}} started</mat-card>
+  <mat-list *ngIf="initiatingChat && isChatConfirmed" role="list">
+    <mat-list-item role="listitem" *ngFor="let invoice of invoices">Received an invoice with commitment {{invoice.commitment}} for {{invoice.amount}} {{invoice.currency}}</mat-list-item>
+  </mat-list>
+</div>
