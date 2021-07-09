@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 using O10.Core.Architecture;
 using O10.Core.Cryptography;
 using O10.Core.ExtensionMethods;
@@ -17,11 +18,13 @@ namespace O10.Nomy.Services
     {
         private readonly IHashCalculation _hashCalculation;
         private readonly Dictionary<string, PaymentSession> _paymentSessions = new();
+        private readonly IServiceProvider _serviceProvider;
         private readonly IHubContext<PaymentSessionHub> _hubContext;
 
-        public PaymentSessionsService(IHashCalculationsRepository hashCalculationsRepository, IHubContext<PaymentSessionHub> hubContext)
+        public PaymentSessionsService(IServiceProvider serviceProvider, IHashCalculationsRepository hashCalculationsRepository, IHubContext<PaymentSessionHub> hubContext)
         {
             _hashCalculation = hashCalculationsRepository.Create(HashType.Keccak256);
+            _serviceProvider = serviceProvider;
             _hubContext = hubContext;
         }
 
@@ -34,8 +37,13 @@ namespace O10.Nomy.Services
             return sessionId;
         }
 
-        public async Task PushInvoice(string sessionId, string currency, ulong amount)
+        public async Task<PaymentSessionEntry?> PushInvoice(string sessionId, string currency, ulong amount)
         {
+            if(!_paymentSessions.ContainsKey(sessionId))
+            {
+                throw new ArgumentOutOfRangeException(nameof(sessionId));
+            }
+
             var invoiceEntry = GenerateInvoiceEntry(sessionId, currency, amount);
 
             var record = _paymentSessions[sessionId].Records[invoiceEntry.Commitment];
@@ -63,15 +71,16 @@ namespace O10.Nomy.Services
                 _hubContext.Clients.Group($"{sessionId}_Payee").SendAsync("Timeout");
             }, TaskScheduler.Default);
 
+            return record.InvoiceEntry;
         }
 
-        public async Task PushPayment(string sessionId, string invoiceCommitment, string currency, ulong amount)
+        public async Task<PaymentSessionEntry?> PushPayment(string sessionId, string invoiceCommitment, string currency, ulong amount)
         {
             lock(_paymentSessions)
             {
                 if (!_paymentSessions.ContainsKey(sessionId))
                 {
-                    return;
+                    return null;
                 }
 
                 _paymentSessions[sessionId].Records[invoiceCommitment].TimeoutCancellation.Cancel();
@@ -91,6 +100,8 @@ namespace O10.Nomy.Services
             {
                 await _hubContext.Clients.Group($"{sessionId}_Payee").SendAsync("Error", paymentEntry);
             }
+
+            return _paymentSessions[sessionId].Records[invoiceCommitment].PaymentEntry;
         }
 
         private PaymentEntryDTO GenerateInvoiceEntry(string sessionId, string currency, ulong amount)
@@ -98,10 +109,10 @@ namespace O10.Nomy.Services
             byte[] currencyCommitment = CryptoHelper.GetNonblindedAssetCommitment(_hashCalculation.CalculateHash(currency));
             RangeProof rangeProof = CryptoHelper.ProveRange(out byte[] invoiceCommitment, out byte[] invoiceBlindingFactor, amount, currencyCommitment);
 
-            var record = new PaymentSessionRecord
-            {
-                InvoiceEntry = new PaymentSessionEntry { Commitment = invoiceCommitment, Mask = invoiceBlindingFactor, RangeProof = rangeProof },
-            };
+            // TODO: need to create a factory
+            var record = ActivatorUtilities.CreateInstance<PaymentSessionRecord>(_serviceProvider);
+            record.SessionId = sessionId;
+            record.InvoiceEntry = new PaymentSessionEntry { Commitment = invoiceCommitment, Mask = invoiceBlindingFactor, RangeProof = rangeProof };
 
             _paymentSessions[sessionId].Records.Add(invoiceCommitment.ToHexString(), record);
 

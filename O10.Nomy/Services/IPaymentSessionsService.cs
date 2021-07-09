@@ -7,7 +7,7 @@ namespace O10.Nomy.Services
     public interface IPaymentSessionsService
     {
         string CreatePaymentsSession();
-        Task PushInvoice(string sessionId, string currency, ulong amount);
-        Task PushPayment(string sessionId, string invoiceCommitment, string currency, ulong amount);
+        Task<PaymentSessionEntry?> PushInvoice(string sessionId, string currency, ulong amount);
+        Task<PaymentSessionEntry?> PushPayment(string sessionId, string invoiceCommitment, string currency, ulong amount);
     }
 }

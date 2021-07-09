@@ -46,15 +46,20 @@ export class ExpertChatComponent implements OnInit {
     var that = this
 
     this.chatHub.start().then(() => {
+      console.info("chatHub started, getting expert info for expertId " + expertId)
       that.expertsAccessService.getExpert(expertId).subscribe(
         r => {
           that.isLoaded = true
           that.expertProfile = r
+
+          console.info("Intiating chat session with the expert " + r.firstName + " " + r.lastName)
           that.expertsAccessService.initiateChatSession().subscribe(
             s => {
+              console.info("Chat session with sessionId " + s.sessionId + " initiated")
               that.sessionInfo = s
               that.chatHub.invoke("AddToGroup", s.sessionId);
               that.initiatingChat = true
+              console.info("Sending chat invitation to " + that.expertProfile.firstName + " " + that.expertProfile.lastName)
               that.expertsAccessService.inviteToChat(that.expertProfile.expertProfileId, s.sessionId).subscribe(
                 a => {
 
@@ -76,22 +81,34 @@ export class ExpertChatComponent implements OnInit {
     });
 
     this.paymentsHub.on("Invoice", i => {
+      console.info("Received invoice " + JSON.stringify(i))
       var invoice = i as PaymentEntry
       that.invoices.push(invoice)
-      that.expertsAccessService.payInvoice(that.userId, invoice.sessionId, invoice.commitment, invoice.currency, invoice.amount)
+      console.info("Pay invoice " + invoice.commitment)
+      that.expertsAccessService.payInvoice(that.userId, invoice.sessionId, invoice.commitment, "USD", that.expertProfile.fee).subscribe(
+        r => {
+          console.info("Invoice " + invoice.commitment + " paid with payment " + r.commitment)
+        },
+        e => {
+          console.error("Failed to pay invoice " + invoice.commitment, e)
+        })
     })
 
     this.chatHub.on("Confirmed", s => {
       var sessionInfo = s as SessionInfo
       that.isChatConfirmed = true
-      that.paymentsHub.invoke("AddToGroup", sessionInfo.sessionId + "_payer");
-      that.expertsAccessService.startChat(that.expertProfile.expertProfileId, that.sessionInfo.sessionId).subscribe(
-        r => {
+      console.info("Confirmation for session " + sessionInfo.sessionId + " from " + that.expertProfile.firstName + " " + that.expertProfile.lastName + " received, adding to group " + sessionInfo.sessionId + "_Payer")
+      that.paymentsHub.invoke("AddToGroup", sessionInfo.sessionId + "_Payer").then(
+        () => {
+          console.info("Added to group " + sessionInfo.sessionId + "_Payer, starting chat...")
+          that.expertsAccessService.startChat(that.expertProfile.expertProfileId, that.sessionInfo.sessionId).subscribe(
+            r => {
 
-        },
-        e => {
+            },
+            e => {
 
-        })
+            })
+        });
     })
   }
 }

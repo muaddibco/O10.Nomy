@@ -1,4 +1,8 @@
-﻿using O10.Core.Cryptography;
+﻿using Newtonsoft.Json;
+using O10.Core.Configuration;
+using O10.Core.Cryptography;
+using O10.Core.Serialization;
+using O10.Nomy.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,13 +25,15 @@ namespace O10.Nomy.Services
 
     public class PaymentSessionRecord
     {
-        public PaymentSessionRecord()
+        public PaymentSessionRecord(IConfigurationService configurationService)
         {
+            var nomyConfig = configurationService.Get<INomyConfig>();
+
             TimeoutCancellation = new CancellationTokenSource();
 
             TimeoutTask = new Task<PaymentSessionRecord>(() => 
             {
-                Task.Delay(5000).Wait();
+                Task.Delay(nomyConfig.SessionTimeout).Wait();
                 return this;
             }, TimeoutCancellation.Token);
         }
@@ -44,8 +50,10 @@ namespace O10.Nomy.Services
 
     public class PaymentSessionEntry
     {
+        [JsonConverter(typeof(ByteArrayJsonConverter))]
         public byte[] Commitment { get; set; }
 
+        [JsonConverter(typeof(ByteArrayJsonConverter))]
         public byte[] Mask { get; set; }
 
         public RangeProof RangeProof { get; set; }

@@ -32,7 +32,7 @@ var ExpertsAccessService = /** @class */ (function () {
         });
     };
     ExpertsAccessService.prototype.payInvoice = function (userId, sessionId, invoiceCommitment, currency, amount) {
-        this.http.post('/api/user/' + userId + "/pay", { sessionId: sessionId, invoiceCommitment: invoiceCommitment, currency: currency, amount: amount });
+        return this.http.post('/api/user/' + userId + "/pay", { sessionId: sessionId, invoiceCommitment: invoiceCommitment, currency: currency, amount: amount });
     };
     ExpertsAccessService = __decorate([
         core_1.Injectable({

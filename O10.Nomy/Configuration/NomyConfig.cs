@@ -15,5 +15,7 @@ namespace O10.Nomy.Configuration
         public string O10Uri { get; set; }
 
         public string O10IdentityProvider { get; set; }
+        
+        public int SessionTimeout { get; set; }
     }
 }

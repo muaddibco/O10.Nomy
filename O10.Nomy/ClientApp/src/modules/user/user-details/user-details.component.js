@@ -44,6 +44,10 @@ var UserDetailsComponent = /** @class */ (function () {
             .withAutomaticReconnect()
             .build();
         this.paymentHub.start();
+        this.paymentHub.on("Payment", function (p) {
+            var paymentEntry = p;
+            console.info("Obtained payment " + paymentEntry.commitment);
+        });
         this.chatHub = new signalr_1.HubConnectionBuilder()
             .withUrl('/chat')
             .build();
@@ -64,14 +68,19 @@ var UserDetailsComponent = /** @class */ (function () {
             var sessionInfo = r;
             console.info("Started session " + sessionInfo.sessionId + ", launching periodic invoice issuing...");
             _this.isSessionStarted = true;
-            _this.paymentSubscription = rxjs_1.interval(30000).subscribe(function (v) {
-                console.info("Issue invoice for " + _this.expertProfile.fee + " USD");
-                _this.userAccessService.sendInvoice(_this.user.accountId, _this.sessionInfo.sessionId, _this.expertProfile.fee, "USD").subscribe(function (r) {
-                    console.info("Invoice for the session " + _this.sessionInfo.sessionId + " issued successfully");
-                }, function (e) {
-                    console.error("Failed to issue an invoice for the session " + _this.sessionInfo.sessionId, e);
-                });
+            _this.issueInvoice();
+            _this.paymentSubscription = rxjs_1.interval(60000).subscribe(function (v) {
+                _this.issueInvoice();
             });
+        });
+    };
+    UserDetailsComponent.prototype.issueInvoice = function () {
+        var _this = this;
+        console.info("Issue invoice for " + this.expertProfile.fee + " USD");
+        this.userAccessService.sendInvoice(this.user.accountId, this.sessionInfo.sessionId, this.expertProfile.fee, "USD").subscribe(function (r) {
+            console.info("Invoice " + r.commitment + " for the session " + _this.sessionInfo.sessionId + " issued successfully");
+        }, function (e) {
+            console.error("Failed to issue an invoice for the session " + _this.sessionInfo.sessionId, e);
         });
     };
     UserDetailsComponent.prototype.initiateUserAttributes = function (that) {

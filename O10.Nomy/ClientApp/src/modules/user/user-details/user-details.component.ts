@@ -12,6 +12,8 @@ import { ExpertProfile } from '../../experts/models/expert-profile';
 import { Subscription } from 'rxjs';
 import { interval } from 'rxjs';
 import { AccountsAccessService } from '../../accounts/accounts-access.service';
+import { invalid } from '@angular/compiler/src/render3/view/util';
+import { PaymentEntry } from '../../experts/models/payment-entry';
 
 @Component({
   selector: 'app-user-details',
@@ -70,6 +72,11 @@ export class UserDetailsComponent implements OnInit {
 
     this.paymentHub.start()
 
+    this.paymentHub.on("Payment", p => {
+      var paymentEntry = p as PaymentEntry
+      console.info("Obtained payment " + paymentEntry.commitment)
+    })
+
     this.chatHub = new HubConnectionBuilder()
       .withUrl('/chat')
       .build()
@@ -100,18 +107,23 @@ export class UserDetailsComponent implements OnInit {
       var sessionInfo = r as SessionExpertInfo
       console.info("Started session " + sessionInfo.sessionId + ", launching periodic invoice issuing...")
       this.isSessionStarted = true
-      this.paymentSubscription = interval(30000).subscribe(v => {
-        console.info("Issue invoice for " + this.expertProfile.fee + " USD")
-        this.userAccessService.sendInvoice(this.user.accountId, this.sessionInfo.sessionId, this.expertProfile.fee, "USD").subscribe(
-          r => {
-            console.info("Invoice for the session " + this.sessionInfo.sessionId + " issued successfully")
-          },
-          e => {
-            console.error("Failed to issue an invoice for the session " + this.sessionInfo.sessionId, e)
-          })
+      this.issueInvoice();
+      this.paymentSubscription = interval(60000).subscribe(v => {
+        this.issueInvoice();
       })
     })
   }
+
+    private issueInvoice() {
+        console.info("Issue invoice for " + this.expertProfile.fee + " USD");
+        this.userAccessService.sendInvoice(this.user.accountId, this.sessionInfo.sessionId, this.expertProfile.fee, "USD").subscribe(
+            r => {
+                console.info("Invoice " + r.commitment + " for the session " + this.sessionInfo.sessionId + " issued successfully");
+            },
+            e => {
+                console.error("Failed to issue an invoice for the session " + this.sessionInfo.sessionId, e);
+            });
+    }
 
     private initiateUserAttributes(that: this) {
         that.userAccessService.getUserAttributes(that.user.accountId).subscribe(

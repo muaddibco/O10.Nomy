@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AccountsAccessService } from '../accounts/accounts-access.service';
 import { Account} from '../accounts/models/account';
+import { InvoiceEntry } from './models/invoice-entry';
 import { User } from './models/user';
 import { UserAttributeScheme } from './models/user-attribute-scheme';
 import { UserDetails } from './models/user-details';
@@ -30,6 +31,6 @@ export class UserAccessService {
   }
 
   sendInvoice(accountId: number, sessionId: string, amount: number, currency: string) {
-    return this.http.post('/api/user/' + accountId + '/invoice', { sessionId, amount, currency })
+    return this.http.post<InvoiceEntry>('/api/user/' + accountId + '/invoice', { sessionId, amount, currency })
   }
 }

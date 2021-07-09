@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ExpertProfile } from './models/expert-profile';
 import { ExpertiseArea } from './models/expertise-area';
+import { PaymentRecordEntry } from './models/payment-record-entry';
 import { SessionInfo } from './models/session-info';
 
 @Injectable({
@@ -36,6 +37,6 @@ export class ExpertsAccessService {
   }
 
   payInvoice(userId: number, sessionId: string, invoiceCommitment: string, currency: string, amount: number) {
-    this.http.post('/api/user/' + userId + "/pay", { sessionId, invoiceCommitment, currency, amount });
+    return this.http.post<PaymentRecordEntry>('/api/user/' + userId + "/pay", { sessionId, invoiceCommitment, currency, amount });
   }
 }
