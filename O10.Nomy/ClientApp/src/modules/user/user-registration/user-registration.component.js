@@ -10,8 +10,7 @@ exports.UserRegistrationComponent = void 0;
 var core_1 = require("@angular/core");
 var forms_1 = require("@angular/forms");
 var UserRegistrationComponent = /** @class */ (function () {
-    function UserRegistrationComponent(cookieService, formBuilder, userAccessService, router) {
-        this.cookieService = cookieService;
+    function UserRegistrationComponent(formBuilder, userAccessService, router) {
         this.formBuilder = formBuilder;
         this.userAccessService = userAccessService;
         this.router = router;
@@ -47,13 +46,12 @@ var UserRegistrationComponent = /** @class */ (function () {
             email: this.formData.email.value,
             password: this.formData.password.value
         }).subscribe(function (a) {
-            _this.cookieService.set("currentUserId", a.accountId.toString());
-            _this.router.navigate(['user-details']);
+            _this.router.navigate(['user-details', a.accountId]);
         }, function (e) {
         });
     };
     UserRegistrationComponent.prototype.onCancel = function () {
-        this.router.navigate(['']);
+        this.router.navigate(['/']);
     };
     UserRegistrationComponent = __decorate([
         core_1.Component({

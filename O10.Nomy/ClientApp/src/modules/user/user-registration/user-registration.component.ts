@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
 import { UserAccessService } from '../user-access.service';
 
 @Component({
@@ -17,7 +16,6 @@ export class UserRegistrationComponent implements OnInit {
   public submitClick = false;
 
   constructor(
-    private cookieService: CookieService,
     private formBuilder: FormBuilder,
     private userAccessService: UserAccessService,
     private router: Router) { }
@@ -53,14 +51,13 @@ export class UserRegistrationComponent implements OnInit {
       password: this.formData.password.value
     }).subscribe(
       a => {
-        this.cookieService.set("currentUserId", a.accountId.toString())
-        this.router.navigate(['user-details'])
+        this.router.navigate(['user-details', a.accountId])
       },
       e => {
       });
   }
 
   onCancel() {
-    this.router.navigate([''])
+    this.router.navigate(['/'])
   }
 }

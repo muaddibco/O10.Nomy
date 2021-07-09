@@ -4,13 +4,14 @@ import { Account } from '../../accounts/models/account';
 import { UserAttributeScheme } from '../models/user-attribute-scheme';
 import { UserAccessService } from '../user-access.service';
 import { PasswordConfirmDialog } from '../../password-confirm/password-confirm/password-confirm.dialog'
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HubConnectionBuilder, HubConnection } from '@microsoft/signalr'
 import { SessionExpertInfo } from '../models/session-expert-info';
 import { ExpertsAccessService } from '../../experts/experts-access.service';
 import { ExpertProfile } from '../../experts/models/expert-profile';
 import { Subscription } from 'rxjs';
 import { interval } from 'rxjs';
+import { AccountsAccessService } from '../../accounts/accounts-access.service';
 
 @Component({
   selector: 'app-user-details',
@@ -33,34 +34,34 @@ export class UserDetailsComponent implements OnInit {
 
   constructor(
     private userAccessService: UserAccessService,
+    private accountAccessService: AccountsAccessService,
     private expertAccessService: ExpertsAccessService,
     private router: Router,
+    private route: ActivatedRoute,
     public dialog: MatDialog ) { }
 
   ngOnInit(): void {
-    this.user = JSON.parse(sessionStorage.getItem("user"))
+    var userId = Number(this.route.snapshot.paramMap.get('userId'))
     let that = this;
-    var dialogRef = this.dialog.open(PasswordConfirmDialog, { data: { title: "Start account", confirmButtonText: "Submit" } });
-    dialogRef.afterClosed().subscribe(
+    this.accountAccessService.getAccountById(userId).subscribe(
       r => {
-        if (r) {
+        that.user = r
+        var dialogRef = that.dialog.open(PasswordConfirmDialog, { data: { title: "Start account", confirmButtonText: "Submit" } });
+        dialogRef.afterClosed().subscribe(
+          r => {
+            if (r) {
 
-        }
+              that.initiateChatHub(that);
 
-        that.isLoaded = true
-      }
-    )
+              that.initiateUserAttributes(that);
+            }
 
-    this.userAccessService.getUserAttributes(this.user).subscribe(
-      r => {
-        if (r && r.length > 0) {
-          this.nomyIdentity = r[0]
-        }
+            that.isLoaded = true
+          }
+        )
       },
       e => {
-
-      }
-    )
+      })
 
     this.paymentHub = new HubConnectionBuilder()
       .withUrl('/payments')
@@ -72,9 +73,6 @@ export class UserDetailsComponent implements OnInit {
     this.chatHub = new HubConnectionBuilder()
       .withUrl('/chat')
       .build()
-
-    this.initiateChatHub(this);
-
 
     this.chatHub.on("Invitation", r => {
       this.sessionInfo = r as SessionExpertInfo
@@ -99,12 +97,33 @@ export class UserDetailsComponent implements OnInit {
     })
 
     this.chatHub.on("Start", r => {
+      var sessionInfo = r as SessionExpertInfo
+      console.info("Started session " + sessionInfo.sessionId + ", launching periodic invoice issuing...")
       this.isSessionStarted = true
       this.paymentSubscription = interval(30000).subscribe(v => {
-
+        console.info("Issue invoice for " + this.expertProfile.fee + " USD")
+        this.userAccessService.sendInvoice(this.user.accountId, this.sessionInfo.sessionId, this.expertProfile.fee, "USD").subscribe(
+          r => {
+            console.info("Invoice for the session " + this.sessionInfo.sessionId + " issued successfully")
+          },
+          e => {
+            console.error("Failed to issue an invoice for the session " + this.sessionInfo.sessionId, e)
+          })
       })
     })
   }
+
+    private initiateUserAttributes(that: this) {
+        that.userAccessService.getUserAttributes(that.user.accountId).subscribe(
+            r => {
+                if (r && r.length > 0) {
+                    this.nomyIdentity = r[0];
+                }
+            },
+            e => {
+            }
+        );
+    }
 
     private initiateChatHub(that: this) {
         this.chatHub.start().then(() => {

@@ -68,7 +68,7 @@ var UserModule = /** @class */ (function () {
                 router_1.RouterModule.forRoot([
                     { path: 'user-entry', component: user_entry_component_1.UserEntryComponent },
                     { path: 'user-register', component: user_registration_component_1.UserRegistrationComponent },
-                    { path: 'user-details', component: user_details_component_1.UserDetailsComponent },
+                    { path: 'user-details/:userId', component: user_details_component_1.UserDetailsComponent },
                     { path: 'user-signin', component: user_signin_component_1.UserSigninComponent }
                 ]),
             ],

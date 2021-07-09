@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
 import { AccountsAccessService } from '../../accounts/accounts-access.service';
 
 @Component({
@@ -18,7 +17,6 @@ export class UserSigninComponent implements OnInit {
   public submitClick = false;
 
   constructor(
-    private cookieService: CookieService,
     private formBuilder: FormBuilder,
     private router: Router,
     private userAccessService: AccountsAccessService) { }
@@ -48,15 +46,13 @@ export class UserSigninComponent implements OnInit {
         if (a == null) {
           this.showError = true
         } else {
-          this.cookieService.set("currentUserId", a.accountId.toString())
-          sessionStorage.setItem("user", JSON.stringify(a))
-          this.router.navigate(['user-details'])
+          this.router.navigate(['user-details', a.accountId])
         }
       }
     )
   }
 
   onCancel() {
-    this.router.navigate([''])
+    this.router.navigate(['/'])
   }
 }

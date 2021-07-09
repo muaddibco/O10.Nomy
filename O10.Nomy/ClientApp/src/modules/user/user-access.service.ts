@@ -1,8 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { filter } from 'rxjs/operators';
 import { AccountsAccessService } from '../accounts/accounts-access.service';
-import { AccountType } from '../accounts/models/account-type';
 import { Account} from '../accounts/models/account';
 import { User } from './models/user';
 import { UserAttributeScheme } from './models/user-attribute-scheme';
@@ -19,15 +17,19 @@ export class UserAccessService {
     return this.http.post<Account>('/api/accounts', user)
   }
 
-  getUserAttributes(account: Account) {
-    return this.http.get<UserAttributeScheme[]>('/api/user/' + account.accountId + '/attributes')
+  getUserAttributes(accountId: number) {
+    return this.http.get<UserAttributeScheme[]>('/api/user/' + accountId + '/attributes')
   }
 
-  getUserDetails(account: Account) {
-    return this.http.get<UserDetails>('/api/user/' + account.accountId)
+  getUserDetails(accountId: number) {
+    return this.http.get<UserDetails>('/api/user/' + accountId)
   }
 
   confirmSession(sessionId: string) {
     return this.http.post('/api/user/session/' + sessionId, null)
+  }
+
+  sendInvoice(accountId: number, sessionId: string, amount: number, currency: string) {
+    return this.http.post('/api/user/' + accountId + '/invoice', { sessionId, amount, currency })
   }
 }

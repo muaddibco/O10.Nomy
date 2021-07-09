@@ -59,7 +59,7 @@ import { UserSigninComponent } from './user-signin/user-signin.component';
     RouterModule.forRoot([
       { path: 'user-entry', component: UserEntryComponent },
       { path: 'user-register', component: UserRegistrationComponent },
-      { path: 'user-details', component: UserDetailsComponent },
+      { path: 'user-details/:userId', component: UserDetailsComponent },
       { path: 'user-signin', component: UserSigninComponent }
     ]),
   ],

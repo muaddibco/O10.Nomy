@@ -42,6 +42,8 @@ namespace O10.Nomy.Services
 
             await _hubContext.Clients.Group($"{sessionId}_Payer").SendAsync("Invoice", invoiceEntry);
 
+            record.TimeoutTask.Start();
+
             await record.TimeoutTask.ContinueWith(t =>
             {
                 if(!t.IsCompletedSuccessfully)

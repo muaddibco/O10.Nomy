@@ -12,10 +12,12 @@ var password_confirm_dialog_1 = require("../../password-confirm/password-confirm
 var signalr_1 = require("@microsoft/signalr");
 var rxjs_1 = require("rxjs");
 var UserDetailsComponent = /** @class */ (function () {
-    function UserDetailsComponent(userAccessService, expertAccessService, router, dialog) {
+    function UserDetailsComponent(userAccessService, accountAccessService, expertAccessService, router, route, dialog) {
         this.userAccessService = userAccessService;
+        this.accountAccessService = accountAccessService;
         this.expertAccessService = expertAccessService;
         this.router = router;
+        this.route = route;
         this.dialog = dialog;
         this.isLoaded = false;
         this.isInSession = false;
@@ -23,18 +25,18 @@ var UserDetailsComponent = /** @class */ (function () {
     }
     UserDetailsComponent.prototype.ngOnInit = function () {
         var _this = this;
-        this.user = JSON.parse(sessionStorage.getItem("user"));
+        var userId = Number(this.route.snapshot.paramMap.get('userId'));
         var that = this;
-        var dialogRef = this.dialog.open(password_confirm_dialog_1.PasswordConfirmDialog, { data: { title: "Start account", confirmButtonText: "Submit" } });
-        dialogRef.afterClosed().subscribe(function (r) {
-            if (r) {
-            }
-            that.isLoaded = true;
-        });
-        this.userAccessService.getUserAttributes(this.user).subscribe(function (r) {
-            if (r && r.length > 0) {
-                _this.nomyIdentity = r[0];
-            }
+        this.accountAccessService.getAccountById(userId).subscribe(function (r) {
+            that.user = r;
+            var dialogRef = that.dialog.open(password_confirm_dialog_1.PasswordConfirmDialog, { data: { title: "Start account", confirmButtonText: "Submit" } });
+            dialogRef.afterClosed().subscribe(function (r) {
+                if (r) {
+                    that.initiateChatHub(that);
+                    that.initiateUserAttributes(that);
+                }
+                that.isLoaded = true;
+            });
         }, function (e) {
         });
         this.paymentHub = new signalr_1.HubConnectionBuilder()
@@ -45,7 +47,6 @@ var UserDetailsComponent = /** @class */ (function () {
         this.chatHub = new signalr_1.HubConnectionBuilder()
             .withUrl('/chat')
             .build();
-        this.initiateChatHub(this);
         this.chatHub.on("Invitation", function (r) {
             _this.sessionInfo = r;
             if (confirm("There is an invitation for a session with id " + _this.sessionInfo.sessionId)) {
@@ -60,9 +61,26 @@ var UserDetailsComponent = /** @class */ (function () {
             }
         });
         this.chatHub.on("Start", function (r) {
+            var sessionInfo = r;
+            console.info("Started session " + sessionInfo.sessionId + ", launching periodic invoice issuing...");
             _this.isSessionStarted = true;
             _this.paymentSubscription = rxjs_1.interval(30000).subscribe(function (v) {
+                console.info("Issue invoice for " + _this.expertProfile.fee + " USD");
+                _this.userAccessService.sendInvoice(_this.user.accountId, _this.sessionInfo.sessionId, _this.expertProfile.fee, "USD").subscribe(function (r) {
+                    console.info("Invoice for the session " + _this.sessionInfo.sessionId + " issued successfully");
+                }, function (e) {
+                    console.error("Failed to issue an invoice for the session " + _this.sessionInfo.sessionId, e);
+                });
             });
+        });
+    };
+    UserDetailsComponent.prototype.initiateUserAttributes = function (that) {
+        var _this = this;
+        that.userAccessService.getUserAttributes(that.user.accountId).subscribe(function (r) {
+            if (r && r.length > 0) {
+                _this.nomyIdentity = r[0];
+            }
+        }, function (e) {
         });
     };
     UserDetailsComponent.prototype.initiateChatHub = function (that) {

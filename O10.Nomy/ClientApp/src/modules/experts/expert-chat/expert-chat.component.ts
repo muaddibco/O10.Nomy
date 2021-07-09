@@ -43,19 +43,49 @@ export class ExpertChatComponent implements OnInit {
       .withAutomaticReconnect()
       .build()
 
-    this.chatHub.start();
+    var that = this
+
+    this.chatHub.start().then(() => {
+      that.expertsAccessService.getExpert(expertId).subscribe(
+        r => {
+          that.isLoaded = true
+          that.expertProfile = r
+          that.expertsAccessService.initiateChatSession().subscribe(
+            s => {
+              that.sessionInfo = s
+              that.chatHub.invoke("AddToGroup", s.sessionId);
+              that.initiatingChat = true
+              that.expertsAccessService.inviteToChat(that.expertProfile.expertProfileId, s.sessionId).subscribe(
+                a => {
+
+                },
+                e => {
+                  console.error(e);
+                }
+              )
+            },
+            e => {
+              console.error(e);
+            }
+          )
+        },
+        e => {
+          console.error(e);
+        }
+      )
+    });
 
     this.paymentsHub.on("Invoice", i => {
       var invoice = i as PaymentEntry
-      this.invoices.push(invoice)
-      this.expertsAccessService.payInvoice(this.userId, invoice.sessionId, invoice.commitment, invoice.currency, invoice.amount)
+      that.invoices.push(invoice)
+      that.expertsAccessService.payInvoice(that.userId, invoice.sessionId, invoice.commitment, invoice.currency, invoice.amount)
     })
 
     this.chatHub.on("Confirmed", s => {
       var sessionInfo = s as SessionInfo
-      this.isChatConfirmed = true
-      this.paymentsHub.invoke("AddToGroup", sessionInfo.sessionId + "_payer");
-      this.expertsAccessService.startChat(this.expertProfile.expertProfileId, this.sessionInfo.sessionId).subscribe(
+      that.isChatConfirmed = true
+      that.paymentsHub.invoke("AddToGroup", sessionInfo.sessionId + "_payer");
+      that.expertsAccessService.startChat(that.expertProfile.expertProfileId, that.sessionInfo.sessionId).subscribe(
         r => {
 
         },
@@ -63,36 +93,5 @@ export class ExpertChatComponent implements OnInit {
 
         })
     })
-
-    var that = this
-    this.expertsAccessService.getExpert(expertId).subscribe(
-      r => {
-        this.isLoaded = true
-        this.expertProfile = r
-        this.expertsAccessService.initiateChatSession().subscribe(
-          s => {
-            that.sessionInfo = s
-            that.chatHub.invoke("AddToGroup", s.sessionId);
-            that.initiatingChat = true
-            that.expertsAccessService.inviteToChat(that.expertProfile.expertProfileId, s.sessionId).subscribe(
-              a => {
-
-              },
-              e => {
-                console.error(e);
-              }
-            )
-          },
-          e => {
-            console.error(e);
-          }
-        )
-      },
-      e => {
-        console.error(e);
-      }
-    )
-
   }
-
 }

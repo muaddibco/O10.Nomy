@@ -16,14 +16,17 @@ var UserAccessService = /** @class */ (function () {
     UserAccessService.prototype.register = function (user) {
         return this.http.post('/api/accounts', user);
     };
-    UserAccessService.prototype.getUserAttributes = function (account) {
-        return this.http.get('/api/user/' + account.accountId + '/attributes');
+    UserAccessService.prototype.getUserAttributes = function (accountId) {
+        return this.http.get('/api/user/' + accountId + '/attributes');
     };
-    UserAccessService.prototype.getUserDetails = function (account) {
-        return this.http.get('/api/user/' + account.accountId);
+    UserAccessService.prototype.getUserDetails = function (accountId) {
+        return this.http.get('/api/user/' + accountId);
     };
     UserAccessService.prototype.confirmSession = function (sessionId) {
         return this.http.post('/api/user/session/' + sessionId, null);
+    };
+    UserAccessService.prototype.sendInvoice = function (accountId, sessionId, amount, currency) {
+        return this.http.post('/api/user/' + accountId + '/invoice', { sessionId: sessionId, amount: amount, currency: currency });
     };
     UserAccessService = __decorate([
         core_1.Injectable({

@@ -19,7 +19,6 @@ var ExpertChatComponent = /** @class */ (function () {
         this.invoices = [];
     }
     ExpertChatComponent.prototype.ngOnInit = function () {
-        var _this = this;
         var expertId = Number(this.route.snapshot.paramMap.get('id'));
         this.userId = Number(this.route.snapshot.paramMap.get('userId'));
         this.paymentsHub = new signalr_1.HubConnectionBuilder()
@@ -31,37 +30,38 @@ var ExpertChatComponent = /** @class */ (function () {
             .withUrl('/chat')
             .withAutomaticReconnect()
             .build();
-        this.chatHub.start();
-        this.paymentsHub.on("Invoice", function (i) {
-            var invoice = i;
-            _this.invoices.push(invoice);
-            _this.expertsAccessService.payInvoice(_this.userId, invoice.sessionId, invoice.commitment, invoice.currency, invoice.amount);
-        });
-        this.chatHub.on("Confirmed", function (s) {
-            var sessionInfo = s;
-            _this.isChatConfirmed = true;
-            _this.paymentsHub.invoke("AddToGroup", sessionInfo.sessionId + "_payer");
-            _this.expertsAccessService.startChat(_this.expertProfile.expertProfileId, _this.sessionInfo.sessionId).subscribe(function (r) {
-            }, function (e) {
-            });
-        });
         var that = this;
-        this.expertsAccessService.getExpert(expertId).subscribe(function (r) {
-            _this.isLoaded = true;
-            _this.expertProfile = r;
-            _this.expertsAccessService.initiateChatSession().subscribe(function (s) {
-                that.sessionInfo = s;
-                that.chatHub.invoke("AddToGroup", s.sessionId);
-                that.initiatingChat = true;
-                that.expertsAccessService.inviteToChat(that.expertProfile.expertProfileId, s.sessionId).subscribe(function (a) {
+        this.chatHub.start().then(function () {
+            that.expertsAccessService.getExpert(expertId).subscribe(function (r) {
+                that.isLoaded = true;
+                that.expertProfile = r;
+                that.expertsAccessService.initiateChatSession().subscribe(function (s) {
+                    that.sessionInfo = s;
+                    that.chatHub.invoke("AddToGroup", s.sessionId);
+                    that.initiatingChat = true;
+                    that.expertsAccessService.inviteToChat(that.expertProfile.expertProfileId, s.sessionId).subscribe(function (a) {
+                    }, function (e) {
+                        console.error(e);
+                    });
                 }, function (e) {
                     console.error(e);
                 });
             }, function (e) {
                 console.error(e);
             });
-        }, function (e) {
-            console.error(e);
+        });
+        this.paymentsHub.on("Invoice", function (i) {
+            var invoice = i;
+            that.invoices.push(invoice);
+            that.expertsAccessService.payInvoice(that.userId, invoice.sessionId, invoice.commitment, invoice.currency, invoice.amount);
+        });
+        this.chatHub.on("Confirmed", function (s) {
+            var sessionInfo = s;
+            that.isChatConfirmed = true;
+            that.paymentsHub.invoke("AddToGroup", sessionInfo.sessionId + "_payer");
+            that.expertsAccessService.startChat(that.expertProfile.expertProfileId, that.sessionInfo.sessionId).subscribe(function (r) {
+            }, function (e) {
+            });
         });
     };
     ExpertChatComponent = __decorate([

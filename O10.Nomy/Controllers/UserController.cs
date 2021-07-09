@@ -66,10 +66,10 @@ namespace O10.Nomy.Controllers
             return Ok();
         }
 
-        [HttpPost("Invoice")]
+        [HttpPost("{accountId}/Invoice")]
         public async Task<IActionResult> SendInvoice(long accountId, [FromBody] InvoiceDTO invoice, CancellationToken ct)
         {
-            await _paymentSessionsService.PushInvoice(invoice.SessionId, invoice.SessionId, invoice.Amount);
+            await _paymentSessionsService.PushInvoice(invoice.SessionId, invoice.Currency, invoice.Amount);
 
             return Ok();
         }
