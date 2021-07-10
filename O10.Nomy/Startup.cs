@@ -45,7 +45,7 @@ namespace O10.Nomy
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection").Replace("{DBSERVER}", Configuration.GetValue<string>("DBSERVER"))));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
