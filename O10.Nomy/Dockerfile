@@ -6,6 +6,10 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+RUN apt-get update -yq \
+    && apt-get install curl gnupg -yq \
+    && curl -sL https://deb.nodesource.com/setup_16.x | bash \
+    && apt-get install nodejs -yq
 WORKDIR /src
 COPY ["O10.Nomy/O10.Nomy.csproj", "O10.Nomy/"]
 RUN dotnet restore "O10.Nomy/O10.Nomy.csproj"
