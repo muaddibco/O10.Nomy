@@ -4,11 +4,13 @@ services:
   o10.nomy:
     image: muaddibco/o10nomy:latest
     ports:
-    - 5004:80
-    - 5005:443
+      - 5004:80
+      - 5005:443
     environment:
       - DBSERVER=db
       - O10PORTALSERVICENAME=o10.portal.webapp
+    depends_on:
+      - db
       
   o10.portal.webapp:
     image: muaddibco/o10portal:latest
@@ -17,7 +19,9 @@ services:
       - GWSERVICENAME=o10.gateway.webapp
       - DBSERVER=db
     ports:
-    - 5003:80
+      - 5003:80
+    depends_on:
+      - db
 
   o10.gateway.webapp:
     image: muaddibco/o10gateway:latest
@@ -28,7 +32,9 @@ services:
       - GATEWAYKEY=7109020FC572C7D84DB0BFE41595454EA2B8BEA65A8EAE398F0833D54DA1EA0B
       - DBSERVER=db
     ports:
-    - 5002:80
+      - 5002:80
+    depends_on:
+      - db
 
   o10.node.webapp:
     image: muaddibco/o10node:latest
@@ -36,8 +42,9 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - DBSERVER=db
     ports:
-    - 5001:80
-
+      - 5001:80
+    depends_on:
+      - db
 
   db:
     image: "mcr.microsoft.com/mssql/server"
