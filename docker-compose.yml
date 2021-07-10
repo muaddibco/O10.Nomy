@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  o10.nomy:
+    image: ${DOCKER_REGISTRY-}o10nomy
+    build:
+      context: .
+      dockerfile: O10.Nomy/Dockerfile
+
+  o10.portal.webapp:
+    image: muaddibco/o10portal:latest
+    ports:
+    - 5003:80
+
+  o10.gateway.webapp:
+    image: muaddibco/o10gateway:latest
+    ports:
+    - 5002:80
+
+  o10.node.webapp:
+    image: muaddibco/o10node:latest
+    ports:
+    - 5001:80
