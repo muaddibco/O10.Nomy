@@ -7,6 +7,7 @@ using Flurl;
 using Flurl.Http;
 using O10.Nomy.DTOs;
 using System.Collections.Generic;
+using O10.Core.Logging;
 
 namespace O10.Nomy.Services
 {
@@ -15,19 +16,24 @@ namespace O10.Nomy.Services
     {
         private readonly INomyConfig _nomyConfig;
         private readonly INomyContext _nomyContext;
+        private readonly ILogger _logger;
 
-        public O10ApiGateway(IConfigurationService configurationService, INomyContext nomyContext)
+        public O10ApiGateway(IConfigurationService configurationService, INomyContext nomyContext, ILoggerService loggerService)
         {
             _nomyConfig = configurationService.Get<INomyConfig>();
             _nomyContext = nomyContext;
+            _logger = loggerService.GetLogger(nameof(O10ApiGateway));
         }
 
         public async Task<O10AccountDTO?> FindAccount(string alias)
         {
-            var account = await _nomyConfig.O10Uri
+            var req = _nomyConfig.O10Uri
                 .AppendPathSegments("accounts", "find")
-                .SetQueryParam("accountAlias", alias)
-                .GetJsonAsync<O10AccountDTO?>();
+                .SetQueryParam("accountAlias", alias);
+
+            _logger.Debug(() => $"Sending O10 request {req}");
+            
+            var account = await req.GetJsonAsync<O10AccountDTO?>();
 
             return account;
         }

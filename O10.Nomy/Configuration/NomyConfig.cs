@@ -12,6 +12,7 @@ namespace O10.Nomy.Configuration
         {
         }
 
+        [Tokenized]
         public string O10Uri { get; set; }
 
         public string O10IdentityProvider { get; set; }

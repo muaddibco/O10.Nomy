@@ -195,47 +195,60 @@ namespace O10.Nomy.Services
                     {
                         _logger.Debug($"Initializing expert profile {expertProfile.Email}");
 
-                        foreach (var expertiseSubAreaName in expertProfile.ExpertiseSubAreas)
+                        try
                         {
-                            if (expertiseSubAreas.All(s => s.Name != expertiseSubAreaName))
+                            foreach (var expertiseSubAreaName in expertProfile.ExpertiseSubAreas)
                             {
-                                await _dataAccessService.AddExpertiseSubArea(expertiseAreaPoco.ExpertiseAreaId, expertiseSubAreaName, "");
+                                if (expertiseSubAreas.All(s => s.Name != expertiseSubAreaName))
+                                {
+                                    await _dataAccessService.AddExpertiseSubArea(expertiseAreaPoco.ExpertiseAreaId, expertiseSubAreaName, "");
+                                }
+                            }
+
+                            var user = await _dataAccessService.FindUser(expertProfile.Email, cancellationToken);
+                            if (user == null)
+                            {
+                                _logger.Debug($"No user found for expert profile {expertProfile.Email}, creating Rapyd Wallet...");
+                                string walletId = await CreateRapydWallet(new UserDTO
+                                {
+                                    Email = expertProfile.Email,
+                                    FirstName = expertProfile.FirstName,
+                                    LastName = expertProfile.LastName
+                                });
+                                _logger.Debug($"Expert profile {expertProfile.Email} now has Rapyd Wallet with is {walletId}");
+
+                                var account = await _apiGateway.FindAccount(expertProfile.Email);
+                                bool needToRequestId = false;
+                                if (account == null)
+                                {
+                                    _logger.Debug($"No O10 account found for expert profile {expertProfile.Email}, creating O10 account...");
+                                    account = await _apiGateway.RegisterUser(expertProfile.Email, "qqq");
+                                    needToRequestId = true;
+                                }
+
+                                account = await _apiGateway.Start(account.AccountId);
+                                await _apiGateway.SetBindingKey(account.AccountId, "qqq");
+
+                                if (needToRequestId)
+                                {
+                                    _logger.Debug($"Requesting O10 identity for expert profile {expertProfile.Email}");
+                                    var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId);
+                                }
+
+                                user = await _dataAccessService.CreateUser(account.AccountId, expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId, cancellationToken);
+
+                                await _dataAccessService.AddExpertProfile(user.NomyUserId, expertProfile.Description ?? string.Empty, (ulong)new Random().Next(10, 20), expertProfile.ExpertiseSubAreas.ToArray());
                             }
                         }
-
-                        var user = await _dataAccessService.FindUser(expertProfile.Email, cancellationToken);
-                        if (user == null)
+                        catch (AggregateException ex)
                         {
-                            _logger.Debug($"No user found for expert profile {expertProfile.Email}, creating Rapyd Wallet...");
-                            string walletId = await CreateRapydWallet(new UserDTO
-                            {
-                                Email = expertProfile.Email,
-                                FirstName = expertProfile.FirstName,
-                                LastName = expertProfile.LastName
-                            });
-                            _logger.Debug($"Expert profile {expertProfile.Email} now has Rapyd Wallet with is {walletId}");
-
-                            var account = await _apiGateway.FindAccount(expertProfile.Email);
-                            bool needToRequestId = false;
-                            if (account == null)
-                            {
-                                _logger.Debug($"No O10 account found for expert profile {expertProfile.Email}, creating O10 account...");
-                                account = await _apiGateway.RegisterUser(expertProfile.Email, "qqq");
-                                needToRequestId = true;
-                            }
-
-                            account = await _apiGateway.Start(account.AccountId);
-                            await _apiGateway.SetBindingKey(account.AccountId, "qqq");
-
-                            if (needToRequestId)
-                            {
-                                _logger.Debug($"Requesting O10 identity for expert profile {expertProfile.Email}");
-                                var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId);
-                            }
-
-                            user = await _dataAccessService.CreateUser(account.AccountId, expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId, cancellationToken);
-
-                            await _dataAccessService.AddExpertProfile(user.NomyUserId, expertProfile.Description ?? string.Empty, (ulong)new Random().Next(10, 20), expertProfile.ExpertiseSubAreas.ToArray());
+                            _logger.Error($"Error during intializing the expert profile {expertProfile.Email}", ex.InnerException);
+                            throw;
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Error($"Error during intializing the expert profile {expertProfile.Email}", ex);
+                            throw;
                         }
                     }
                 }
