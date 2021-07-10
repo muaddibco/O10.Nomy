@@ -1,6 +1,7 @@
 ﻿using Flurl.Http;
 using O10.Core;
 using O10.Core.Architecture;
+using O10.Core.Logging;
 using O10.Nomy.DTOs;
 using O10.Nomy.Rapyd;
 using O10.Nomy.Rapyd.DTOs;
@@ -161,70 +162,86 @@ namespace O10.Nomy.Services
         private readonly IDataAccessService _dataAccessService;
         private readonly IO10ApiGateway _apiGateway;
         private readonly IRapydApi _rapydApi;
-
-        public ExpertsInitializer(IDataAccessService dataAccessService, IO10ApiGateway o10ApiGateway, IRapydApi rapydApi)
+        private readonly ILogger _logger;
+        public ExpertsInitializer(IDataAccessService dataAccessService, IO10ApiGateway o10ApiGateway, IRapydApi rapydApi, ILoggerService loggerService)
         {
             _dataAccessService = dataAccessService;
             _apiGateway = o10ApiGateway;
             _rapydApi = rapydApi;
+            _logger = loggerService.GetLogger(nameof(ExpertsInitializer));
         }
 
         public override ExtensionOrderPriorities Priority => ExtensionOrderPriorities.Lowest;
 
         protected override async Task InitializeInner(CancellationToken cancellationToken)
         {
+            _logger.Debug("Initializing experts pre-setup");
             var expertiseAreas = await _dataAccessService.GetExpertiseAreas();
 
             foreach (var expertiseArea in _expertiseAreas)
             {
-                var expertiseAreaPoco = expertiseAreas.FirstOrDefault(s => s.Name == expertiseArea.Name);
-                if(expertiseAreaPoco == null)
+                _logger.Debug($"Initializing expertise area {expertiseArea.Name} started");
+                try
                 {
-                    expertiseAreaPoco = await _dataAccessService.AddExpertiseArea(expertiseArea.Name, "");
+                    var expertiseAreaPoco = expertiseAreas.FirstOrDefault(s => s.Name == expertiseArea.Name);
+                    if (expertiseAreaPoco == null)
+                    {
+                        expertiseAreaPoco = await _dataAccessService.AddExpertiseArea(expertiseArea.Name, "");
+                    }
+
+                    var expertiseSubAreas = await _dataAccessService.GetExpertiseSubAreas(expertiseAreaPoco.ExpertiseAreaId);
+
+                    foreach (var expertProfile in expertiseArea.ExpertProfiles)
+                    {
+                        _logger.Debug($"Initializing expert profile {expertProfile.Email}");
+
+                        foreach (var expertiseSubAreaName in expertProfile.ExpertiseSubAreas)
+                        {
+                            if (expertiseSubAreas.All(s => s.Name != expertiseSubAreaName))
+                            {
+                                await _dataAccessService.AddExpertiseSubArea(expertiseAreaPoco.ExpertiseAreaId, expertiseSubAreaName, "");
+                            }
+                        }
+
+                        var user = await _dataAccessService.FindUser(expertProfile.Email, cancellationToken);
+                        if (user == null)
+                        {
+                            _logger.Debug($"No user found for expert profile {expertProfile.Email}, creating Rapyd Wallet...");
+                            string walletId = await CreateRapydWallet(new UserDTO
+                            {
+                                Email = expertProfile.Email,
+                                FirstName = expertProfile.FirstName,
+                                LastName = expertProfile.LastName
+                            });
+                            _logger.Debug($"Expert profile {expertProfile.Email} now has Rapyd Wallet with is {walletId}");
+
+                            var account = await _apiGateway.FindAccount(expertProfile.Email);
+                            bool needToRequestId = false;
+                            if (account == null)
+                            {
+                                _logger.Debug($"No O10 account found for expert profile {expertProfile.Email}, creating O10 account...");
+                                account = await _apiGateway.RegisterUser(expertProfile.Email, "qqq");
+                                needToRequestId = true;
+                            }
+
+                            account = await _apiGateway.Start(account.AccountId);
+                            await _apiGateway.SetBindingKey(account.AccountId, "qqq");
+
+                            if (needToRequestId)
+                            {
+                                _logger.Debug($"Requesting O10 identity for expert profile {expertProfile.Email}");
+                                var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId);
+                            }
+
+                            user = await _dataAccessService.CreateUser(account.AccountId, expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId, cancellationToken);
+
+                            await _dataAccessService.AddExpertProfile(user.NomyUserId, expertProfile.Description ?? string.Empty, (ulong)new Random().Next(10, 20), expertProfile.ExpertiseSubAreas.ToArray());
+                        }
+                    }
                 }
-
-                var expertiseSubAreas = await _dataAccessService.GetExpertiseSubAreas(expertiseAreaPoco.ExpertiseAreaId);
-
-                foreach (var expertProfile in expertiseArea.ExpertProfiles)
+                finally
                 {
-                    foreach (var expertiseSubAreaName in expertProfile.ExpertiseSubAreas)
-                    {
-                        if(expertiseSubAreas.All(s => s.Name != expertiseSubAreaName))
-                        {
-                            await _dataAccessService.AddExpertiseSubArea(expertiseAreaPoco.ExpertiseAreaId, expertiseSubAreaName, "");
-                        }
-                    }
-
-                    var user = await _dataAccessService.FindUser(expertProfile.Email, cancellationToken);
-                    if(user == null)
-                    {
-                        string walletId = await CreateRapydWallet(new UserDTO
-                        {
-                            Email = expertProfile.Email,
-                            FirstName = expertProfile.FirstName,
-                            LastName = expertProfile.LastName
-                        });
-
-                        var account = await _apiGateway.FindAccount(expertProfile.Email);
-                        bool needToRequestId = false;
-                        if(account == null)
-                        {
-                            account = await _apiGateway.RegisterUser(expertProfile.Email, "qqq");
-                            needToRequestId = true;
-                        }
-
-                        account = await _apiGateway.Start(account.AccountId);
-                        await _apiGateway.SetBindingKey(account.AccountId, "qqq");
-
-                        if(needToRequestId)
-                        {
-                            var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId);
-                        }
-
-                        user = await _dataAccessService.CreateUser(account.AccountId, expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId, cancellationToken);
-
-                        await _dataAccessService.AddExpertProfile(user.NomyUserId, expertProfile.Description ?? string.Empty, (ulong)new Random().Next(10, 20), expertProfile.ExpertiseSubAreas.ToArray());
-                    }
+                    _logger.Debug($"Initializing expertise area {expertiseArea.Name} finished");
                 }
             }
         }

@@ -44,8 +44,12 @@ namespace O10.Nomy
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection").Replace("{DBSERVER}", Configuration.GetValue<string>("DBSERVER"))));
+            {
+                var connString = Configuration.GetConnectionString("DefaultConnection").Replace("{DBSERVER}", Configuration.GetValue<string>("DBSERVER"));
+
+                _logger.Debug($"Main DB Context: {connString}");
+                options.UseSqlServer(connString);
+            });
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -107,10 +111,10 @@ namespace O10.Nomy
             {
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                //app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             if (!env.IsDevelopment())
             {

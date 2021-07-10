@@ -86,7 +86,11 @@ namespace O10.Nomy.Rapyd
         {
             try
             {
-                var resp = await FlurlRequest("GET", null, segments).GetJsonAsync<RapydResponse<T>>().ConfigureAwait(false);
+                var req = FlurlRequest("GET", null, segments);
+                
+                _logger.Debug(() => $"Sending Rapyd request: {req.Url}");
+
+                var resp = await req.GetJsonAsync<RapydResponse<T>>().ConfigureAwait(false);
 
                 return resp.Data;
             }
@@ -119,7 +123,11 @@ namespace O10.Nomy.Rapyd
         {
             try
             {
-                var resp = await FlurlRequest("POST", payload, segments)
+                var req = FlurlRequest("POST", payload, segments);
+
+                _logger.Debug(() => $"Sending Rapyd request: {req.Url}\r\n{JsonConvert.SerializeObject(payload, Formatting.Indented)}");
+
+                var resp = await req
                     .PostJsonAsync(payload)
                     .ReceiveJson<RapydResponse<T>>()
                     .ConfigureAwait(false);

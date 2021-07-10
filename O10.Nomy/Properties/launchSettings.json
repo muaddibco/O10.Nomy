@@ -19,9 +19,11 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "O10PORTALSERVICENAME": "localhost:5003",
+        "DBSERVER": "localhost,1433"
       },
-      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+      "applicationUrl": "https://localhost:5011;http://localhost:5010"
     },
     "Docker": {
       "commandName": "Docker",
