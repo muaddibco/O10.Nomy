@@ -8,6 +8,7 @@ using Flurl.Http;
 using O10.Nomy.DTOs;
 using System.Collections.Generic;
 using O10.Core.Logging;
+using Newtonsoft.Json;
 
 namespace O10.Nomy.Services
 {
@@ -64,8 +65,12 @@ namespace O10.Nomy.Services
 
         public async Task<O10AccountDTO?> RegisterUser(string email, string password)
         {
-            var account = await _nomyConfig.O10Uri
-                .AppendPathSegments("accounts", "register")
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("accounts", "register");
+
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(new { accountType = 3, accountInfo = email, password }, Formatting.Indented)}");
+
+            var account = await req
                 .PostJsonAsync(new
                 {
                     accountType = 3,
@@ -77,33 +82,44 @@ namespace O10.Nomy.Services
             return account;
         }
 
-        public async Task<IEnumerable<AttributeValue>> RequestIdentity(long accountId, string password, string email, string firstName, string lastName, string walletId) =>
-            await _nomyConfig.O10Uri
-                .AppendPathSegments("user", accountId, "Attributes")
-                .PostJsonAsync(new
+        public async Task<IEnumerable<AttributeValue>> RequestIdentity(long accountId, string password, string email, string firstName, string lastName, string walletId)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("user", accountId, "Attributes");
+            var body = new
+            {
+                issuer = _nomyContext.O10IdentityProvider.PublicSpendKey,
+                attributeValues = new
                 {
-                    issuer = _nomyContext.O10IdentityProvider.PublicSpendKey,
-                    attributeValues = new
-                    {
-                        email,
-                        firstName,
-                        lastName,
-                        rapydWalletId = walletId
-                    }
-                })
-                .ReceiveJson<IEnumerable<AttributeValue>>();
+                    email,
+                    firstName,
+                    lastName,
+                    rapydWalletId = walletId
+                }
+            };
+
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(body, Formatting.Indented)}");
+
+            return await req.PostJsonAsync(body).ReceiveJson<IEnumerable<AttributeValue>>();
+        }
 
         public async Task SetBindingKey(long accountId, string password)
         {
-            await _nomyConfig.O10Uri
-                .AppendPathSegments("Accounts", accountId.ToString(), "BindingKey")
-                .PostJsonAsync(new { password });
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("Accounts", accountId.ToString(), "BindingKey");
+            
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(new { password }, Formatting.Indented)}");
+
+            await req.PostJsonAsync(new { password });
         }
 
         public async Task<O10AccountDTO?> Start(long accountId)
         {
-            var account = await _nomyConfig.O10Uri
-                .AppendPathSegments("Accounts", accountId.ToString(), "Start")
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("Accounts", accountId.ToString(), "Start");
+
+            _logger.Debug(() => $"Sending O10 request {req}");
+
+            var account = await req
                 .PostAsync()
                 .ReceiveJson<O10AccountDTO>();
 

@@ -223,10 +223,13 @@ namespace O10.Nomy.Services
                                 {
                                     _logger.Debug($"No O10 account found for expert profile {expertProfile.Email}, creating O10 account...");
                                     account = await _apiGateway.RegisterUser(expertProfile.Email, "qqq");
+                                    _logger.Debug($"O10 account with id {account.AccountId} was created for {expertProfile.Email}");
                                     needToRequestId = true;
                                 }
 
+                                _logger.Debug("Starting O10 account...");
                                 account = await _apiGateway.Start(account.AccountId);
+                                _logger.Debug("Setting the binding key of the O10 account...");
                                 await _apiGateway.SetBindingKey(account.AccountId, "qqq");
 
                                 if (needToRequestId)
