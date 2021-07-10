@@ -1,3 +1,3 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-//# sourceMappingURL=payment-record-entry.js.map
+//# sourceMappingURL=range-proof.js.map

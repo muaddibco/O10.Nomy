@@ -140,8 +140,11 @@ namespace O10.Nomy.Rapyd
             }
             catch (FlurlHttpException fex)
             {
-                var resp = await fex.Call.Response.GetJsonAsync<RapydResponse<object>>().ConfigureAwait(false);
-                _logger.Error($"The request failed with the status: {JsonConvert.SerializeObject(resp.Status)}", fex);
+                if(fex.Call.Response != null)
+                {
+                    var resp = await fex.Call.Response.GetJsonAsync<RapydResponse<object>>().ConfigureAwait(false);
+                    _logger.Error($"The request failed with the status: {JsonConvert.SerializeObject(resp.Status)}", fex);
+                }
                 throw;
             }
             catch (Exception ex)

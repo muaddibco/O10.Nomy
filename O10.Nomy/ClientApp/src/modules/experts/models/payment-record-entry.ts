@@ -1,3 +1,6 @@
+import { RangeProof } from "./range-proof";
+
 export interface PaymentRecordEntry {
-  commitment: string
+  commitment: string;
+  rangeProof: RangeProof;
 }

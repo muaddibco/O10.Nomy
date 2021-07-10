@@ -30,6 +30,7 @@ var radio_1 = require("@angular/material/radio");
 var select_1 = require("@angular/material/select");
 var slide_toggle_1 = require("@angular/material/slide-toggle");
 var stepper_1 = require("@angular/material/stepper");
+var table_1 = require("@angular/material/table");
 var expert_chat_component_1 = require("./expert-chat/expert-chat.component");
 var experts_list_component_1 = require("./experts-list/experts-list.component");
 var ExpertsModule = /** @class */ (function () {
@@ -43,7 +44,7 @@ var ExpertsModule = /** @class */ (function () {
             ],
             imports: [
                 common_1.CommonModule, platform_browser_1.BrowserModule, animations_1.BrowserAnimationsModule, http_1.HttpClientModule,
-                expansion_1.MatExpansionModule, input_1.MatInputModule, select_1.MatSelectModule, dialog_1.MatDialogModule, button_1.MatButtonModule, bottom_sheet_1.MatBottomSheetModule, card_1.MatCardModule, icon_1.MatIconModule, progress_bar_1.MatProgressBarModule, list_1.MatListModule, button_toggle_1.MatButtonToggleModule, divider_1.MatDividerModule, stepper_1.MatStepperModule, checkbox_1.MatCheckboxModule, radio_1.MatRadioModule, form_field_1.MatFormFieldModule, slide_toggle_1.MatSlideToggleModule,
+                expansion_1.MatExpansionModule, input_1.MatInputModule, select_1.MatSelectModule, dialog_1.MatDialogModule, button_1.MatButtonModule, bottom_sheet_1.MatBottomSheetModule, card_1.MatCardModule, icon_1.MatIconModule, progress_bar_1.MatProgressBarModule, list_1.MatListModule, button_toggle_1.MatButtonToggleModule, divider_1.MatDividerModule, stepper_1.MatStepperModule, checkbox_1.MatCheckboxModule, radio_1.MatRadioModule, form_field_1.MatFormFieldModule, slide_toggle_1.MatSlideToggleModule, table_1.MatTableModule,
                 router_1.RouterModule.forRoot([
                     { path: 'expert-chat/:userId/:id', component: expert_chat_component_1.ExpertChatComponent },
                     { path: 'experts-list/:userId', component: experts_list_component_1.ExpertsListComponent }

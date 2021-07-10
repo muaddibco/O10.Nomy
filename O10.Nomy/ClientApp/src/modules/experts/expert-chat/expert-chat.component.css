@@ -1,0 +1,44 @@
+.invoices-table {
+  width: 100%;
+}
+
+.o10-container-mobile th {
+    font-size: xx-small
+}
+
+.o10-container-mobile td.mat-cell {
+  font-size: xx-small
+}
+
+tr.detail-row {
+  height: 0!important;
+}
+
+tr.element-row:not(.expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.element-row:not(.expanded-row):active {
+  background: #efefef;
+}
+
+.element-row td {
+  border-bottom-width: 0;
+}
+
+.element-detail {
+  overflow: hidden;
+}
+
+.element-description {
+  padding: 4px 10px;
+}
+
+  .element-description .mat-list-item-content {
+    padding: 0px !important;
+    font-size: xx-small !important;
+  }
+
+  .element-description .mat-list-item {
+      height: auto !important;
+  }

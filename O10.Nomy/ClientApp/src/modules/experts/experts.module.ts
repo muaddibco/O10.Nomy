@@ -22,6 +22,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatTableModule } from '@angular/material/table';
 
 import { ExpertChatComponent } from './expert-chat/expert-chat.component';
 import { ExpertsListComponent } from './experts-list/experts-list.component';
@@ -34,7 +35,7 @@ import { ExpertsListComponent } from './experts-list/experts-list.component';
   ],
   imports: [
     CommonModule, BrowserModule, BrowserAnimationsModule, HttpClientModule,
-    MatExpansionModule, MatInputModule, MatSelectModule, MatDialogModule, MatButtonModule, MatBottomSheetModule, MatCardModule, MatIconModule, MatProgressBarModule, MatListModule, MatButtonToggleModule, MatDividerModule, MatStepperModule, MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatSlideToggleModule,
+    MatExpansionModule, MatInputModule, MatSelectModule, MatDialogModule, MatButtonModule, MatBottomSheetModule, MatCardModule, MatIconModule, MatProgressBarModule, MatListModule, MatButtonToggleModule, MatDividerModule, MatStepperModule, MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatSlideToggleModule, MatTableModule,
     RouterModule.forRoot([
       { path: 'expert-chat/:userId/:id', component: ExpertChatComponent},
       { path: 'experts-list/:userId', component: ExpertsListComponent }

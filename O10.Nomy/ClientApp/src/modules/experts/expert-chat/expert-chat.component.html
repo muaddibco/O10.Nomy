@@ -2,7 +2,49 @@
 <div *ngIf="isLoaded">
   <mat-card *ngIf="initiatingChat && !isChatConfirmed">Initiating chat with {{expertProfile.firstName}} {{expertProfile.lastName}}...</mat-card>
   <mat-card *ngIf="initiatingChat && isChatConfirmed">Chat with {{expertProfile.firstName}} {{expertProfile.lastName}} started</mat-card>
-  <mat-list *ngIf="initiatingChat && isChatConfirmed" role="list">
+  <!--<mat-list *ngIf="initiatingChat && isChatConfirmed" role="list">
     <mat-list-item role="listitem" *ngFor="let invoice of invoices">Received an invoice with commitment {{invoice.commitment}} for {{invoice.amount}} {{invoice.currency}}</mat-list-item>
-  </mat-list>
+  </mat-list>-->
+<table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8 invoices-table">
+  <!-- Commitment Column -->
+  <ng-container matColumnDef="{{column}}" *ngFor="let column of displayedColumns">
+    <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+    <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="expandedDetail">
+    <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+      <div class="element-detail"
+           [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+        <div class="element-description">
+          Received an invoice with the following range proof:
+        </div>
+        <div class="element-description">
+          <table>
+            <tr>
+              <td>D:</td>
+              <td>
+                <mat-list role="list">
+                  <mat-list-item role="listitem" *ngFor="let d of element.rangeProof.d">{{d}}</mat-list-item>
+                </mat-list>
+              </td>
+            </tr>
+            <tr>
+              <td>E:</td>
+              <td>{{element.rangeProof.borromeanRingSignature.e}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+</td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let element; columns: displayedColumns;"
+      class="element-row"
+      [class.expanded-row]="expandedElement === element"
+      (click)="expandedElement = expandedElement === element ? null : element">
+  </tr>
+  <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+</table>
 </div>
