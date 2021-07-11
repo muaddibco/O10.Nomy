@@ -3,8 +3,6 @@ using O10.Core.Architecture;
 using O10.Core.Configuration;
 using O10.Nomy.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Flurl;
@@ -13,6 +11,7 @@ using O10.Core.Logging;
 
 namespace O10.Nomy.Services
 {
+    [RegisterExtension(typeof(IInitializer), Lifetime = LifetimeManagement.Singleton)]
     public class WaitForPortalInitializer : InitializerBase
     {
         private readonly INomyConfig _nomyConfig;
