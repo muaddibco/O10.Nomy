@@ -50,14 +50,18 @@ namespace O10.Nomy.Services
 
         public async Task<O10AccountDTO?> RegisterIdp(string alias, string password)
         {
-            var account = await _nomyConfig.O10Uri
-                .AppendPathSegments("accounts", "register")
-                .PostJsonAsync(new
-                {
-                    accountType = 1,
-                    accountInfo = alias,
-                    password
-                })
+            var req = _nomyConfig.O10Uri.AppendPathSegments("accounts", "register");
+            var body = new
+            {
+                accountType = 1,
+                accountInfo = alias,
+                password
+            };
+
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(body, Formatting.Indented)}");
+
+            var account = await req
+                .PostJsonAsync(body)
                 .ReceiveJson<O10AccountDTO>();
 
             return account;
@@ -138,9 +142,11 @@ namespace O10.Nomy.Services
 
         public async Task<AttributeDefinitionsResponse> SetAttributeDefinitions(string issuer, List<AttributeDefinition> attributeDefinitions)
         {
-            var resp = await _nomyConfig.O10Uri
-                .AppendPathSegments("SchemeResolution", "AttributeDefinitions")
-                .SetQueryParam("issuer", issuer)
+            var req = _nomyConfig.O10Uri.AppendPathSegments("SchemeResolution", "AttributeDefinitions").SetQueryParam("issuer", issuer);
+
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(attributeDefinitions, Formatting.Indented)}");
+
+            var resp = await req
                 .PutJsonAsync(attributeDefinitions)
                 .ReceiveJson<AttributeDefinitionsResponse>();
 
