@@ -16,6 +16,13 @@ namespace O10.Nomy.Services
     [RegisterExtension(typeof(IInitializer), Lifetime = LifetimeManagement.Singleton)]
     public class ExpertsInitializer : InitializerBase
     {
+        public readonly UserDTO _demoUser = new()
+        {
+            Email = "demo@nomy.com",
+            FirstName = "John",
+            LastName = "Doe"
+        };
+
         public readonly List<ExpertiseAreaDTO> _expertiseAreas = new()
         {
             new ExpertiseAreaDTO
@@ -178,6 +185,37 @@ namespace O10.Nomy.Services
             _logger.Debug("Initializing experts pre-setup");
             var expertiseAreas = await _dataAccessService.GetExpertiseAreas();
 
+            var user = await _dataAccessService.FindUser(_demoUser.Email, cancellationToken);
+            if (user == null)
+            {
+                _logger.Debug($"No user found for demo user {_demoUser.Email}, creating Rapyd Wallet...");
+                string walletId = await CreateRapydWallet(_demoUser);
+                _logger.Debug($"DEmo user profile {_demoUser.Email} now has Rapyd Wallet with is {walletId}");
+
+                var account = await _apiGateway.FindAccount(_demoUser.Email);
+                bool needToRequestId = false;
+                if (account == null)
+                {
+                    _logger.Debug($"No O10 account found for demo profile {_demoUser.Email}, creating O10 account...");
+                    account = await _apiGateway.RegisterUser(_demoUser.Email, "qqq");
+                    _logger.Debug($"O10 account with id {account.AccountId} was created for {_demoUser.Email}");
+                    needToRequestId = true;
+                }
+
+                _logger.Debug("Starting O10 account...");
+                account = await _apiGateway.Start(account.AccountId);
+                _logger.Debug("Setting the binding key of the O10 account...");
+                await _apiGateway.SetBindingKey(account.AccountId, "qqq");
+
+                if (needToRequestId)
+                {
+                    _logger.Debug($"Requesting O10 identity for expert profile {_demoUser.Email}");
+                    var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId);
+                }
+
+                var userPoco = await _dataAccessService.CreateUser(account.AccountId, _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId, cancellationToken);
+            }
+
             foreach (var expertiseArea in _expertiseAreas)
             {
                 _logger.Debug($"Initializing expertise area {expertiseArea.Name} started");
@@ -205,8 +243,8 @@ namespace O10.Nomy.Services
                                 }
                             }
 
-                            var user = await _dataAccessService.FindUser(expertProfile.Email, cancellationToken);
-                            if (user == null)
+                            var userExpert = await _dataAccessService.FindUser(expertProfile.Email, cancellationToken);
+                            if (userExpert == null)
                             {
                                 _logger.Debug($"No user found for expert profile {expertProfile.Email}, creating Rapyd Wallet...");
                                 string walletId = await CreateRapydWallet(new UserDTO
@@ -238,9 +276,9 @@ namespace O10.Nomy.Services
                                     var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId);
                                 }
 
-                                user = await _dataAccessService.CreateUser(account.AccountId, expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId, cancellationToken);
+                                userExpert = await _dataAccessService.CreateUser(account.AccountId, expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId, cancellationToken);
 
-                                await _dataAccessService.AddExpertProfile(user.NomyUserId, expertProfile.Description ?? string.Empty, (ulong)new Random().Next(10, 20), expertProfile.ExpertiseSubAreas.ToArray());
+                                await _dataAccessService.AddExpertProfile(userExpert.NomyUserId, expertProfile.Description ?? string.Empty, (ulong)new Random().Next(10, 20), expertProfile.ExpertiseSubAreas.ToArray());
                             }
                         }
                         catch (AggregateException ex)
