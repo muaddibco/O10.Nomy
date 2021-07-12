@@ -16,6 +16,9 @@ var UserAccessService = /** @class */ (function () {
     UserAccessService.prototype.register = function (user) {
         return this.http.post('/api/accounts', user);
     };
+    UserAccessService.prototype.start = function (accountId, password) {
+        return this.http.post('/api/accounts/' + accountId + '/start', null, { params: { "password": password } });
+    };
     UserAccessService.prototype.getUserAttributes = function (accountId) {
         return this.http.get('/api/user/' + accountId + '/attributes');
     };

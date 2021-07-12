@@ -51,6 +51,16 @@ namespace O10.Nomy.Controllers
             return Ok(_translatorsRepository.GetInstance<NomyUser?, UserDetailsDTO?>().Translate(await _dataAccessService.FindUser(accountAlias, ct)));
         }
 
+        [HttpPost("{accountId}/Start")]
+        public async Task<IActionResult> StartAccount(long accountId, string password, CancellationToken ct)
+        {
+            var user = await _dataAccessService.GetUser(accountId, ct);
+            var account = await _apiGateway.Start(user.O10Id);
+            await _apiGateway.SetBindingKey(user.O10Id, password);
+
+            return Ok(account);
+        }
+
         [HttpPost]
         public async Task<IActionResult> RegisterUser([FromBody] UserDTO user, CancellationToken cancellationToken)
         {

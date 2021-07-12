@@ -55,7 +55,7 @@ export class UserDetailsComponent implements OnInit {
 
               that.initiateChatHub(that);
 
-              that.initiateUserAttributes(that);
+              that.initiateUserAttributes(that, r);
             }
 
             that.isLoaded = true
@@ -125,17 +125,19 @@ export class UserDetailsComponent implements OnInit {
             });
     }
 
-    private initiateUserAttributes(that: this) {
-        that.userAccessService.getUserAttributes(that.user.accountId).subscribe(
-            r => {
-                if (r && r.length > 0) {
-                    this.nomyIdentity = r[0];
-                }
-            },
-            e => {
-            }
-        );
-    }
+  private initiateUserAttributes(that: this, password: string) {
+    that.userAccessService.start(that.user.accountId, password).subscribe(a => {
+      that.userAccessService.getUserAttributes(that.user.accountId).subscribe(
+        r => {
+          if (r && r.length > 0) {
+            this.nomyIdentity = r[0];
+          }
+        },
+        e => {
+        }
+      );
+    })
+  }
 
     private initiateChatHub(that: this) {
         this.chatHub.start().then(() => {

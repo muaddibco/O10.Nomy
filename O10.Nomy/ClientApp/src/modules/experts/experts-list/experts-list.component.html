@@ -3,12 +3,12 @@
   <mat-list>
     <div *ngFor="let expertiseArea of expertiseAreas">
       <div mat-subheader>{{expertiseArea.Name}}</div>
-      <button mat-list-item *ngFor="let expertProfile of expertiseArea.expertProfiles" (click)="gotoExpert(expertProfile)">
+      <mat-list-item *ngFor="let expertProfile of expertiseArea.expertProfiles" (click)="gotoExpert(expertProfile)">
         <div mat-line>{{expertProfile.firstName}} {{expertProfile.lastName}}</div>
         <div mat-line>
           <span *ngFor="let expertiseSubArea of expertProfile.expertiseSubAreas">{{expertiseSubArea}}</span>
         </div>
-      </button>
+      </mat-list-item>
       <mat-divider></mat-divider>
     </div>
   </mat-list>

@@ -18,6 +18,10 @@ export class UserAccessService {
     return this.http.post<Account>('/api/accounts', user)
   }
 
+  start(accountId: number, password: string) {
+    return this.http.post<Account>('/api/accounts/' + accountId + '/start', null, { params: { "password": password } })
+  }
+
   getUserAttributes(accountId: number) {
     return this.http.get<UserAttributeScheme[]>('/api/user/' + accountId + '/attributes')
   }

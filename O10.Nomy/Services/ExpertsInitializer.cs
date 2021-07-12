@@ -190,7 +190,7 @@ namespace O10.Nomy.Services
             {
                 _logger.Debug($"No user found for demo user {_demoUser.Email}, creating Rapyd Wallet...");
                 string walletId = await CreateRapydWallet(_demoUser);
-                _logger.Debug($"DEmo user profile {_demoUser.Email} now has Rapyd Wallet with is {walletId}");
+                _logger.Debug($"Demo user profile {_demoUser.Email} now has Rapyd Wallet with is {walletId}");
 
                 var account = await _apiGateway.FindAccount(_demoUser.Email);
                 bool needToRequestId = false;
@@ -210,7 +210,14 @@ namespace O10.Nomy.Services
                 if (needToRequestId)
                 {
                     _logger.Debug($"Requesting O10 identity for expert profile {_demoUser.Email}");
-                    var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId);
+                    try
+                    {
+                        var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"Failed to request identity for {_demoUser.Email}", ex);
+                    }
                 }
 
                 var userPoco = await _dataAccessService.CreateUser(account.AccountId, _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId, cancellationToken);
@@ -273,7 +280,14 @@ namespace O10.Nomy.Services
                                 if (needToRequestId)
                                 {
                                     _logger.Debug($"Requesting O10 identity for expert profile {expertProfile.Email}");
-                                    var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId);
+                                    try
+                                    {
+                                        var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _logger.Error($"Failed to request identity for {expertProfile.Email}", ex);
+                                    }
                                 }
 
                                 userExpert = await _dataAccessService.CreateUser(account.AccountId, expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId, cancellationToken);

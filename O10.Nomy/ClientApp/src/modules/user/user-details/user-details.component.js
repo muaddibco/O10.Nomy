@@ -33,7 +33,7 @@ var UserDetailsComponent = /** @class */ (function () {
             dialogRef.afterClosed().subscribe(function (r) {
                 if (r) {
                     that.initiateChatHub(that);
-                    that.initiateUserAttributes(that);
+                    that.initiateUserAttributes(that, r);
                 }
                 that.isLoaded = true;
             });
@@ -83,13 +83,15 @@ var UserDetailsComponent = /** @class */ (function () {
             console.error("Failed to issue an invoice for the session " + _this.sessionInfo.sessionId, e);
         });
     };
-    UserDetailsComponent.prototype.initiateUserAttributes = function (that) {
+    UserDetailsComponent.prototype.initiateUserAttributes = function (that, password) {
         var _this = this;
-        that.userAccessService.getUserAttributes(that.user.accountId).subscribe(function (r) {
-            if (r && r.length > 0) {
-                _this.nomyIdentity = r[0];
-            }
-        }, function (e) {
+        that.userAccessService.start(that.user.accountId, password).subscribe(function (a) {
+            that.userAccessService.getUserAttributes(that.user.accountId).subscribe(function (r) {
+                if (r && r.length > 0) {
+                    _this.nomyIdentity = r[0];
+                }
+            }, function (e) {
+            });
         });
     };
     UserDetailsComponent.prototype.initiateChatHub = function (that) {
