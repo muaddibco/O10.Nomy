@@ -36,7 +36,7 @@ There are also several predefined experts for demonstration purposes with the fo
 
 Sign-in into the app with demo user credentials.
 
-Now open another page and, ponce again, go to `http://localtion:5001`, right click at any place and choose 'Inspect'. Refresh the page.
+Now open another page and, ponce again, go to `http://localtion:5004`, right click at any place and choose 'Inspect'. Refresh the page.
 
 Pick up any predefined account of expert and enter his/her email and the password 'qqq'.
 
