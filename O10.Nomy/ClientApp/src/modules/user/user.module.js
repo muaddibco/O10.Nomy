@@ -30,6 +30,7 @@ var radio_1 = require("@angular/material/radio");
 var select_1 = require("@angular/material/select");
 var slide_toggle_1 = require("@angular/material/slide-toggle");
 var stepper_1 = require("@angular/material/stepper");
+var table_1 = require("@angular/material/table");
 var ngx_webcam_1 = require("ngx-webcam");
 var angularx_qrcode_1 = require("angularx-qrcode");
 var ngx_scanner_1 = require("@zxing/ngx-scanner");
@@ -61,7 +62,7 @@ var UserModule = /** @class */ (function () {
                 angularx_qrcode_1.QRCodeModule,
                 ngx_scanner_1.ZXingScannerModule,
                 animations_1.BrowserAnimationsModule,
-                expansion_1.MatExpansionModule, input_1.MatInputModule, select_1.MatSelectModule, dialog_1.MatDialogModule, button_1.MatButtonModule, bottom_sheet_1.MatBottomSheetModule, card_1.MatCardModule, icon_1.MatIconModule, progress_bar_1.MatProgressBarModule, list_1.MatListModule, button_toggle_1.MatButtonToggleModule, divider_1.MatDividerModule, stepper_1.MatStepperModule, checkbox_1.MatCheckboxModule, radio_1.MatRadioModule, form_field_1.MatFormFieldModule, slide_toggle_1.MatSlideToggleModule,
+                expansion_1.MatExpansionModule, input_1.MatInputModule, select_1.MatSelectModule, dialog_1.MatDialogModule, button_1.MatButtonModule, bottom_sheet_1.MatBottomSheetModule, card_1.MatCardModule, icon_1.MatIconModule, progress_bar_1.MatProgressBarModule, list_1.MatListModule, button_toggle_1.MatButtonToggleModule, divider_1.MatDividerModule, stepper_1.MatStepperModule, checkbox_1.MatCheckboxModule, radio_1.MatRadioModule, form_field_1.MatFormFieldModule, slide_toggle_1.MatSlideToggleModule, table_1.MatTableModule,
                 accounts_module_1.AccountsModule,
                 password_confirm_module_1.PasswordConfirmModule,
                 experts_module_1.ExpertsModule,

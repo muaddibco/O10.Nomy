@@ -69,7 +69,7 @@ namespace O10.Nomy.Controllers
         [HttpPost("{accountId}/Invoice")]
         public async Task<IActionResult> SendInvoice(long accountId, [FromBody] InvoiceDTO invoice, CancellationToken ct)
         {
-            var invoiceEntry = await _paymentSessionsService.PushInvoice(invoice.SessionId, invoice.Currency, invoice.Amount);
+            var invoiceEntry = await _paymentSessionsService.PushInvoice(accountId, invoice.SessionId, invoice.Currency, invoice.Amount, ct);
 
             return Ok(invoiceEntry);
         }
@@ -80,7 +80,7 @@ namespace O10.Nomy.Controllers
             var user = await _dataAccessService.GetUser(accountId, ct);
 
             await _rapydApi.PutFundsOnHold(user.WalletId, payInvoice.Currency, payInvoice.Amount);
-            var paymentEntry = await _paymentSessionsService.PushPayment(payInvoice.SessionId, payInvoice.InvoiceCommitment, payInvoice.Currency, payInvoice.Amount);
+            var paymentEntry = await _paymentSessionsService.PushPayment(accountId, payInvoice.SessionId, payInvoice.InvoiceCommitment, payInvoice.Currency, payInvoice.Amount, ct);
 
             return Ok(paymentEntry);
         }

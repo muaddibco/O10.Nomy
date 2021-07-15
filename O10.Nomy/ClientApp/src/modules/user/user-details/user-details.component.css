@@ -15,6 +15,7 @@
 }
 
 .o10-container-mobile .myinfo {
+  width: 100%;
   margin: 10px 5px;
 }
 
@@ -26,4 +27,37 @@
 .o10-container-mobile .value {
   font-size: x-small;
   font-weight: 200;
+}
+
+tr.detail-row {
+  height: 0 !important;
+}
+
+tr.element-row:not(.expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.element-row:not(.expanded-row):active {
+  background: #efefef;
+}
+
+.element-row td {
+  border-bottom-width: 0;
+}
+
+.element-detail {
+  overflow: hidden;
+}
+
+.element-description {
+  padding: 4px 10px;
+}
+
+.element-description .mat-list-item-content {
+  padding: 0px !important;
+  font-size: xx-small !important;
+}
+
+.element-description .mat-list-item {
+  height: auto !important;
 }

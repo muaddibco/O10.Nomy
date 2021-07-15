@@ -1,4 +1,5 @@
 ﻿using O10.Core.Architecture;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace O10.Nomy.Services
@@ -7,7 +8,7 @@ namespace O10.Nomy.Services
     public interface IPaymentSessionsService
     {
         string CreatePaymentsSession();
-        Task<PaymentSessionEntry?> PushInvoice(string sessionId, string currency, ulong amount);
-        Task<PaymentSessionEntry?> PushPayment(string sessionId, string invoiceCommitment, string currency, ulong amount);
+        Task<PaymentSessionEntry?> PushInvoice(long userId, string sessionId, string currency, ulong amount, CancellationToken ct);
+        Task<PaymentSessionEntry?> PushPayment(long userId, string sessionId, string invoiceCommitment, string currency, ulong amount, CancellationToken ct);
     }
 }

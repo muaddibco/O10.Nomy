@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -10,7 +25,10 @@ exports.UserDetailsComponent = void 0;
 var core_1 = require("@angular/core");
 var password_confirm_dialog_1 = require("../../password-confirm/password-confirm/password-confirm.dialog");
 var signalr_1 = require("@microsoft/signalr");
+var collections_1 = require("@angular/cdk/collections");
 var rxjs_1 = require("rxjs");
+var animations_1 = require("@angular/animations");
+var rxjs_2 = require("rxjs");
 var UserDetailsComponent = /** @class */ (function () {
     function UserDetailsComponent(userAccessService, accountAccessService, expertAccessService, router, route, dialog) {
         this.userAccessService = userAccessService;
@@ -22,6 +40,9 @@ var UserDetailsComponent = /** @class */ (function () {
         this.isLoaded = false;
         this.isInSession = false;
         this.isSessionStarted = false;
+        this.payments = [];
+        this.dataSource = new PaymentsDataSource(this.payments);
+        this.displayedColumns = ['commitment'];
     }
     UserDetailsComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -47,6 +68,8 @@ var UserDetailsComponent = /** @class */ (function () {
         this.paymentHub.on("Payment", function (p) {
             var paymentEntry = p;
             console.info("Obtained payment " + paymentEntry.commitment);
+            that.payments.push(paymentEntry);
+            that.dataSource.setData(that.payments);
         });
         this.chatHub = new signalr_1.HubConnectionBuilder()
             .withUrl('/chat')
@@ -121,10 +144,34 @@ var UserDetailsComponent = /** @class */ (function () {
             selector: 'app-user-details',
             templateUrl: './user-details.component.html',
             styleUrls: ['./user-details.component.css'],
-            encapsulation: core_1.ViewEncapsulation.None
+            encapsulation: core_1.ViewEncapsulation.None,
+            animations: [
+                animations_1.trigger('detailExpand', [
+                    animations_1.state('collapsed', animations_1.style({ height: '0px', minHeight: '0' })),
+                    animations_1.state('expanded', animations_1.style({ height: '*' })),
+                    animations_1.transition('expanded <=> collapsed', animations_1.animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+                ]),
+            ]
         })
     ], UserDetailsComponent);
     return UserDetailsComponent;
 }());
 exports.UserDetailsComponent = UserDetailsComponent;
+var PaymentsDataSource = /** @class */ (function (_super) {
+    __extends(PaymentsDataSource, _super);
+    function PaymentsDataSource(initialData) {
+        var _this = _super.call(this) || this;
+        _this._dataStream = new rxjs_2.ReplaySubject();
+        _this.setData(initialData);
+        return _this;
+    }
+    PaymentsDataSource.prototype.connect = function () {
+        return this._dataStream;
+    };
+    PaymentsDataSource.prototype.disconnect = function () { };
+    PaymentsDataSource.prototype.setData = function (data) {
+        this._dataStream.next(data);
+    };
+    return PaymentsDataSource;
+}(collections_1.DataSource));
 //# sourceMappingURL=user-details.component.js.map

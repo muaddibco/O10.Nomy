@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using O10.Core.Architecture;
 using O10.Core.Cryptography;
 using O10.Core.ExtensionMethods;
@@ -7,8 +8,10 @@ using O10.Core.HashCalculations;
 using O10.Crypto.ConfidentialAssets;
 using O10.Nomy.DTOs;
 using O10.Nomy.Hubs;
+using O10.Nomy.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace O10.Nomy.Services
@@ -19,12 +22,17 @@ namespace O10.Nomy.Services
         private readonly IHashCalculation _hashCalculation;
         private readonly Dictionary<string, PaymentSession> _paymentSessions = new();
         private readonly IServiceProvider _serviceProvider;
+        private readonly IDataAccessService _dataAccessService;
         private readonly IHubContext<PaymentSessionHub> _hubContext;
 
-        public PaymentSessionsService(IServiceProvider serviceProvider, IHashCalculationsRepository hashCalculationsRepository, IHubContext<PaymentSessionHub> hubContext)
+        public PaymentSessionsService(IServiceProvider serviceProvider,
+                                      IHashCalculationsRepository hashCalculationsRepository,
+                                      IDataAccessService dataAccessService,
+                                      IHubContext<PaymentSessionHub> hubContext)
         {
             _hashCalculation = hashCalculationsRepository.Create(HashType.Keccak256);
             _serviceProvider = serviceProvider;
+            _dataAccessService = dataAccessService;
             _hubContext = hubContext;
         }
 
@@ -37,7 +45,7 @@ namespace O10.Nomy.Services
             return sessionId;
         }
 
-        public async Task<PaymentSessionEntry?> PushInvoice(string sessionId, string currency, ulong amount)
+        public async Task<PaymentSessionEntry?> PushInvoice(long userId, string sessionId, string currency, ulong amount, CancellationToken ct)
         {
             if(!_paymentSessions.ContainsKey(sessionId))
             {
@@ -51,6 +59,9 @@ namespace O10.Nomy.Services
             await _hubContext.Clients.Group($"{sessionId}_Payer").SendAsync("Invoice", invoiceEntry);
 
             record.TimeoutTask.Start();
+
+            var invoiceRecord = await _dataAccessService.AddInvoiceRecord(userId,invoiceEntry.Commitment, JsonConvert.SerializeObject(invoiceEntry.RangeProof), ct);
+            var secretInvoiceRecord = await _dataAccessService.AddSecretInvoiceRecord(userId, invoiceRecord.InvoiceRecordId, invoiceEntry.Mask, amount, ct);
 
             await record.TimeoutTask.ContinueWith(t =>
             {
@@ -74,7 +85,7 @@ namespace O10.Nomy.Services
             return record.InvoiceEntry;
         }
 
-        public async Task<PaymentSessionEntry?> PushPayment(string sessionId, string invoiceCommitment, string currency, ulong amount)
+        public async Task<PaymentSessionEntry?> PushPayment(long userId, string sessionId, string invoiceCommitment, string currency, ulong amount, CancellationToken ct)
         {
             lock(_paymentSessions)
             {
@@ -94,6 +105,13 @@ namespace O10.Nomy.Services
 
             if(resDiff)
             {
+                var paymentRecord = await _dataAccessService.AddPaymentRecord(userId,
+                                                                              _paymentSessions[sessionId].Records[invoiceCommitment].PaymentEntry.Commitment.ToHexString(),
+                                                                              JsonConvert.SerializeObject(_paymentSessions[sessionId].Records[invoiceCommitment].PaymentEntry.RangeProof),
+                                                                              JsonConvert.SerializeObject(_paymentSessions[sessionId].Records[invoiceCommitment].PaymentSignature),
+                                                                              _paymentSessions[sessionId].Records[invoiceCommitment].InvoiceEntry.Commitment.ToHexString(),
+                                                                              ct);
+                var secretPaymentRecord = await _dataAccessService.AddSecretPaymentRecord(userId, paymentRecord.PaymentRecordId, _paymentSessions[sessionId].Records[invoiceCommitment].PaymentEntry.Mask.ToHexString(), amount, ct);
                 await _hubContext.Clients.Group($"{sessionId}_Payee").SendAsync("Payment", paymentEntry);
             }
             else

@@ -72,14 +72,22 @@ namespace O10.Nomy.Rapyd
 
         public async Task<PutFundsOnHoldResponseDTO?> PutFundsOnHold(string walletId, string currency, ulong amount)
         {
-            var response = await PostToRapyd<PutFundsOnHoldResponseDTO>(new PutFundsOnHoldDTO
+            try
             {
-                WalletId = walletId,
-                Currency = currency,
-                Amount = amount
-            }, "account", "balance", "hold");
+                var response = await PostToRapyd<PutFundsOnHoldResponseDTO>(new PutFundsOnHoldDTO
+                {
+                    WalletId = walletId,
+                    Currency = currency,
+                    Amount = amount
+                }, "account", "balance", "hold");
 
-            return response;
+                return response;
+            }
+            catch(Exception ex)
+            {
+                _logger.Error("Failed to put funds on hold", ex);
+                throw;
+            }
         }
 
         private async Task<T?> GetFromRapyd<T>(params string[] segments)

@@ -220,7 +220,13 @@ namespace O10.Nomy.Services
                     }
                 }
 
-                var userPoco = await _dataAccessService.CreateUser(account.AccountId, _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId, cancellationToken);
+                user = await _dataAccessService.CreateUser(account.AccountId, _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId, cancellationToken);
+            }
+
+            var wallet = await _rapydApi.GetWallet(user.WalletId);
+            if(wallet.Accounts.Select(a => int.Parse(a.Balance)).Sum() < 500)
+            {
+                var depositResponse = await _rapydApi.DepositFunds(user.WalletId, "USD", 1000);
             }
 
             foreach (var expertiseArea in _expertiseAreas)

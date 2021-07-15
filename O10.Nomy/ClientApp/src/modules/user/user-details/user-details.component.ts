@@ -10,16 +10,26 @@ import { SessionExpertInfo } from '../models/session-expert-info';
 import { ExpertsAccessService } from '../../experts/experts-access.service';
 import { ExpertProfile } from '../../experts/models/expert-profile';
 import { Subscription } from 'rxjs';
+import { DataSource } from '@angular/cdk/collections';
 import { interval } from 'rxjs';
 import { AccountsAccessService } from '../../accounts/accounts-access.service';
-import { invalid } from '@angular/compiler/src/render3/view/util';
-import { PaymentEntry } from '../../experts/models/payment-entry';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { PaymentRecordEntry } from '../../experts/models/payment-record-entry';
+import { ReplaySubject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-user-details',
   templateUrl: './user-details.component.html',
   styleUrls: ['./user-details.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ]
 })
 export class UserDetailsComponent implements OnInit {
 
@@ -33,6 +43,11 @@ export class UserDetailsComponent implements OnInit {
   public sessionInfo: SessionExpertInfo
   public expertProfile: ExpertProfile
   private paymentSubscription: Subscription
+  public payments: PaymentRecordEntry[] = []
+  public dataSource = new PaymentsDataSource(this.payments)
+
+  public displayedColumns: string[] = ['commitment']
+  public expandedElement: PaymentRecordEntry | null;
 
   constructor(
     private userAccessService: UserAccessService,
@@ -73,8 +88,10 @@ export class UserDetailsComponent implements OnInit {
     this.paymentHub.start()
 
     this.paymentHub.on("Payment", p => {
-      var paymentEntry = p as PaymentEntry
+      var paymentEntry = p as PaymentRecordEntry
       console.info("Obtained payment " + paymentEntry.commitment)
+      that.payments.push(paymentEntry)
+      that.dataSource.setData(that.payments)
     })
 
     this.chatHub = new HubConnectionBuilder()
@@ -161,5 +178,24 @@ export class UserDetailsComponent implements OnInit {
 
   gotoExperts() {
     this.router.navigate(['experts-list', this.user.accountId])
+  }
+}
+
+class PaymentsDataSource extends DataSource<PaymentRecordEntry> {
+  private _dataStream = new ReplaySubject<PaymentRecordEntry[]>();
+
+  constructor(initialData: PaymentRecordEntry[]) {
+    super();
+    this.setData(initialData);
+  }
+
+  connect(): Observable<PaymentRecordEntry[]> {
+    return this._dataStream;
+  }
+
+  disconnect() { }
+
+  setData(data: PaymentRecordEntry[]) {
+    this._dataStream.next(data);
   }
 }

@@ -1,11 +1,7 @@
 using Flurl.Http;
 using Flurl.Http.Configuration;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,11 +14,9 @@ using Newtonsoft.Json.Serialization;
 using O10.Core.Configuration;
 using O10.Core.ExtensionMethods;
 using O10.Core.Logging;
-using O10.Core.Serialization;
 using O10.Nomy.Data;
 using O10.Nomy.ExtensionMethods;
 using O10.Nomy.Hubs;
-using O10.Nomy.Models;
 using System.Threading;
 
 namespace O10.Nomy

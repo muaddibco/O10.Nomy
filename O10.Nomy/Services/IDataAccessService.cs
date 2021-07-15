@@ -1,5 +1,6 @@
 ﻿using O10.Core.Architecture;
 using O10.Nomy.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,5 +38,37 @@ namespace O10.Nomy.Services
         Task<ExpertProfile> AddExpertProfile(long userId, string description, ulong fee, params string[] expertiseSubAreas);
 
         #endregion Experts
+
+        #region Invoice Records
+
+        Task<InvoiceRecord> AddInvoiceRecord(long userId, string commitment, string rangeProof, CancellationToken ct);
+
+        Task<IEnumerable<InvoiceRecord>> GetInvoiceRecords(long userId, bool notProcessed, CancellationToken ct);
+
+        Task<IEnumerable<InvoiceRecord>> MarkInvoiceRecordsProcessed(long userId, IEnumerable<long> invoiceRecordIds, CancellationToken ct);
+
+        #endregion Invoice Records
+
+        #region Payment Records
+
+        Task<PaymentRecord> AddPaymentRecord(long userId, string commitment, string rangeProof, string signature, string invoiceCommitment, CancellationToken ct );
+
+        Task<IEnumerable<PaymentRecord>> GetPaymentRecords(long userId, bool notProcessed, CancellationToken ct);
+
+        Task<IEnumerable<PaymentRecord>> MarkPaymentRecordsProcessed(long userId, IEnumerable<long> paymentRecordIds, CancellationToken ct);
+
+        #endregion Payment Records
+
+        #region Secret Payment Records
+
+        Task<SecretPaymentRecord> AddSecretPaymentRecord(long userId, long paymentRecordId, string blindingFactor, ulong amount, CancellationToken ct);
+
+        #endregion Secret Payment Records
+
+        #region Secret Invoice Records
+
+        Task<SecretInvoiceRecord> AddSecretInvoiceRecord(long userId, long invoiceRecordId, string blindingFactor, ulong amount, CancellationToken ct);
+
+        #endregion Secret Invoice Records
     }
 }

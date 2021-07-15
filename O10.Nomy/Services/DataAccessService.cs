@@ -114,7 +114,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var user = await dbContext.ConsumerUsers.FirstOrDefaultAsync(u => u.NomyUserId == userId);
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId);
 
             if(user == null)
             {
@@ -142,7 +142,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var res = await dbContext.ConsumerUsers.AddAsync(new NomyUser
+            var res = await dbContext.Users.AddAsync(new NomyUser
             {
                 O10Id = o10Id,
                 Email = email,
@@ -160,7 +160,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var res = await dbContext.ConsumerUsers.FirstOrDefaultAsync(c => c.Email == email, ct);
+            var res = await dbContext.Users.FirstOrDefaultAsync(c => c.Email == email, ct);
 
             return res;
         }
@@ -169,12 +169,218 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var res = await dbContext.ConsumerUsers.FirstOrDefaultAsync(c => c.NomyUserId == userId, ct);
+            var res = await dbContext.Users.FirstOrDefaultAsync(c => c.NomyUserId == userId, ct);
 
             return res;
         }
 
         #endregion Users
 
+        #region Invoice Records
+
+        public async Task<InvoiceRecord> AddInvoiceRecord(long userId, string commitment, string rangeProof, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+
+            if (user == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            }
+
+            var entry = dbContext.InvoiceRecords.Add(
+                new InvoiceRecord
+                {
+                    User = user,
+                    Commitment = commitment,
+                    RangeProof = rangeProof
+                });
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return entry.Entity;
+
+        }
+
+        public async Task<IEnumerable<InvoiceRecord>> GetInvoiceRecords(long userId, bool notProcessed, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+
+            if (user == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            }
+
+            return dbContext.InvoiceRecords.Include(r => r.User).Where(r => r.User.NomyUserId == userId && (!notProcessed || r.DateOfProcessing == null));
+        }
+
+        public async Task<IEnumerable<InvoiceRecord>> MarkInvoiceRecordsProcessed(long userId, IEnumerable<long> invoiceRecordIds, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+
+            if (user == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            }
+
+            var records = dbContext.InvoiceRecords.Include(r => r.User)
+                .Where(r => r.User.NomyUserId == userId && invoiceRecordIds.Contains(r.InvoiceRecordId));
+
+            await records.ForEachAsync(r => r.DateOfProcessing = DateTime.Now, ct);
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return records;
+        }
+
+        #endregion Invoice Records
+
+        #region Payment Records
+
+        public async Task<PaymentRecord> AddPaymentRecord(long userId, string commitment, string rangeProof, string signature, string invoiceCommitment, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+
+            if(user == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            }
+
+            var invoiceRecord = await dbContext.InvoiceRecords.FirstOrDefaultAsync(r => r.Commitment == commitment, ct);
+            if(invoiceRecord == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(invoiceCommitment));
+            }
+
+            var entry = dbContext.PaymentRecords.Add(
+                new PaymentRecord
+                {
+                    User = user,
+                    Commitment = commitment, 
+                    RangeProof = rangeProof,
+                    Signature = signature,
+                    Invoice = invoiceRecord
+                });
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return entry.Entity;
+        }
+
+        public async Task<IEnumerable<PaymentRecord>> GetPaymentRecords(long userId, bool notProcessed, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+
+            if (user == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            }
+
+            return dbContext.PaymentRecords.Include(r => r.User).Where(r => r.User.NomyUserId == userId && (!notProcessed || r.DateOfProcessing == null));
+        }
+
+        public async Task<IEnumerable<PaymentRecord>> MarkPaymentRecordsProcessed(long userId, IEnumerable<long> paymentRecordIds, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+
+            if (user == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            }
+
+            var records = dbContext.PaymentRecords.Include(r => r.User)
+                .Where(r => r.User.NomyUserId == userId && paymentRecordIds.Contains(r.PaymentRecordId));
+
+            await records.ForEachAsync(r => r.DateOfProcessing = DateTime.Now, ct);
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return records;
+        }
+
+        #endregion Payment Records
+    
+        #region Secret Payment Records
+
+        public async Task<SecretPaymentRecord> AddSecretPaymentRecord(long userId, long paymentRecordId, string blindingFactor, ulong amount, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+
+            if (user == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            }
+
+            var paymentRecord = await dbContext.PaymentRecords.FirstOrDefaultAsync(r => r.PaymentRecordId == paymentRecordId);
+
+            if (paymentRecord == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(paymentRecordId));
+            }
+
+            var entry = dbContext.SecretPaymentRecords.Add(
+                new SecretPaymentRecord
+                {
+                    User = user,
+                    PaymentRecord = paymentRecord,
+                    BlindingFactor = blindingFactor,
+                    Amount = amount
+                });
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return entry.Entity;
+        }
+
+        #endregion Secret Payment Records
+
+        #region Secret Invoice Records
+
+        public async Task<SecretInvoiceRecord> AddSecretInvoiceRecord(long userId, long invoiceRecordId, string blindingFactor, ulong amount, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+
+            if (user == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            }
+
+            var invoiceRecord = await dbContext.InvoiceRecords.FirstOrDefaultAsync(r => r.InvoiceRecordId == invoiceRecordId);
+
+            if (invoiceRecord == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(invoiceRecordId));
+            }
+
+            var entry = dbContext.SecretInvoiceRecords.Add(
+                new SecretInvoiceRecord
+                {
+                    User = user,
+                    InvoiceRecord = invoiceRecord,
+                    BlindingFactor = blindingFactor,
+                    Amount = amount
+                });
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return entry.Entity;
+        }
+
+        #endregion Secret Invoice Records
     }
 }
