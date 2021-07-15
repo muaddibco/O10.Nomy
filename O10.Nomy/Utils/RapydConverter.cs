@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -61,7 +62,17 @@ namespace O10.Nomy.Utils
                 if (val != null)
                 {
                     writer.WritePropertyName(prop.Name.ToUnderscoreDelimited().ToLower());
-                    writer.WriteValue(prop.GetValue(value));
+
+                    if(prop.PropertyType.IsEnum)
+                    {
+                        var member = prop.PropertyType.GetMember(val.ToString())[0];
+                        var attr = (EnumMemberAttribute)member.GetCustomAttribute(typeof(EnumMemberAttribute));
+                        writer.WriteValue(attr.Value ?? prop.GetValue(value));
+                    }
+                    else
+                    {
+                        writer.WriteValue(prop.GetValue(value));
+                    }
                 }
             }
 

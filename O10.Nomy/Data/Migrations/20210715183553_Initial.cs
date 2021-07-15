@@ -31,11 +31,28 @@ namespace O10.Nomy.Data.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WalletId = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    WalletId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BeneficiaryId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SenderId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NomyUsers", x => x.NomyUserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PayoutRecords",
+                columns: table => new
+                {
+                    PayoutRecordId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    From = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    To = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(20,0)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PayoutRecords", x => x.PayoutRecordId);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,7 +85,8 @@ namespace O10.Nomy.Data.Migrations
                     UserNomyUserId = table.Column<long>(type: "bigint", nullable: true),
                     Commitment = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RangeProof = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateOfProcessing = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    DateOfProcessing = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PayoutRecordId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -78,6 +96,12 @@ namespace O10.Nomy.Data.Migrations
                         column: x => x.UserNomyUserId,
                         principalTable: "NomyUsers",
                         principalColumn: "NomyUserId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_InvoiceRecords_PayoutRecords_PayoutRecordId",
+                        column: x => x.PayoutRecordId,
+                        principalTable: "PayoutRecords",
+                        principalColumn: "PayoutRecordId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -120,7 +144,8 @@ namespace O10.Nomy.Data.Migrations
                     Commitment = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RangeProof = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Signature = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateOfProcessing = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    DateOfProcessing = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PayoutRecordId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -136,6 +161,12 @@ namespace O10.Nomy.Data.Migrations
                         column: x => x.UserNomyUserId,
                         principalTable: "NomyUsers",
                         principalColumn: "NomyUserId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PaymentRecords_PayoutRecords_PayoutRecordId",
+                        column: x => x.PayoutRecordId,
+                        principalTable: "PayoutRecords",
+                        principalColumn: "PayoutRecordId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -211,6 +242,11 @@ namespace O10.Nomy.Data.Migrations
                 column: "NomyUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InvoiceRecords_PayoutRecordId",
+                table: "InvoiceRecords",
+                column: "PayoutRecordId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InvoiceRecords_UserNomyUserId",
                 table: "InvoiceRecords",
                 column: "UserNomyUserId");
@@ -219,6 +255,11 @@ namespace O10.Nomy.Data.Migrations
                 name: "IX_PaymentRecords_InvoiceRecordId",
                 table: "PaymentRecords",
                 column: "InvoiceRecordId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentRecords_PayoutRecordId",
+                table: "PaymentRecords",
+                column: "PayoutRecordId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PaymentRecords_UserNomyUserId",
@@ -271,6 +312,9 @@ namespace O10.Nomy.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "NomyUsers");
+
+            migrationBuilder.DropTable(
+                name: "PayoutRecords");
         }
     }
 }

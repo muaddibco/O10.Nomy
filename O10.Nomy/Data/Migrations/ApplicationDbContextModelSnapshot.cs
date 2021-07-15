@@ -107,6 +107,9 @@ namespace O10.Nomy.Data.Migrations
                     b.Property<DateTime?>("DateOfProcessing")
                         .HasColumnType("datetime2");
 
+                    b.Property<long?>("PayoutRecordId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("RangeProof")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -115,6 +118,8 @@ namespace O10.Nomy.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("InvoiceRecordId");
+
+                    b.HasIndex("PayoutRecordId");
 
                     b.HasIndex("UserNomyUserId");
 
@@ -127,6 +132,9 @@ namespace O10.Nomy.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BeneficiaryId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -142,6 +150,9 @@ namespace O10.Nomy.Data.Migrations
 
                     b.Property<long>("O10Id")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("SenderId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WalletId")
                         .IsRequired()
@@ -169,6 +180,9 @@ namespace O10.Nomy.Data.Migrations
                     b.Property<long?>("InvoiceRecordId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("PayoutRecordId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("RangeProof")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -184,9 +198,32 @@ namespace O10.Nomy.Data.Migrations
 
                     b.HasIndex("InvoiceRecordId");
 
+                    b.HasIndex("PayoutRecordId");
+
                     b.HasIndex("UserNomyUserId");
 
                     b.ToTable("PaymentRecords");
+                });
+
+            modelBuilder.Entity("O10.Nomy.Models.PayoutRecord", b =>
+                {
+                    b.Property<long>("PayoutRecordId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("To")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(20,0)");
+
+                    b.HasKey("PayoutRecordId");
+
+                    b.ToTable("PayoutRecords");
                 });
 
             modelBuilder.Entity("O10.Nomy.Models.SecretInvoiceRecord", b =>
@@ -273,6 +310,10 @@ namespace O10.Nomy.Data.Migrations
 
             modelBuilder.Entity("O10.Nomy.Models.InvoiceRecord", b =>
                 {
+                    b.HasOne("O10.Nomy.Models.PayoutRecord", null)
+                        .WithMany("Invoices")
+                        .HasForeignKey("PayoutRecordId");
+
                     b.HasOne("O10.Nomy.Models.NomyUser", "User")
                         .WithMany()
                         .HasForeignKey("UserNomyUserId");
@@ -285,6 +326,10 @@ namespace O10.Nomy.Data.Migrations
                     b.HasOne("O10.Nomy.Models.InvoiceRecord", "Invoice")
                         .WithMany()
                         .HasForeignKey("InvoiceRecordId");
+
+                    b.HasOne("O10.Nomy.Models.PayoutRecord", null)
+                        .WithMany("Payments")
+                        .HasForeignKey("PayoutRecordId");
 
                     b.HasOne("O10.Nomy.Models.NomyUser", "User")
                         .WithMany()
@@ -333,6 +378,13 @@ namespace O10.Nomy.Data.Migrations
             modelBuilder.Entity("O10.Nomy.Models.ExpertiseArea", b =>
                 {
                     b.Navigation("ExpertiseSubAreas");
+                });
+
+            modelBuilder.Entity("O10.Nomy.Models.PayoutRecord", b =>
+                {
+                    b.Navigation("Invoices");
+
+                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }

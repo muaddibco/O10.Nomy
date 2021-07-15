@@ -12,7 +12,7 @@ namespace O10.Nomy.Services
     {
         #region Users
 
-        Task<NomyUser> CreateUser(long o10Id, string email, string firstName, string lastName, string walletId, CancellationToken ct);
+        Task<NomyUser> CreateUser(long o10Id, string email, string firstName, string lastName, string walletId, string? beneficiaryId, string? senderId, CancellationToken ct);
         Task<NomyUser?> FindUser(string email, CancellationToken ct);
         Task<NomyUser?> GetUser(long userId, CancellationToken ct);
 

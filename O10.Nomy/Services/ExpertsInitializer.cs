@@ -186,6 +186,7 @@ namespace O10.Nomy.Services
         {
             BeneficiaryDTO beneficiary = new BeneficiaryDTO
             {
+                Category = BeneficiaryCategory.RapydEWallet,
                 FirstName = "Kirill",
                 LastName = "Gandyl",
                 Properties = new Dictionary<string, string>
@@ -285,6 +286,13 @@ namespace O10.Nomy.Services
                                 });
                                 _logger.Debug($"Expert profile {expertProfile.Email} now has Rapyd Wallet with is {walletId}");
 
+                                string beneficiaryId = await CreateBeneficiary(new UserDTO
+                                {
+                                    Email = expertProfile.Email,
+                                    FirstName = expertProfile.FirstName,
+                                    LastName = expertProfile.LastName
+                                });
+
                                 var account = await _apiGateway.FindAccount(expertProfile.Email);
                                 bool needToRequestId = false;
                                 if (account == null)
@@ -313,7 +321,14 @@ namespace O10.Nomy.Services
                                     }
                                 }
 
-                                userExpert = await _dataAccessService.CreateUser(account.AccountId, expertProfile.Email, expertProfile.FirstName, expertProfile.LastName, walletId, cancellationToken);
+                                userExpert = await _dataAccessService.CreateUser(account.AccountId,
+                                                                                 expertProfile.Email,
+                                                                                 expertProfile.FirstName,
+                                                                                 expertProfile.LastName,
+                                                                                 walletId,
+                                                                                 beneficiaryId,
+                                                                                 null,
+                                                                                 cancellationToken);
 
                                 await _dataAccessService.AddExpertProfile(userExpert.NomyUserId, expertProfile.Description ?? string.Empty, (ulong)new Random().Next(10, 20), expertProfile.ExpertiseSubAreas.ToArray());
                             }
@@ -334,6 +349,41 @@ namespace O10.Nomy.Services
                 {
                     _logger.Debug($"Initializing expertise area {expertiseArea.Name} finished");
                 }
+            }
+        }
+
+        private async Task<string> CreateBeneficiary(UserDTO user)
+        {
+            try
+            {
+                BeneficiaryDTO beneficiaryDTO = new BeneficiaryDTO
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Category = BeneficiaryCategory.Bank,
+                    Country = "US",
+                    Currency = "USD",
+                    PayoutMethodType = "us_visa_card",
+                    Properties = new Dictionary<string, string>
+                    {
+                        { "email", user.Email },
+                        { "card_number", "4462030000000000" },
+                        { "card_expiration_month", "11" },
+                        { "card_expiration_year", "2025" },
+                        { "card_cvv", "111" },
+                        { "company_name", "" },
+                        { "postcode", "" }
+                    }
+                };
+
+                var beneficiary = await _rapydApi.CreateBenificiary(beneficiaryDTO);
+
+                return beneficiary.Id;
+            }
+            catch (FlurlHttpException ex)
+            {
+                var str = await ex.Call.Response.ResponseMessage.Content.ReadAsStringAsync();
+                throw;
             }
         }
 

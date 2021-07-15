@@ -138,7 +138,7 @@ namespace O10.Nomy.Services
 
         #region Users
 
-        public async Task<NomyUser> CreateUser(long o10Id, string email, string firstName, string lastName, string walletId, CancellationToken ct)
+        public async Task<NomyUser> CreateUser(long o10Id, string email, string firstName, string lastName, string walletId, string? beneficiaryId, string? senderId, CancellationToken ct)
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
@@ -149,6 +149,8 @@ namespace O10.Nomy.Services
                 FirstName = firstName,
                 LastName = lastName,
                 WalletId = walletId,
+                BeneficiaryId = beneficiaryId,
+                SenderId = senderId
             }, ct);
 
             await dbContext.SaveChangesAsync(ct);
