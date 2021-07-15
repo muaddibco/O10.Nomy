@@ -72,7 +72,13 @@ namespace O10.Nomy.Controllers
 
             var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, user.Password, user.Email, user.FirstName, user.LastName, walletId);
 
-            var userPoco = await _dataAccessService.CreateUser(account.AccountId, user.Email, user.FirstName, user.LastName, walletId, cancellationToken);
+            var userPoco = await _dataAccessService.CreateUser(account.AccountId,
+                                                               user.Email,
+                                                               user.FirstName,
+                                                               user.LastName,
+                                                               walletId,
+                                                               "","",
+                                                               cancellationToken);
 
             return Ok(_translatorsRepository.GetInstance<NomyUser, UserDetailsDTO>().Translate(userPoco));
         }

@@ -238,7 +238,13 @@ namespace O10.Nomy.Services
                     }
                 }
 
-                user = await _dataAccessService.CreateUser(account.AccountId, _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId, cancellationToken);
+                user = await _dataAccessService.CreateUser(account.AccountId,
+                                                           _demoUser.Email,
+                                                           _demoUser.FirstName,
+                                                           _demoUser.LastName,
+                                                           walletId,
+                                                           "","",
+                                                           cancellationToken);
             }
 
             var wallet = await _rapydApi.GetWallet(user.WalletId);
