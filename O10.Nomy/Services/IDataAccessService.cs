@@ -44,6 +44,7 @@ namespace O10.Nomy.Services
         Task<InvoiceRecord> AddInvoiceRecord(long userId, string commitment, string rangeProof, CancellationToken ct);
 
         Task<IEnumerable<InvoiceRecord>> GetInvoiceRecords(long userId, bool notProcessed, CancellationToken ct);
+        Task<IEnumerable<InvoiceRecord>> GetInvoiceRecords(bool notProcessed, CancellationToken ct);
 
         Task<IEnumerable<InvoiceRecord>> MarkInvoiceRecordsProcessed(long userId, IEnumerable<long> invoiceRecordIds, CancellationToken ct);
 
@@ -54,6 +55,7 @@ namespace O10.Nomy.Services
         Task<PaymentRecord> AddPaymentRecord(long userId, string commitment, string rangeProof, string signature, string invoiceCommitment, CancellationToken ct );
 
         Task<IEnumerable<PaymentRecord>> GetPaymentRecords(long userId, bool notProcessed, CancellationToken ct);
+        Task<IEnumerable<PaymentRecord>> GetPaymentRecords(bool notProcessed, CancellationToken ct);
 
         Task<IEnumerable<PaymentRecord>> MarkPaymentRecordsProcessed(long userId, IEnumerable<long> paymentRecordIds, CancellationToken ct);
 
@@ -63,12 +65,22 @@ namespace O10.Nomy.Services
 
         Task<SecretPaymentRecord> AddSecretPaymentRecord(long userId, long paymentRecordId, string blindingFactor, ulong amount, CancellationToken ct);
 
+        IEnumerable<SecretPaymentRecord> GetSecretPayments(IEnumerable<long> paymentRecordIds);
+
         #endregion Secret Payment Records
 
         #region Secret Invoice Records
 
         Task<SecretInvoiceRecord> AddSecretInvoiceRecord(long userId, long invoiceRecordId, string blindingFactor, ulong amount, CancellationToken ct);
+        
+        IEnumerable<SecretInvoiceRecord> GetSecretInvoices(IEnumerable<long> invoiceRecordIds);
 
         #endregion Secret Invoice Records
+
+        #region Payouts
+
+        IEnumerable<PayoutRecord> GetPayouts();
+
+        #endregion Payouts
     }
 }

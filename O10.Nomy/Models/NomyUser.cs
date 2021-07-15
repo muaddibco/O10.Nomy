@@ -14,5 +14,9 @@ namespace O10.Nomy.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string WalletId { get; set; }
+
+        public string? BeneficiaryId { get; set; }
+
+        public string? SenderId { get; set; }
     }
 }

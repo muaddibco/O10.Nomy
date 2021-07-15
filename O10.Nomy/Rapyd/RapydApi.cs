@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using O10.Nomy.Utils;
+using O10.Nomy.Rapyd.DTOs.Beneficiary;
 
 namespace O10.Nomy.Rapyd
 {
@@ -84,6 +85,21 @@ namespace O10.Nomy.Rapyd
                 return response;
             }
             catch(Exception ex)
+            {
+                _logger.Error("Failed to put funds on hold", ex);
+                throw;
+            }
+        }
+
+        public async Task<BeneficiaryDTO?> CreateBenificiary(BeneficiaryDTO beneficiary)
+        {
+            try
+            {
+                var response = await PostToRapyd<BeneficiaryDTO?>(beneficiary, "payouts", "beneficiary");
+
+                return response;
+            }
+            catch (Exception ex)
             {
                 _logger.Error("Failed to put funds on hold", ex);
                 throw;

@@ -217,6 +217,13 @@ namespace O10.Nomy.Services
             return dbContext.InvoiceRecords.Include(r => r.User).Where(r => r.User.NomyUserId == userId && (!notProcessed || r.DateOfProcessing == null));
         }
 
+        public async Task<IEnumerable<InvoiceRecord>> GetInvoiceRecords(bool notProcessed, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            return dbContext.InvoiceRecords.Include(r => r.User).Where(r => !notProcessed || r.DateOfProcessing == null);
+        }
+
         public async Task<IEnumerable<InvoiceRecord>> MarkInvoiceRecordsProcessed(long userId, IEnumerable<long> invoiceRecordIds, CancellationToken ct)
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
@@ -288,6 +295,13 @@ namespace O10.Nomy.Services
             return dbContext.PaymentRecords.Include(r => r.User).Where(r => r.User.NomyUserId == userId && (!notProcessed || r.DateOfProcessing == null));
         }
 
+        public async Task<IEnumerable<PaymentRecord>> GetPaymentRecords(bool notProcessed, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            return dbContext.PaymentRecords.Include(r => r.User).Where(r => !notProcessed || r.DateOfProcessing == null);
+        }
+
         public async Task<IEnumerable<PaymentRecord>> MarkPaymentRecordsProcessed(long userId, IEnumerable<long> paymentRecordIds, CancellationToken ct)
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
@@ -345,6 +359,15 @@ namespace O10.Nomy.Services
             return entry.Entity;
         }
 
+        public IEnumerable<SecretPaymentRecord> GetSecretPayments(IEnumerable<long> paymentRecordIds)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            return dbContext.SecretPaymentRecords.Include(r => r.PaymentRecord)
+                                                 .Include(r => r.User)
+                                                 .Where(r => paymentRecordIds.Contains(r.PaymentRecord.PaymentRecordId));
+        }
+
         #endregion Secret Payment Records
 
         #region Secret Invoice Records
@@ -381,6 +404,26 @@ namespace O10.Nomy.Services
             return entry.Entity;
         }
 
+        public IEnumerable<SecretInvoiceRecord> GetSecretInvoices(IEnumerable<long> invoiceRecordIds)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            return dbContext.SecretInvoiceRecords.Include(r => r.InvoiceRecord)
+                                                 .Include(r => r.User)
+                                                 .Where(r => invoiceRecordIds.Contains(r.InvoiceRecord.InvoiceRecordId));
+        }
+
         #endregion Secret Invoice Records
+
+        #region Payouts
+
+        public IEnumerable<PayoutRecord> GetPayouts()
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            return dbContext.PayoutRecords;
+        }
+
+        #endregion Payouts
     }
 }

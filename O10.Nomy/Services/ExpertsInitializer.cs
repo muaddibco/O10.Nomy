@@ -1,10 +1,12 @@
 ﻿using Flurl.Http;
+using Newtonsoft.Json;
 using O10.Core;
 using O10.Core.Architecture;
 using O10.Core.Logging;
 using O10.Nomy.DTOs;
 using O10.Nomy.Rapyd;
 using O10.Nomy.Rapyd.DTOs;
+using O10.Nomy.Rapyd.DTOs.Beneficiary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -182,6 +184,21 @@ namespace O10.Nomy.Services
 
         protected override async Task InitializeInner(CancellationToken cancellationToken)
         {
+            BeneficiaryDTO beneficiary = new BeneficiaryDTO
+            {
+                FirstName = "Kirill",
+                LastName = "Gandyl",
+                Properties = new Dictionary<string, string>
+                {
+                    {"field1", "value1" },
+                    {"field2", "value2" }
+                }
+            };
+
+            string val = JsonConvert.SerializeObject(beneficiary, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+            BeneficiaryDTO? beneficiary1 = JsonConvert.DeserializeObject<BeneficiaryDTO>(val);
+
             _logger.Debug("Initializing experts pre-setup");
             var expertiseAreas = await _dataAccessService.GetExpertiseAreas();
 

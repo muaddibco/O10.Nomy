@@ -23,5 +23,6 @@ namespace O10.Nomy.Data
         public DbSet<PaymentRecord> PaymentRecords { get; set; }
         public DbSet<SecretInvoiceRecord> SecretInvoiceRecords { get; set; }
         public DbSet<SecretPaymentRecord> SecretPaymentRecords { get; set; }
+        public DbSet<PayoutRecord> PayoutRecords { get; set; }
     }
 }
