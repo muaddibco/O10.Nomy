@@ -36,14 +36,21 @@ namespace O10.Nomy.Services
             var secretInvoices = _dataAccessService.GetSecretInvoices(invoices.Select(i => i.InvoiceRecordId));
             var secretPayments = _dataAccessService.GetSecretPayments(payments.Select(i => i.PaymentRecordId));
 
-            var invoicesByUserId = secretInvoices.GroupBy(i => i.User);
-            var paymentsByUserId = secretPayments.GroupBy(i => i.User);
+            var invoicesByUser = secretInvoices.GroupBy(i => i.User);
+            var paymentsByUser = secretPayments.GroupBy(i => i.User);
 
-            foreach (var g in paymentsByUserId)
+            foreach (var g in paymentsByUser)
             {
                 var amount = g.Sum(s => (long)s.Amount);
 
                 await _rapydService.TransferFunds(g.Key.WalletId, _walletId, "USD", (ulong)amount);
+            }
+
+            foreach (var g in invoicesByUser)
+            {
+                var amount = g.Sum(s => (long)s.Amount);
+
+                await _rapydService.PayoutFunds(_walletId, g.Key.BeneficiaryId, "USD", (ulong)amount);
             }
         }
     }
