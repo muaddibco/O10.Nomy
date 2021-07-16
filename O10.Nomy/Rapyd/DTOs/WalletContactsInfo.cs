@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using O10.Nomy.Utils;
 using System.Collections.Generic;
 
 namespace O10.Nomy.Rapyd.DTOs
 {
+    [JsonConverter(typeof(RapydConverter))]
     public class WalletContactsInfo
     {
         /// <summary>

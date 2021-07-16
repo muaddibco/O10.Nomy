@@ -1,12 +1,8 @@
-﻿using Flurl.Http;
-using Newtonsoft.Json;
-using O10.Core;
+﻿using O10.Core;
 using O10.Core.Architecture;
 using O10.Core.Logging;
 using O10.Nomy.DTOs;
 using O10.Nomy.Rapyd;
-using O10.Nomy.Rapyd.DTOs;
-using O10.Nomy.Rapyd.DTOs.Beneficiary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -170,12 +166,14 @@ namespace O10.Nomy.Services
         };
         private readonly IDataAccessService _dataAccessService;
         private readonly IO10ApiGateway _apiGateway;
+        private readonly IRapydSevice _rapydSevice;
         private readonly IRapydApi _rapydApi;
         private readonly ILogger _logger;
-        public ExpertsInitializer(IDataAccessService dataAccessService, IO10ApiGateway o10ApiGateway, IRapydApi rapydApi, ILoggerService loggerService)
+        public ExpertsInitializer(IDataAccessService dataAccessService, IO10ApiGateway o10ApiGateway, IRapydSevice rapydSevice, IRapydApi rapydApi, ILoggerService loggerService)
         {
             _dataAccessService = dataAccessService;
             _apiGateway = o10ApiGateway;
+            _rapydSevice = rapydSevice;
             _rapydApi = rapydApi;
             _logger = loggerService.GetLogger(nameof(ExpertsInitializer));
         }
@@ -184,22 +182,6 @@ namespace O10.Nomy.Services
 
         protected override async Task InitializeInner(CancellationToken cancellationToken)
         {
-            BeneficiaryDTO beneficiary = new BeneficiaryDTO
-            {
-                Category = BeneficiaryCategory.RapydEWallet,
-                FirstName = "Kirill",
-                LastName = "Gandyl",
-                Properties = new Dictionary<string, string>
-                {
-                    {"field1", "value1" },
-                    {"field2", "value2" }
-                }
-            };
-
-            string val = JsonConvert.SerializeObject(beneficiary, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-
-            BeneficiaryDTO? beneficiary1 = JsonConvert.DeserializeObject<BeneficiaryDTO>(val);
-
             _logger.Debug("Initializing experts pre-setup");
             var expertiseAreas = await _dataAccessService.GetExpertiseAreas();
 
@@ -207,7 +189,8 @@ namespace O10.Nomy.Services
             if (user == null)
             {
                 _logger.Debug($"No user found for demo user {_demoUser.Email}, creating Rapyd Wallet...");
-                string walletId = await CreateRapydWallet(_demoUser);
+                string walletId = await _rapydSevice.CreateRapydWallet(_demoUser);
+                string senderId = await _rapydSevice.CreateSender(_demoUser);
                 _logger.Debug($"Demo user profile {_demoUser.Email} now has Rapyd Wallet with is {walletId}");
 
                 var account = await _apiGateway.FindAccount(_demoUser.Email);
@@ -243,15 +226,12 @@ namespace O10.Nomy.Services
                                                            _demoUser.FirstName,
                                                            _demoUser.LastName,
                                                            walletId,
-                                                           "","",
+                                                           "",
+                                                           senderId,
                                                            cancellationToken);
             }
 
-            var wallet = await _rapydApi.GetWallet(user.WalletId);
-            if(wallet.Accounts.Select(a => int.Parse(a.Balance)).Sum() < 500)
-            {
-                var depositResponse = await _rapydApi.DepositFunds(user.WalletId, "USD", 1000);
-            }
+            await _rapydSevice.ReplenishFunds(user.WalletId, 500, 1000);
 
             foreach (var expertiseArea in _expertiseAreas)
             {
@@ -284,7 +264,7 @@ namespace O10.Nomy.Services
                             if (userExpert == null)
                             {
                                 _logger.Debug($"No user found for expert profile {expertProfile.Email}, creating Rapyd Wallet...");
-                                string walletId = await CreateRapydWallet(new UserDTO
+                                string walletId = await _rapydSevice.CreateRapydWallet(new UserDTO
                                 {
                                     Email = expertProfile.Email,
                                     FirstName = expertProfile.FirstName,
@@ -292,7 +272,7 @@ namespace O10.Nomy.Services
                                 });
                                 _logger.Debug($"Expert profile {expertProfile.Email} now has Rapyd Wallet with is {walletId}");
 
-                                string beneficiaryId = await CreateBeneficiary(new UserDTO
+                                string beneficiaryId = await _rapydSevice.CreateBeneficiary(new UserDTO
                                 {
                                     Email = expertProfile.Email,
                                     FirstName = expertProfile.FirstName,
@@ -358,77 +338,5 @@ namespace O10.Nomy.Services
             }
         }
 
-        private async Task<string> CreateBeneficiary(UserDTO user)
-        {
-            try
-            {
-                BeneficiaryDTO beneficiaryDTO = new BeneficiaryDTO
-                {
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Category = BeneficiaryCategory.Bank,
-                    Country = "US",
-                    Currency = "USD",
-                    PayoutMethodType = "us_visa_card",
-                    Properties = new Dictionary<string, string>
-                    {
-                        { "email", user.Email },
-                        { "card_number", "4462030000000000" },
-                        { "card_expiration_month", "11" },
-                        { "card_expiration_year", "2025" },
-                        { "card_cvv", "111" },
-                        { "company_name", "" },
-                        { "postcode", "" }
-                    }
-                };
-
-                var beneficiary = await _rapydApi.CreateBenificiary(beneficiaryDTO);
-
-                return beneficiary.Id;
-            }
-            catch (FlurlHttpException ex)
-            {
-                var str = await ex.Call.Response.ResponseMessage.Content.ReadAsStringAsync();
-                throw;
-            }
-        }
-
-        private async Task<string> CreateRapydWallet(UserDTO user)
-        {
-            try
-            {
-                WalletContact walletContact = new()
-                {
-                    ContactType = ContactType.Business,
-                    Email = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName
-                };
-
-                WalletRequestDTO walletRequest = new()
-                {
-                    Category = WalletCategory.General,
-                    Contact = walletContact,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    EwalletReferenceId = Guid.NewGuid().ToString(),
-                    Type = WalletType.Company
-                };
-
-                var response = await _rapydApi.CreateWallet(walletRequest);
-
-                string walletId = response.Id;
-                return walletId;
-            }
-            catch(FlurlHttpException ex)
-            {
-                string reason = await ex.Call.Response.GetStringAsync();
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
     }
 }

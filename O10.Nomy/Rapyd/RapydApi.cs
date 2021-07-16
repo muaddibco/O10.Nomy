@@ -13,6 +13,8 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using O10.Nomy.Utils;
 using O10.Nomy.Rapyd.DTOs.Beneficiary;
+using O10.Nomy.Rapyd.DTOs.Sender;
+using System.Collections.Generic;
 
 namespace O10.Nomy.Rapyd
 {
@@ -39,7 +41,8 @@ namespace O10.Nomy.Rapyd
                     {
                         OverrideSpecifiedNames = false
                     }
-                }
+                },
+                Converters = new List<JsonConverter> { new RapydConverter() }
             };
             _serializerSettings.Converters.Add(new StringEnumConverter());
 
@@ -101,7 +104,22 @@ namespace O10.Nomy.Rapyd
             }
             catch (Exception ex)
             {
-                _logger.Error("Failed to put funds on hold", ex);
+                _logger.Error("Failed to create beneficiary", ex);
+                throw;
+            }
+        }
+
+        public async Task<SenderDTO?> CreateSender(SenderDTO sender)
+        {
+            try
+            {
+                var response = await PostToRapyd<SenderDTO?>(sender, "payouts", "sender");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Failed to create sender", ex);
                 throw;
             }
         }

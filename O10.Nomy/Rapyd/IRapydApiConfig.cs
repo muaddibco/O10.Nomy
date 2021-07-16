@@ -1,8 +1,4 @@
 ﻿using O10.Core.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace O10.Nomy.Rapyd
 {

@@ -2,8 +2,6 @@
 using O10.Core.Architecture;
 using O10.Nomy.Rapyd.DTOs;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

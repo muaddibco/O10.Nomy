@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace O10.Nomy.Rapyd.DTOs.Beneficiary
+namespace O10.Nomy.Rapyd.DTOs
 {
     public enum EntityType
     {

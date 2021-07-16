@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using O10.Nomy.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace O10.Nomy.Rapyd.DTOs
 {
+    [JsonConverter(typeof(RapydConverter))]
     public class CustomerDTO
     {
         /// <summary>

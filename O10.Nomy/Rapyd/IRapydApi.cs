@@ -1,9 +1,7 @@
 ﻿using O10.Core.Architecture;
 using O10.Nomy.Rapyd.DTOs;
 using O10.Nomy.Rapyd.DTOs.Beneficiary;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using O10.Nomy.Rapyd.DTOs.Sender;
 using System.Threading.Tasks;
 
 namespace O10.Nomy.Rapyd
@@ -20,5 +18,7 @@ namespace O10.Nomy.Rapyd
         Task<PutFundsOnHoldResponseDTO?> PutFundsOnHold(string walletId, string currency, ulong amount);
 
         Task<BeneficiaryDTO?> CreateBenificiary(BeneficiaryDTO beneficiary);
+
+        Task<SenderDTO?> CreateSender(SenderDTO sender);
     }
 }

@@ -4,11 +4,8 @@ using O10.Nomy.ExtensionMethods;
 using O10.Nomy.Rapyd.DTOs;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace O10.Nomy.Utils
 {
@@ -16,7 +13,7 @@ namespace O10.Nomy.Utils
     {
         public override bool CanConvert(Type objectType)
         {
-            return true;
+            return objectType.GetCustomAttribute<JsonConverterAttribute>()?.ConverterType == typeof(RapydConverter);
         }
 
         public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
@@ -29,10 +26,14 @@ namespace O10.Nomy.Utils
 
             foreach (var prop in props)
             {
-                var tokenName = prop.Name.ToUnderscoreDelimited().ToLower();
+                var tokenName = prop.GetCustomAttribute<JsonPropertyAttribute>()?.PropertyName ?? prop.Name.ToUnderscoreDelimited().ToLower();
+
                 if(jobj.Remove(tokenName, out var token))
                 {
-                    prop.SetValue(value, token?.ToObject(prop.PropertyType));
+                    if(token.Type != JTokenType.Null)
+                    {
+                        prop.SetValue(value, token?.ToObject(prop.PropertyType));
+                    }
                 }
             }
 
@@ -61,7 +62,8 @@ namespace O10.Nomy.Utils
                 var val = prop.GetValue(value);
                 if (val != null)
                 {
-                    writer.WritePropertyName(prop.Name.ToUnderscoreDelimited().ToLower());
+                    writer.WritePropertyName(prop.GetCustomAttribute<JsonPropertyAttribute>()?.PropertyName
+                                             ?? prop.Name.ToUnderscoreDelimited().ToLower());
 
                     if(prop.PropertyType.IsEnum)
                     {
@@ -71,7 +73,7 @@ namespace O10.Nomy.Utils
                     }
                     else
                     {
-                        writer.WriteValue(prop.GetValue(value));
+                        serializer.Serialize(writer, prop.GetValue(value));
                     }
                 }
             }

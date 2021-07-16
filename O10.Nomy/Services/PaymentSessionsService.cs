@@ -8,7 +8,6 @@ using O10.Core.HashCalculations;
 using O10.Crypto.ConfidentialAssets;
 using O10.Nomy.DTOs;
 using O10.Nomy.Hubs;
-using O10.Nomy.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading;

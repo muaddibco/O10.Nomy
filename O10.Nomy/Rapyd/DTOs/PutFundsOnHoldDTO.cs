@@ -1,11 +1,9 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using O10.Nomy.Utils;
 
 namespace O10.Nomy.Rapyd.DTOs
 {
+    [JsonConverter(typeof(RapydConverter))]
     public class PutFundsOnHoldDTO
     {
         [JsonProperty("ewallet")]
