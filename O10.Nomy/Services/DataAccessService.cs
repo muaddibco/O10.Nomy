@@ -427,5 +427,42 @@ namespace O10.Nomy.Services
         }
 
         #endregion Payouts
+
+        #region System Parameters
+
+        public async Task<SystemParameter> SetSystemParameter(string name, string value, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var param = await dbContext.SystemParameters.FirstOrDefaultAsync(s => s.Name == name, ct);
+            if (param == null)
+            {
+                var entry = await dbContext.SystemParameters.AddAsync(
+                    new SystemParameter
+                    {
+                        Name = name,
+                        Value = value
+                    }, ct);
+
+                await dbContext.SaveChangesAsync(ct);
+
+                return entry.Entity;
+            }
+            else
+            {
+                param.Value = value;
+                await dbContext.SaveChangesAsync(ct);
+                return param;
+            }
+        }
+
+        public async Task<SystemParameter> GetSystemParameter(string name, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            return await dbContext.SystemParameters.FirstOrDefaultAsync(s => s.Name == name, ct);
+        }
+
+        #endregion System Parameters
     }
 }

@@ -7,6 +7,8 @@ namespace O10.Nomy.Services
     [ServiceContract]
     public interface IPayoutsService
     {
-        Task CollectPayments(CancellationToken ct);
+        void Initialize(string walletId, string beneficiaryId, string senderId);
+        Task CreatePayout(CancellationToken ct);
+
     }
 }

@@ -4,7 +4,7 @@ using O10.Nomy.Utils;
 namespace O10.Nomy.Rapyd.DTOs
 {
     [JsonConverter(typeof(RapydConverter))]
-    public class PutFundsOnHoldResponseDTO
+    public class PutOnHoldReleaseFundsResponseDTO
     {
         public string Id { get; set; }
 

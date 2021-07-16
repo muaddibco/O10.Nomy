@@ -12,9 +12,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using O10.Nomy.Utils;
-using O10.Nomy.Rapyd.DTOs.Beneficiary;
-using O10.Nomy.Rapyd.DTOs.Sender;
 using System.Collections.Generic;
+using O10.Nomy.Rapyd.DTOs.Disburse;
 
 namespace O10.Nomy.Rapyd
 {
@@ -74,11 +73,11 @@ namespace O10.Nomy.Rapyd
             return response;
         }
 
-        public async Task<PutFundsOnHoldResponseDTO?> PutFundsOnHold(string walletId, string currency, ulong amount)
+        public async Task<PutOnHoldReleaseFundsResponseDTO?> PutFundsOnHold(string walletId, string currency, ulong amount)
         {
             try
             {
-                var response = await PostToRapyd<PutFundsOnHoldResponseDTO>(new PutFundsOnHoldDTO
+                var response = await PostToRapyd<PutOnHoldReleaseFundsResponseDTO>(new PutFundsOnHoldDTO
                 {
                     WalletId = walletId,
                     Currency = currency,
@@ -90,6 +89,26 @@ namespace O10.Nomy.Rapyd
             catch(Exception ex)
             {
                 _logger.Error("Failed to put funds on hold", ex);
+                throw;
+            }
+        }
+
+        public async Task<PutOnHoldReleaseFundsResponseDTO?> ReleaseFunds(string walletId, string currency, ulong amount)
+        {
+            try
+            {
+                var response = await PostToRapyd<PutOnHoldReleaseFundsResponseDTO>(new ReleaseFundsDTO
+                {
+                    WalletId = walletId,
+                    Currency = currency,
+                    Amount = amount
+                }, "account", "balance", "release");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Failed to release funds", ex);
                 throw;
             }
         }
@@ -123,6 +142,79 @@ namespace O10.Nomy.Rapyd
                 throw;
             }
         }
+        public async Task<TransferFundsResponseDTO?> TransferFunds(string sourceWalletId, string destinationWalletId, string currency, ulong amount)
+        {
+            try
+            {
+                TransferFundsDTO transferFunds = new()
+                {
+                    SourceEwallet = sourceWalletId,
+                    DestinationEwallet =destinationWalletId,
+                    Currency = currency,
+                    Amount = amount
+                };
+
+                var response = await PostToRapyd<TransferFundsResponseDTO?>(transferFunds, "account", "transfer");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Failed to transfer funds", ex);
+                throw;
+            }
+        }
+
+        public async Task<TransferFundsResponseDTO?> ConfirmTransfer(string transferId)
+        {
+            try
+            {
+                SetTransferDTO setTransfer = new()
+                {
+                    Id = transferId,
+                    Status = SetTransferStatus.Accept
+                };
+
+                var response = await PostToRapyd<TransferFundsResponseDTO?>(setTransfer, "account", "transfer", "response");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Failed to transfer funds", ex);
+                throw;
+            }
+        }
+
+        public async Task<string> PayoutFunds(string sourceWalletId, string beneficiaryId, string currency, ulong amount)
+        {
+            try
+            {
+                PayoutRequestDTO payoutRequest = new()
+                {
+                    Ewallet = sourceWalletId,
+                    PayoutAmount = amount,
+                    SenderCurrency = currency,
+                    SenderCountry = "US",
+                    BeneficiaryCountry = "US",
+                    PayoutCurrency = currency,
+                    SenderEntityTypy = EntityType.Company,
+                    BeneficiaryEntityType = EntityType.Company,
+                    Beneficiary = beneficiaryId
+                };
+
+                var response = await PostToRapyd<string>(payoutRequest, "payouts");
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Failed to payout funds", ex);
+                throw;
+            }
+        }
+
+        #region Private Functions
 
         private async Task<T?> GetFromRapyd<T>(params string[] segments)
         {
@@ -273,5 +365,7 @@ namespace O10.Nomy.Rapyd
                 throw;
             }
         }
+
+        #endregion Private Functions
     }
 }

@@ -15,13 +15,13 @@ namespace O10.Nomy.Controllers
     {
         private readonly IO10ApiGateway _apiGateway;
         private readonly IRapydApi _rapydApi;
-        private readonly IRapydSevice _rapydSevice;
+        private readonly IRapydService _rapydSevice;
         private readonly ITranslatorsRepository _translatorsRepository;
         private readonly IDataAccessService _dataAccessService;
 
         public AccountsController(IO10ApiGateway apiGateway,
                                   IRapydApi rapydApi,
-                                  IRapydSevice rapydSevice,
+                                  IRapydService rapydSevice,
                                   ITranslatorsRepository translatorsRepository,
                                   IDataAccessService dataAccessService)
         {

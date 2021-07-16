@@ -3,6 +3,8 @@ using O10.Core.Architecture;
 using O10.Core.Logging;
 using O10.Nomy.DTOs;
 using O10.Nomy.Rapyd;
+using O10.Nomy.Rapyd.DTOs;
+using O10.Nomy.Rapyd.DTOs.Disburse;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -166,14 +168,21 @@ namespace O10.Nomy.Services
         };
         private readonly IDataAccessService _dataAccessService;
         private readonly IO10ApiGateway _apiGateway;
-        private readonly IRapydSevice _rapydSevice;
+        private readonly IRapydService _rapydSevice;
+        private readonly IPayoutsService _payoutsService;
         private readonly IRapydApi _rapydApi;
         private readonly ILogger _logger;
-        public ExpertsInitializer(IDataAccessService dataAccessService, IO10ApiGateway o10ApiGateway, IRapydSevice rapydSevice, IRapydApi rapydApi, ILoggerService loggerService)
+        public ExpertsInitializer(IDataAccessService dataAccessService,
+                                  IO10ApiGateway o10ApiGateway,
+                                  IRapydService rapydSevice,
+                                  IPayoutsService payoutsService,
+                                  IRapydApi rapydApi,
+                                  ILoggerService loggerService)
         {
             _dataAccessService = dataAccessService;
             _apiGateway = o10ApiGateway;
             _rapydSevice = rapydSevice;
+            _payoutsService = payoutsService;
             _rapydApi = rapydApi;
             _logger = loggerService.GetLogger(nameof(ExpertsInitializer));
         }
@@ -183,55 +192,72 @@ namespace O10.Nomy.Services
         protected override async Task InitializeInner(CancellationToken cancellationToken)
         {
             _logger.Debug("Initializing experts pre-setup");
-            var expertiseAreas = await _dataAccessService.GetExpertiseAreas();
 
-            var user = await _dataAccessService.FindUser(_demoUser.Email, cancellationToken);
-            if (user == null)
+            await InitDemoUser(cancellationToken);
+
+            await InitExperts(cancellationToken);
+        }
+
+        private async Task InitNomyWallet(CancellationToken cancellationToken)
+        {
+            var nomyWalletParam = await _dataAccessService.GetSystemParameter("NomyWallet", cancellationToken);
+            var nomyBeneficiaryParam = await _dataAccessService.GetSystemParameter("NomyBeneficiary", cancellationToken);
+            var nomySenderParam = await _dataAccessService.GetSystemParameter("NomySender", cancellationToken);
+
+            if(nomyWalletParam == null)
             {
-                _logger.Debug($"No user found for demo user {_demoUser.Email}, creating Rapyd Wallet...");
-                string walletId = await _rapydSevice.CreateRapydWallet(_demoUser);
-                string senderId = await _rapydSevice.CreateSender(_demoUser);
-                _logger.Debug($"Demo user profile {_demoUser.Email} now has Rapyd Wallet with is {walletId}");
-
-                var account = await _apiGateway.FindAccount(_demoUser.Email);
-                bool needToRequestId = false;
-                if (account == null)
-                {
-                    _logger.Debug($"No O10 account found for demo profile {_demoUser.Email}, creating O10 account...");
-                    account = await _apiGateway.RegisterUser(_demoUser.Email, "qqq");
-                    _logger.Debug($"O10 account with id {account.AccountId} was created for {_demoUser.Email}");
-                    needToRequestId = true;
-                }
-
-                _logger.Debug("Starting O10 account...");
-                account = await _apiGateway.Start(account.AccountId);
-                _logger.Debug("Setting the binding key of the O10 account...");
-                await _apiGateway.SetBindingKey(account.AccountId, "qqq");
-
-                if (needToRequestId)
-                {
-                    _logger.Debug($"Requesting O10 identity for expert profile {_demoUser.Email}");
-                    try
-                    {
-                        var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error($"Failed to request identity for {_demoUser.Email}", ex);
-                    }
-                }
-
-                user = await _dataAccessService.CreateUser(account.AccountId,
-                                                           _demoUser.Email,
-                                                           _demoUser.FirstName,
-                                                           _demoUser.LastName,
-                                                           walletId,
-                                                           "",
-                                                           senderId,
-                                                           cancellationToken);
+                string walletId = await _rapydSevice.CreateRapydWallet(new UserDTO { Email = "info@nomy.com", FirstName = "Nomy LTD", LastName = "" });
+                nomyWalletParam = await _dataAccessService.SetSystemParameter("NomyWallet", walletId, cancellationToken);
             }
 
-            await _rapydSevice.ReplenishFunds(user.WalletId, 500, 1000);
+            if(nomyBeneficiaryParam == null)
+            {
+                BeneficiaryDTO beneficiaryDTO = new()
+                {
+                    FirstName = "Nomy LTD",
+                    LastName = "",
+                    Category = BeneficiaryCategory.Bank,
+                    EntityType = EntityType.Company,
+                    Country = "US",
+                    Currency = "USD",
+                    PayoutMethodType = "us_visa_card",
+                    Properties = new Dictionary<string, string>
+                    {
+                        { "email", "info@nomy.com" },
+                        { "card_number", "4462030000000000" },
+                        { "card_expiration_month", "11" },
+                        { "card_expiration_year", "2025" },
+                        { "card_cvv", "111" },
+                        { "company_name", "" },
+                        { "postcode", "" }
+                    }
+                };
+
+                var beneficiary = await _rapydApi.CreateBenificiary(beneficiaryDTO);
+                nomyBeneficiaryParam = await _dataAccessService.SetSystemParameter("NomyBeneficiary", beneficiary.Id, cancellationToken);
+            }
+
+            if(nomySenderParam == null)
+            {
+                SenderDTO senderDTO = new()
+                {
+                    FirstName = "Nomy LTD",
+                    LastName = "",
+                    Country = "US",
+                    Currency = "USD",
+                    EntityType = EntityType.Company
+                };
+
+                var sender = await _rapydApi.CreateSender(senderDTO);
+                nomySenderParam = await _dataAccessService.SetSystemParameter("NomySender", sender.Id, cancellationToken);
+            }
+
+            _payoutsService.Initialize(nomyWalletParam.Value, nomyBeneficiaryParam.Value, nomySenderParam.Value);
+        }
+
+        private async Task InitExperts(CancellationToken cancellationToken)
+        {
+            var expertiseAreas = await _dataAccessService.GetExpertiseAreas();
 
             foreach (var expertiseArea in _expertiseAreas)
             {
@@ -338,5 +364,55 @@ namespace O10.Nomy.Services
             }
         }
 
+        private async Task InitDemoUser(CancellationToken cancellationToken)
+        {
+            var user = await _dataAccessService.FindUser(_demoUser.Email, cancellationToken);
+            if (user == null)
+            {
+                _logger.Debug($"No user found for demo user {_demoUser.Email}, creating Rapyd Wallet...");
+                string walletId = await _rapydSevice.CreateRapydWallet(_demoUser);
+                string senderId = await _rapydSevice.CreateSender(_demoUser);
+                _logger.Debug($"Demo user profile {_demoUser.Email} now has Rapyd Wallet with is {walletId}");
+
+                var account = await _apiGateway.FindAccount(_demoUser.Email);
+                bool needToRequestId = false;
+                if (account == null)
+                {
+                    _logger.Debug($"No O10 account found for demo profile {_demoUser.Email}, creating O10 account...");
+                    account = await _apiGateway.RegisterUser(_demoUser.Email, "qqq");
+                    _logger.Debug($"O10 account with id {account.AccountId} was created for {_demoUser.Email}");
+                    needToRequestId = true;
+                }
+
+                _logger.Debug("Starting O10 account...");
+                account = await _apiGateway.Start(account.AccountId);
+                _logger.Debug("Setting the binding key of the O10 account...");
+                await _apiGateway.SetBindingKey(account.AccountId, "qqq");
+
+                if (needToRequestId)
+                {
+                    _logger.Debug($"Requesting O10 identity for expert profile {_demoUser.Email}");
+                    try
+                    {
+                        var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, "qqq", _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"Failed to request identity for {_demoUser.Email}", ex);
+                    }
+                }
+
+                user = await _dataAccessService.CreateUser(account.AccountId,
+                                                           _demoUser.Email,
+                                                           _demoUser.FirstName,
+                                                           _demoUser.LastName,
+                                                           walletId,
+                                                           "",
+                                                           senderId,
+                                                           cancellationToken);
+            }
+
+            await _rapydSevice.ReplenishFunds(user.WalletId, 500, 1000);
+        }
     }
 }

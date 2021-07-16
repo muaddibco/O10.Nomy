@@ -1,16 +1,16 @@
 ﻿using System.Runtime.Serialization;
 
-namespace O10.Nomy.Rapyd.DTOs.Beneficiary
+namespace O10.Nomy.Rapyd.DTOs.Disburse
 {
     public enum BeneficiaryCategory
     {
-        [EnumMember(Value ="bank")]
+        [EnumMember(Value = "bank")]
         Bank,
-        [EnumMember(Value ="card")]
+        [EnumMember(Value = "card")]
         Card,
-        [EnumMember(Value ="cash")]
+        [EnumMember(Value = "cash")]
         Cash,
-        [EnumMember(Value ="ewallet")]
+        [EnumMember(Value = "ewallet")]
         EWallet,
         [EnumMember(Value = "rapyd_ewallet")]
         RapydEWallet

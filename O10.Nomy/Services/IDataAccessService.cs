@@ -81,5 +81,12 @@ namespace O10.Nomy.Services
         IEnumerable<PayoutRecord> GetPayouts();
 
         #endregion Payouts
+
+        #region System Parameters
+
+        Task<SystemParameter> SetSystemParameter(string name, string value, CancellationToken ct);
+        Task<SystemParameter> GetSystemParameter(string name, CancellationToken ct);
+
+        #endregion System Parameters
     }
 }

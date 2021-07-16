@@ -3,8 +3,7 @@ using O10.Core.Architecture;
 using O10.Core.Logging;
 using O10.Nomy.DTOs;
 using O10.Nomy.Rapyd.DTOs;
-using O10.Nomy.Rapyd.DTOs.Beneficiary;
-using O10.Nomy.Rapyd.DTOs.Sender;
+using O10.Nomy.Rapyd.DTOs.Disburse;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace O10.Nomy.Rapyd
 {
-    [RegisterDefaultImplementation(typeof(IRapydSevice), Lifetime = LifetimeManagement.Singleton)]
-    public class RapydSevice : IRapydSevice
+    [RegisterDefaultImplementation(typeof(IRapydService), Lifetime = LifetimeManagement.Singleton)]
+    public class RapydService : IRapydService
     {
         private readonly IRapydApi _rapydApi;
         private readonly ILogger _logger;
 
-        public RapydSevice(IRapydApi rapydApi, ILoggerService loggerService)
+        public RapydService(IRapydApi rapydApi, ILoggerService loggerService)
         {
             _rapydApi = rapydApi;
-            _logger = loggerService.GetLogger(nameof(RapydSevice));
+            _logger = loggerService.GetLogger(nameof(RapydService));
         }
 
         public async Task<string> CreateBeneficiary(UserDTO user)
@@ -159,6 +158,46 @@ namespace O10.Nomy.Rapyd
             catch (Exception ex)
             {
                 _logger.Error($"Failed to replenish funds due to the error", ex);
+                throw;
+            }
+        }
+
+        public async Task TransferFunds(string sourceWalletId, string destinationWalletId, string currency, ulong amount)
+        {
+            try
+            {
+                var releaseResp = await _rapydApi.ReleaseFunds(sourceWalletId, currency, amount);
+                var resp1 = await _rapydApi.TransferFunds(sourceWalletId, destinationWalletId, currency, amount);
+                var resp2 = await _rapydApi.ConfirmTransfer(resp1.Id);
+            }
+            catch (FlurlHttpException ex)
+            {
+                var str = await ex.Call.Response?.ResponseMessage.Content.ReadAsStringAsync();
+                _logger.Error($"Failed to transfer funds due to the error '{str}'", ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Failed to transfer funds due to the error", ex);
+                throw;
+            }
+        }
+
+        public async Task PayoutFunds(string sourceWalletId, string beneficiaryId, string currency, ulong amount)
+        {
+            try
+            {
+                var resp = await _rapydApi.PayoutFunds(sourceWalletId, beneficiaryId, currency, amount);
+            }
+            catch (FlurlHttpException ex)
+            {
+                var str = await ex.Call.Response?.ResponseMessage.Content.ReadAsStringAsync();
+                _logger.Error($"Failed to payout funds due to the error '{str}'", ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Failed to payout funds due to the error", ex);
                 throw;
             }
         }
