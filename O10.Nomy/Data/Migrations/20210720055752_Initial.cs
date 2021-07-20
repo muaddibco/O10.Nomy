@@ -56,6 +56,20 @@ namespace O10.Nomy.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SystemParameters",
+                columns: table => new
+                {
+                    SystemParameterId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemParameters", x => x.SystemParameterId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ExpertProfiles",
                 columns: table => new
                 {
@@ -297,6 +311,9 @@ namespace O10.Nomy.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "SecretPaymentRecords");
+
+            migrationBuilder.DropTable(
+                name: "SystemParameters");
 
             migrationBuilder.DropTable(
                 name: "ExpertiseAreas");

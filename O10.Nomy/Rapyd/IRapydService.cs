@@ -8,7 +8,7 @@ namespace O10.Nomy.Rapyd
     public interface IRapydService
     {
         Task<string> CreateRapydWallet(UserDTO user);
-        Task<string> CreateBeneficiary(UserDTO user);
+        Task<string> CreateBenificiary(UserDTO user);
         Task<string> CreateSender(UserDTO user);
 
         Task<ulong?> ReplenishFunds(string walletId, int threshold, ulong target);

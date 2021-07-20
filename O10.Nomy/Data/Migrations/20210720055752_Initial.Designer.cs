@@ -10,7 +10,7 @@ using O10.Nomy.Data;
 namespace O10.Nomy.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210715183553_Initial")]
+    [Migration("20210720055752_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -284,6 +284,26 @@ namespace O10.Nomy.Data.Migrations
                     b.HasIndex("UserNomyUserId");
 
                     b.ToTable("SecretPaymentRecords");
+                });
+
+            modelBuilder.Entity("O10.Nomy.Models.SystemParameter", b =>
+                {
+                    b.Property<long>("SystemParameterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SystemParameterId");
+
+                    b.ToTable("SystemParameters");
                 });
 
             modelBuilder.Entity("O10.Nomy.Models.ExpertProfile", b =>

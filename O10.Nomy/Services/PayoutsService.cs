@@ -1,4 +1,5 @@
-﻿using O10.Nomy.Rapyd;
+﻿using O10.Core.Architecture;
+using O10.Nomy.Rapyd;
 using System;
 using System.Linq;
 using System.Threading;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace O10.Nomy.Services
 {
+    [RegisterDefaultImplementation(typeof(IPayoutsService), Lifetime = LifetimeManagement.Singleton)]
     public class PayoutsService : IPayoutsService
     {
         private readonly IDataAccessService _dataAccessService;

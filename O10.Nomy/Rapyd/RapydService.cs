@@ -23,7 +23,7 @@ namespace O10.Nomy.Rapyd
             _logger = loggerService.GetLogger(nameof(RapydService));
         }
 
-        public async Task<string> CreateBeneficiary(UserDTO user)
+        public async Task<string> CreateBenificiary(UserDTO user)
         {
             try
             {

@@ -284,6 +284,26 @@ namespace O10.Nomy.Data.Migrations
                     b.ToTable("SecretPaymentRecords");
                 });
 
+            modelBuilder.Entity("O10.Nomy.Models.SystemParameter", b =>
+                {
+                    b.Property<long>("SystemParameterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SystemParameterId");
+
+                    b.ToTable("SystemParameters");
+                });
+
             modelBuilder.Entity("O10.Nomy.Models.ExpertProfile", b =>
                 {
                     b.HasOne("O10.Nomy.Models.NomyUser", "NomyUser")

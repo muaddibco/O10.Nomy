@@ -63,7 +63,7 @@ namespace O10.Nomy.Controllers
 
             string walletId = await _rapydSevice.CreateRapydWallet(user);
             await _rapydSevice.ReplenishFunds(walletId, -1, 1000);
-            string beneficiaryId = await _rapydSevice.CreateBeneficiary(user);
+            string beneficiaryId = await _rapydSevice.CreateBenificiary(user);
             string senderId = await _rapydSevice.CreateSender(user);
             
             var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, user.Password, user.Email, user.FirstName, user.LastName, walletId);

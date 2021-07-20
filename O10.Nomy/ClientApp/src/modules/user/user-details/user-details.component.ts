@@ -147,10 +147,15 @@ export class UserDetailsComponent implements OnInit {
       that.userAccessService.getUserAttributes(that.user.accountId).subscribe(
         r => {
           if (r && r.length > 0) {
-            this.nomyIdentity = r[0];
+            console.log("There are " + r.length + " user attributes")
+            that.nomyIdentity = r[0];
+            console.log(that.nomyIdentity)
+          } else {
+            console.warn("No user attributes obtained")
           }
         },
         e => {
+          console.error("Failed to obtain user attributes", e)
         }
       );
     })

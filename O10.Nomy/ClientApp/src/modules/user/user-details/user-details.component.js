@@ -107,13 +107,18 @@ var UserDetailsComponent = /** @class */ (function () {
         });
     };
     UserDetailsComponent.prototype.initiateUserAttributes = function (that, password) {
-        var _this = this;
         that.userAccessService.start(that.user.accountId, password).subscribe(function (a) {
             that.userAccessService.getUserAttributes(that.user.accountId).subscribe(function (r) {
                 if (r && r.length > 0) {
-                    _this.nomyIdentity = r[0];
+                    console.log("There are " + r.length + " user attributes");
+                    that.nomyIdentity = r[0];
+                    console.log(that.nomyIdentity);
+                }
+                else {
+                    console.warn("No user attributes obtained");
                 }
             }, function (e) {
+                console.error("Failed to obtain user attributes", e);
             });
         });
     };
