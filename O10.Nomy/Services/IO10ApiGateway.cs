@@ -10,6 +10,7 @@ namespace O10.Nomy.Services
     public interface IO10ApiGateway
     {
         Task<O10AccountDTO?> FindAccount(string alias);
+        Task<O10AccountDTO?> GetAccount(long accountId);
 
         Task<O10AccountDTO?> RegisterIdp(string alias, string password);
         Task<O10AccountDTO?> RegisterUser(string email, string password);
@@ -17,6 +18,7 @@ namespace O10.Nomy.Services
         Task<O10AccountDTO?> Start(long accountId);
         
         Task SetBindingKey(long accountId, string password);
+        Task<O10AccountDTO?> Authenticate(long accountId, string password);
 
         Task<IEnumerable<AttributeValue>> RequestIdentity(long accountId, string password, string email, string firstName, string lastName, string walletId);
 

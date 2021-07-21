@@ -39,6 +39,17 @@ namespace O10.Nomy.Services
             return account;
         }
 
+        public async Task<O10AccountDTO?> GetAccount(long accountId)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("accounts", accountId.ToString());
+
+            _logger.Debug(() => $"Sending O10 request {req}");
+
+            var account = await req.GetJsonAsync<O10AccountDTO?>();
+
+            return account;
+        }
+
         public async Task<List<UserAttributeSchemeDto>?> GetUserAttributes(long accountId)
         {
             var attributeSchemes = await _nomyConfig.O10Uri
@@ -114,6 +125,18 @@ namespace O10.Nomy.Services
             _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(new { password }, Formatting.Indented)}");
 
             await req.PostJsonAsync(new { password });
+        }
+
+        public async Task<O10AccountDTO?> Authenticate(long accountId, string password)
+        {
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("Accounts", "Authenticate");
+
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(new { accountId, password }, Formatting.Indented)}");
+
+            return await req
+                .PostJsonAsync(new { accountId, password })
+                .ReceiveJson<O10AccountDTO?>();
         }
 
         public async Task<O10AccountDTO?> Start(long accountId)

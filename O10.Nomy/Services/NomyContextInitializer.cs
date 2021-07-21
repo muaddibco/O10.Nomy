@@ -271,10 +271,8 @@ namespace O10.Nomy.Services
                                     needToRequestId = true;
                                 }
 
-                                _logger.Debug("Starting O10 account...");
-                                account = await _o10ApiGateway.Start(account.AccountId);
-                                _logger.Debug("Setting the binding key of the O10 account...");
-                                await _o10ApiGateway.SetBindingKey(account.AccountId, "qqq");
+                                _logger.Debug("Authenticate O10 account...");
+                                account = await _o10ApiGateway.Authenticate(account.AccountId, "qqq");
 
                                 if (needToRequestId)
                                 {
@@ -322,6 +320,7 @@ namespace O10.Nomy.Services
 
         private async Task InitDemoUser(CancellationToken cancellationToken)
         {
+            O10AccountDTO? account;
             var user = await _dataAccessService.FindUser(_demoUser.Email, cancellationToken);
             if (user == null)
             {
@@ -330,32 +329,12 @@ namespace O10.Nomy.Services
                 string senderId = await _rapydSevice.CreateSender(_demoUser);
                 _logger.Debug($"Demo user profile {_demoUser.Email} now has Rapyd Wallet with is {walletId}");
 
-                var account = await _o10ApiGateway.FindAccount(_demoUser.Email);
-                bool needToRequestId = false;
+                account = await _o10ApiGateway.FindAccount(_demoUser.Email);
                 if (account == null)
                 {
                     _logger.Debug($"No O10 account found for demo profile {_demoUser.Email}, creating O10 account...");
                     account = await _o10ApiGateway.RegisterUser(_demoUser.Email, "qqq");
                     _logger.Debug($"O10 account with id {account.AccountId} was created for {_demoUser.Email}");
-                    needToRequestId = true;
-                }
-
-                _logger.Debug("Starting O10 account...");
-                account = await _o10ApiGateway.Start(account.AccountId);
-                _logger.Debug("Setting the binding key of the O10 account...");
-                await _o10ApiGateway.SetBindingKey(account.AccountId, "qqq");
-
-                if (needToRequestId)
-                {
-                    _logger.Debug($"Requesting O10 identity for expert profile {_demoUser.Email}");
-                    try
-                    {
-                        var attributeValues = await _o10ApiGateway.RequestIdentity(account.AccountId, "qqq", _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, walletId);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error($"Failed to request identity for {_demoUser.Email}", ex);
-                    }
                 }
 
                 user = await _dataAccessService.CreateUser(account.AccountId,
@@ -366,6 +345,27 @@ namespace O10.Nomy.Services
                                                            "",
                                                            senderId,
                                                            cancellationToken);
+            } 
+            else
+            {
+                account = await _o10ApiGateway.GetAccount(user.O10Id);
+            }
+
+            _logger.Debug("Authenticate O10 account...");
+            account = await _o10ApiGateway.Authenticate(account.AccountId, "qqq");
+
+            var attrs = await _o10ApiGateway.GetUserAttributes(account.AccountId);
+            if (attrs == null || attrs.Count == 0)
+            {
+                _logger.Debug($"Requesting O10 identity for expert profile {_demoUser.Email}");
+                try
+                {
+                    var attributeValues = await _o10ApiGateway.RequestIdentity(account.AccountId, "qqq", _demoUser.Email, _demoUser.FirstName, _demoUser.LastName, user.WalletId);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Failed to request identity for {_demoUser.Email}", ex);
+                }
             }
 
             await _rapydSevice.ReplenishFunds(user.WalletId, 500, 1000);
