@@ -208,7 +208,7 @@ namespace O10.Nomy.Services
 
             await InitDemoUser(cancellationToken);
 
-            await InitExperts(cancellationToken);
+            //await InitExperts(cancellationToken);
         }
 
         private async Task InitExperts(CancellationToken cancellationToken)
@@ -386,7 +386,7 @@ namespace O10.Nomy.Services
                 }
 
                 _logger.Debug($"Starting O10 account of {_nomyConfig.O10IdentityProvider}");
-                await _o10ApiGateway.Start(_nomyContext.O10IdentityProvider.AccountId);
+                await _o10ApiGateway.Authenticate(_nomyContext.O10IdentityProvider.AccountId, "qqq");
 
                 _logger.Debug($"Checking Scheme Definition of {_nomyConfig.O10IdentityProvider}");
                 var attrs = await _o10ApiGateway.GetAttributeDefinitions(_nomyContext.O10IdentityProvider.PublicSpendKey);
