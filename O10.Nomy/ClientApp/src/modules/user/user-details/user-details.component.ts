@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Account } from '../../accounts/models/account';
-import { UserAttributeScheme } from '../models/user-attribute-scheme';
 import { UserAccessService } from '../user-access.service';
 import { PasswordConfirmDialog } from '../../password-confirm/password-confirm/password-confirm.dialog'
 import { ActivatedRoute, Router } from '@angular/router';
@@ -34,7 +33,6 @@ import { Observable } from 'rxjs';
 export class UserDetailsComponent implements OnInit {
 
   public user: Account
-  public nomyIdentity: UserAttributeScheme
   public isLoaded = false
   private chatHub: HubConnection
   private paymentHub: HubConnection
@@ -67,10 +65,7 @@ export class UserDetailsComponent implements OnInit {
         dialogRef.afterClosed().subscribe(
           r => {
             if (r) {
-
-              that.initiateChatHub(that);
-
-              that.initiateUserAttributes(that, r);
+              that.authenticateUser(that, r);
             }
 
             that.isLoaded = true
@@ -142,23 +137,18 @@ export class UserDetailsComponent implements OnInit {
             });
     }
 
-  private initiateUserAttributes(that: this, password: string) {
-    that.userAccessService.start(that.user.accountId, password).subscribe(a => {
-      that.userAccessService.getUserAttributes(that.user.accountId).subscribe(
-        r => {
-          if (r && r.length > 0) {
-            console.log("There are " + r.length + " user attributes")
-            that.nomyIdentity = r[0];
-            console.log(that.nomyIdentity)
-          } else {
-            console.warn("No user attributes obtained")
-          }
+  private authenticateUser(that: this, password: string) {
+    that.accountAccessService.authenticate(that.user.accountId, password)
+      .subscribe(
+        a => {
+          console.info("user authenticated successfully")
+          that.initiateChatHub(that);
         },
         e => {
-          console.error("Failed to obtain user attributes", e)
-        }
-      );
-    })
+          console.error("failed to authenticate user", e)
+          alert("Failed to authenticate user")
+          that.router.navigate(['/'])
+        })
   }
 
     private initiateChatHub(that: this) {
@@ -183,6 +173,10 @@ export class UserDetailsComponent implements OnInit {
 
   gotoExperts() {
     this.router.navigate(['experts-list', this.user.accountId])
+  }
+
+  onMyAttributes() {
+    this.router.navigate(['user-attributes', this.user.accountId])
   }
 }
 

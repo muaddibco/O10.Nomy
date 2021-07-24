@@ -12,7 +12,7 @@ namespace O10.Nomy.DTOs
 
         public AttributeState State { get; set; }
 
-        public string Issuer { get; set; }
+        public string IssuerAddress { get; set; }
 
         public string IssuerName { get; set; }
 

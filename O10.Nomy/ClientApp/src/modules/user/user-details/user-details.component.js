@@ -53,8 +53,7 @@ var UserDetailsComponent = /** @class */ (function () {
             var dialogRef = that.dialog.open(password_confirm_dialog_1.PasswordConfirmDialog, { data: { title: "Start account", confirmButtonText: "Submit" } });
             dialogRef.afterClosed().subscribe(function (r) {
                 if (r) {
-                    that.initiateChatHub(that);
-                    that.initiateUserAttributes(that, r);
+                    that.authenticateUser(that, r);
                 }
                 that.isLoaded = true;
             });
@@ -106,20 +105,15 @@ var UserDetailsComponent = /** @class */ (function () {
             console.error("Failed to issue an invoice for the session " + _this.sessionInfo.sessionId, e);
         });
     };
-    UserDetailsComponent.prototype.initiateUserAttributes = function (that, password) {
-        that.userAccessService.start(that.user.accountId, password).subscribe(function (a) {
-            that.userAccessService.getUserAttributes(that.user.accountId).subscribe(function (r) {
-                if (r && r.length > 0) {
-                    console.log("There are " + r.length + " user attributes");
-                    that.nomyIdentity = r[0];
-                    console.log(that.nomyIdentity);
-                }
-                else {
-                    console.warn("No user attributes obtained");
-                }
-            }, function (e) {
-                console.error("Failed to obtain user attributes", e);
-            });
+    UserDetailsComponent.prototype.authenticateUser = function (that, password) {
+        that.accountAccessService.authenticate(that.user.accountId, password)
+            .subscribe(function (a) {
+            console.info("user authenticated successfully");
+            that.initiateChatHub(that);
+        }, function (e) {
+            console.error("failed to authenticate user", e);
+            alert("Failed to authenticate user");
+            that.router.navigate(['/']);
         });
     };
     UserDetailsComponent.prototype.initiateChatHub = function (that) {
@@ -143,6 +137,9 @@ var UserDetailsComponent = /** @class */ (function () {
     };
     UserDetailsComponent.prototype.gotoExperts = function () {
         this.router.navigate(['experts-list', this.user.accountId]);
+    };
+    UserDetailsComponent.prototype.onMyAttributes = function () {
+        this.router.navigate(['user-attributes', this.user.accountId]);
     };
     UserDetailsComponent = __decorate([
         core_1.Component({

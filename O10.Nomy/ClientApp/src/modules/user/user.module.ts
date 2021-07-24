@@ -32,10 +32,12 @@ import { UserEntryComponent } from './user-entry/user-entry.component';
 import { AccountsModule } from '../accounts/accounts.module';
 import { ExpertsModule } from '../experts/experts.module'
 import { PasswordConfirmModule } from '../password-confirm/password-confirm.module'
+import { IdentitiesModule } from '../identities/identities.module'
 
 import { UserRegistrationComponent } from './user-registration/user-registration.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { UserSigninComponent } from './user-signin/user-signin.component';
+import { UserAttributesComponent } from '../identities/user-attributes/user-attributes.component';
 
 @NgModule({
   declarations: [
@@ -57,11 +59,13 @@ import { UserSigninComponent } from './user-signin/user-signin.component';
     AccountsModule,
     PasswordConfirmModule,
     ExpertsModule,
+    IdentitiesModule,
     RouterModule.forRoot([
       { path: 'user-entry', component: UserEntryComponent },
       { path: 'user-register', component: UserRegistrationComponent },
       { path: 'user-details/:userId', component: UserDetailsComponent },
-      { path: 'user-signin', component: UserSigninComponent }
+      { path: 'user-signin', component: UserSigninComponent },
+      { path: 'user-attributes/:userId', component: UserAttributesComponent }
     ]),
   ],
   providers: [CookieService]

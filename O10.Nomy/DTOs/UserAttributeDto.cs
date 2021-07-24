@@ -6,16 +6,12 @@
 
         public string SchemeName { get; set; }
 
-        public string Source { get; set; }
+        public string IssuerAddress { get; set; }
 
         public string IssuerName { get; set; }
-
-        public bool Validated { get; set; }
 
         public string Content { get; set; }
 
         public AttributeState State { get; set; }
-
-        public bool IsOverriden { get; set; }
     }
 }

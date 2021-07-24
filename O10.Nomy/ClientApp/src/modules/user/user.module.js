@@ -39,9 +39,11 @@ var user_entry_component_1 = require("./user-entry/user-entry.component");
 var accounts_module_1 = require("../accounts/accounts.module");
 var experts_module_1 = require("../experts/experts.module");
 var password_confirm_module_1 = require("../password-confirm/password-confirm.module");
+var identities_module_1 = require("../identities/identities.module");
 var user_registration_component_1 = require("./user-registration/user-registration.component");
 var user_details_component_1 = require("./user-details/user-details.component");
 var user_signin_component_1 = require("./user-signin/user-signin.component");
+var user_attributes_component_1 = require("../identities/user-attributes/user-attributes.component");
 var UserModule = /** @class */ (function () {
     function UserModule() {
     }
@@ -66,11 +68,13 @@ var UserModule = /** @class */ (function () {
                 accounts_module_1.AccountsModule,
                 password_confirm_module_1.PasswordConfirmModule,
                 experts_module_1.ExpertsModule,
+                identities_module_1.IdentitiesModule,
                 router_1.RouterModule.forRoot([
                     { path: 'user-entry', component: user_entry_component_1.UserEntryComponent },
                     { path: 'user-register', component: user_registration_component_1.UserRegistrationComponent },
                     { path: 'user-details/:userId', component: user_details_component_1.UserDetailsComponent },
-                    { path: 'user-signin', component: user_signin_component_1.UserSigninComponent }
+                    { path: 'user-signin', component: user_signin_component_1.UserSigninComponent },
+                    { path: 'user-attributes/:userId', component: user_attributes_component_1.UserAttributesComponent }
                 ]),
             ],
             providers: [ngx_cookie_service_1.CookieService]

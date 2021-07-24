@@ -16,4 +16,8 @@ export class AccountsAccessService {
   find(alias: string) {
     return this.http.get<Account>('/api/accounts/find', { params: { "accountAlias": alias } })
   }
+
+  authenticate(accountId: number, password: string) {
+    return this.http.post('/api/accounts/' + accountId + '/authenticate', { password })
+  }
 }

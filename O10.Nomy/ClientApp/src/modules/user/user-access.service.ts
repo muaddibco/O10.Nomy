@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AccountsAccessService } from '../accounts/accounts-access.service';
 import { Account} from '../accounts/models/account';
 import { InvoiceEntry } from './models/invoice-entry';
 import { User } from './models/user';
@@ -12,14 +11,10 @@ import { UserDetails } from './models/user-details';
 })
 export class UserAccessService {
 
-  constructor(private http: HttpClient, private accountsAccessService: AccountsAccessService) { }
+  constructor(private http: HttpClient) { }
 
   register(user: User) {
     return this.http.post<Account>('/api/accounts', user)
-  }
-
-  start(accountId: number, password: string) {
-    return this.http.post<Account>('/api/accounts/' + accountId + '/start', null, { params: { "password": password } })
   }
 
   getUserAttributes(accountId: number) {

@@ -9,7 +9,7 @@ namespace O10.Nomy.DTOs
             Attributes = new List<UserAssociatedAttributeDto>();
         }
 
-        public string Issuer { get; set; }
+        public string IssuerAddress { get; set; }
 
         public string IssuerName { get; set; }
 

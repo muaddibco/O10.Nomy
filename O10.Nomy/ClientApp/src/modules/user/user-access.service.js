@@ -9,15 +9,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserAccessService = void 0;
 var core_1 = require("@angular/core");
 var UserAccessService = /** @class */ (function () {
-    function UserAccessService(http, accountsAccessService) {
+    function UserAccessService(http) {
         this.http = http;
-        this.accountsAccessService = accountsAccessService;
     }
     UserAccessService.prototype.register = function (user) {
         return this.http.post('/api/accounts', user);
-    };
-    UserAccessService.prototype.start = function (accountId, password) {
-        return this.http.post('/api/accounts/' + accountId + '/start', null, { params: { "password": password } });
     };
     UserAccessService.prototype.getUserAttributes = function (accountId) {
         return this.http.get('/api/user/' + accountId + '/attributes');

@@ -20,6 +20,7 @@
         <td class="value">{{user.walletId}}</td>
       </tr>
     </table>
+    <button mat-flat-button color="primary" (click)="onMyAttributes()">See my attributes...</button>
     <div *ngIf="isInSession">
       <mat-card *ngIf="!isSessionStarted"><em>Waiting for session '{{sessionInfo.sessionId}}' starting...</em></mat-card>
       <mat-card *ngIf="isSessionStarted"><em>Session '{{sessionInfo.sessionId}}' started</em></mat-card>
