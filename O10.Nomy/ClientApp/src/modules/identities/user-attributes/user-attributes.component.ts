@@ -16,7 +16,7 @@ import { Observable, ReplaySubject } from 'rxjs';
       state('collapsed', style({ height: '0px', minHeight: '0' })),
       state('expanded', style({ height: '*' })),
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
+    ])
   ]
 })
 export class UserAttributesComponent implements OnInit {
@@ -25,7 +25,8 @@ export class UserAttributesComponent implements OnInit {
   public attributeSchemes: AttributeScheme[] = []
   public dataSource = new AttributeSchemesDataSource(this.attributeSchemes)
 
-  public displayedColumns: string[] = ['issuerName']
+  public displayedColumns: string[] = ['schemeName', 'rootAttributeContent', 'issuerName']
+  public associatedAttrsDisplayedColumns: string[] = ['alias', 'content']
   public expandedElement: AttributeScheme | null;
 
   constructor(
@@ -38,6 +39,15 @@ export class UserAttributesComponent implements OnInit {
     this.attributesService.getUserAttributes(userId).subscribe(
       r => {
         this.attributeSchemes = r
+
+        for (var attrScheme of this.attributeSchemes) {
+          var rootIdx = attrScheme.associatedSchemes.findIndex(v => v.issuerAddress === attrScheme.issuerAddress);
+
+          if (rootIdx >= 0) {
+            attrScheme.rootAssociatedScheme = attrScheme.associatedSchemes.splice(rootIdx, 1)[0];
+          }
+        }
+
         this.dataSource.setData(this.attributeSchemes)
         this.isLoaded = true
       }

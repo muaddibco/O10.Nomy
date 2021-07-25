@@ -10,5 +10,6 @@ export interface AttributeScheme {
   rootAssetId: string;
   schemeName: string;
   rootAttributes: RootAttribute[];
+  rootAssociatedScheme: AssociatedScheme;
   associatedSchemes: AssociatedScheme[];
 }

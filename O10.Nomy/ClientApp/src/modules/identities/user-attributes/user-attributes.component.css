@@ -1,3 +1,40 @@
 .attributes-table {
   width: 100%;
 }
+
+tr.detail-row {
+  height: 0!important;
+}
+
+tr.element-row:not(.expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.element-row:not(.expanded-row):active {
+  background: #efefef;
+}
+
+.element-row td {
+  border-bottom-width: 0;
+}
+
+.element-description {
+  padding: 4px 10px;
+}
+
+.element-description td {
+    font-size: xx-small
+}
+
+.element-description .mat-row {
+    height: 24px;
+}
+
+.element-description .mat-cell {
+    padding: 0px 5px;
+}
+
+.element-detail {
+  overflow: hidden;
+  display: flex;
+}

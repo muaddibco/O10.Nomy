@@ -34,13 +34,21 @@ var UserAttributesComponent = /** @class */ (function () {
         this.isLoaded = false;
         this.attributeSchemes = [];
         this.dataSource = new AttributeSchemesDataSource(this.attributeSchemes);
-        this.displayedColumns = ['issuerName'];
+        this.displayedColumns = ['schemeName', 'rootAttributeContent', 'issuerName'];
+        this.associatedAttrsDisplayedColumns = ['alias', 'content'];
     }
     UserAttributesComponent.prototype.ngOnInit = function () {
         var _this = this;
         var userId = Number(this.route.snapshot.paramMap.get('userId'));
         this.attributesService.getUserAttributes(userId).subscribe(function (r) {
             _this.attributeSchemes = r;
+            for (var _i = 0, _a = _this.attributeSchemes; _i < _a.length; _i++) {
+                var attrScheme = _a[_i];
+                var rootIdx = attrScheme.associatedSchemes.findIndex(function (v) { return v.issuerAddress === attrScheme.issuerAddress; });
+                if (rootIdx >= 0) {
+                    attrScheme.rootAssociatedScheme = attrScheme.associatedSchemes.splice(rootIdx, 1)[0];
+                }
+            }
             _this.dataSource.setData(_this.attributeSchemes);
             _this.isLoaded = true;
         });
@@ -56,7 +64,7 @@ var UserAttributesComponent = /** @class */ (function () {
                     animations_1.state('collapsed', animations_1.style({ height: '0px', minHeight: '0' })),
                     animations_1.state('expanded', animations_1.style({ height: '*' })),
                     animations_1.transition('expanded <=> collapsed', animations_1.animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-                ]),
+                ])
             ]
         })
     ], UserAttributesComponent);
