@@ -1,0 +1,10 @@
+<p *ngIf="!isLoaded"><em>Loading...</em></p>
+<div *ngIf="isLoaded">
+  <div style="padding: 20px; text-align: center">
+    <h2>Welcome to the home page of Joint Purchases</h2>
+    <h4>For registration or login please scan the QR code with your Identity Wallet</h4>
+    <div style="display: inline-block; height: 300px; width: 300px; margin-top: 50px;">
+      <app-qrcode [stringContent]="loginQrCode" *ngIf="isQrLoaded" level="L"></app-qrcode>
+    </div>
+  </div>
+</div>

@@ -22,22 +22,16 @@ namespace O10.Nomy.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NomyUsers",
+                name: "NomyAccount",
                 columns: table => new
                 {
-                    NomyUserId = table.Column<long>(type: "bigint", nullable: false)
+                    NomyAccountId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    O10Id = table.Column<long>(type: "bigint", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WalletId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BeneficiaryId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SenderId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    O10Id = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NomyUsers", x => x.NomyUserId);
+                    table.PrimaryKey("PK_NomyAccount", x => x.NomyAccountId);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,6 +61,51 @@ namespace O10.Nomy.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SystemParameters", x => x.SystemParameterId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NomyServiceProvider",
+                columns: table => new
+                {
+                    NomyServiceProviderId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountNomyAccountId = table.Column<long>(type: "bigint", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NomyServiceProvider", x => x.NomyServiceProviderId);
+                    table.ForeignKey(
+                        name: "FK_NomyServiceProvider_NomyAccount_AccountNomyAccountId",
+                        column: x => x.AccountNomyAccountId,
+                        principalTable: "NomyAccount",
+                        principalColumn: "NomyAccountId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NomyUsers",
+                columns: table => new
+                {
+                    NomyUserId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountNomyAccountId = table.Column<long>(type: "bigint", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WalletId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BeneficiaryId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SenderId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NomyUsers", x => x.NomyUserId);
+                    table.ForeignKey(
+                        name: "FK_NomyUsers_NomyAccount_AccountNomyAccountId",
+                        column: x => x.AccountNomyAccountId,
+                        principalTable: "NomyAccount",
+                        principalColumn: "NomyAccountId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -266,6 +305,21 @@ namespace O10.Nomy.Data.Migrations
                 column: "UserNomyUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_NomyAccount_O10Id",
+                table: "NomyAccount",
+                column: "O10Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NomyServiceProvider_AccountNomyAccountId",
+                table: "NomyServiceProvider",
+                column: "AccountNomyAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NomyUsers_AccountNomyAccountId",
+                table: "NomyUsers",
+                column: "AccountNomyAccountId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PaymentRecords_InvoiceRecordId",
                 table: "PaymentRecords",
                 column: "InvoiceRecordId");
@@ -307,6 +361,9 @@ namespace O10.Nomy.Data.Migrations
                 name: "ExpertiseSubAreas");
 
             migrationBuilder.DropTable(
+                name: "NomyServiceProvider");
+
+            migrationBuilder.DropTable(
                 name: "SecretInvoiceRecords");
 
             migrationBuilder.DropTable(
@@ -332,6 +389,9 @@ namespace O10.Nomy.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "PayoutRecords");
+
+            migrationBuilder.DropTable(
+                name: "NomyAccount");
         }
     }
 }

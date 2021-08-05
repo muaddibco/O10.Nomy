@@ -21,6 +21,7 @@ var animations_1 = require("@angular/platform-browser/animations");
 var grid_list_1 = require("@angular/material/grid-list");
 var user_module_1 = require("../modules/user/user.module");
 var experts_module_1 = require("../modules/experts/experts.module");
+var joint_purchases_module_1 = require("../modules/joint-purchases/joint-purchases.module");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
@@ -38,7 +39,7 @@ var AppModule = /** @class */ (function () {
                 http_1.HttpClientModule,
                 forms_1.FormsModule,
                 grid_list_1.MatGridListModule,
-                user_module_1.UserModule, experts_module_1.ExpertsModule,
+                user_module_1.UserModule, experts_module_1.ExpertsModule, joint_purchases_module_1.JointPurchasesModule,
                 router_1.RouterModule.forRoot([
                     { path: '', component: home_component_1.HomeComponent, pathMatch: 'full' }
                 ]),

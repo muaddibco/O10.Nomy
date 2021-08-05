@@ -9,7 +9,7 @@ namespace O10.Nomy.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long NomyUserId { get; set; }
 
-        public long O10Id { get; set; }
+        public NomyAccount Account { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

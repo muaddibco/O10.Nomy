@@ -15,6 +15,7 @@ namespace O10.Nomy.Data
         {
         }*/
 
+        public DbSet<NomyAccount> Accounts { get; set; }
         public DbSet<ExpertiseArea> ExpertiseAreas { get; set; }
         public DbSet<ExpertiseSubArea> ExpertiseSubAreas { get; set; }
         public DbSet<ExpertProfile> Experts { get; set; }
@@ -25,5 +26,13 @@ namespace O10.Nomy.Data
         public DbSet<SecretPaymentRecord> SecretPaymentRecords { get; set; }
         public DbSet<PayoutRecord> PayoutRecords { get; set; }
         public DbSet<SystemParameter> SystemParameters { get; set; }
+        public DbSet<NomyServiceProvider> ServiceProviders { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<NomyAccount>().HasIndex(s => s.O10Id);
+        }
     }
 }

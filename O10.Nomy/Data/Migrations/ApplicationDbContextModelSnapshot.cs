@@ -16,7 +16,7 @@ namespace O10.Nomy.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.7")
+                .HasAnnotation("ProductVersion", "5.0.8")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("O10.Nomy.Models.ExpertProfile", b =>
@@ -126,12 +126,53 @@ namespace O10.Nomy.Data.Migrations
                     b.ToTable("InvoiceRecords");
                 });
 
+            modelBuilder.Entity("O10.Nomy.Models.NomyAccount", b =>
+                {
+                    b.Property<long>("NomyAccountId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("O10Id")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("NomyAccountId");
+
+                    b.HasIndex("O10Id");
+
+                    b.ToTable("NomyAccount");
+                });
+
+            modelBuilder.Entity("O10.Nomy.Models.NomyServiceProvider", b =>
+                {
+                    b.Property<long>("NomyServiceProviderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long?>("AccountNomyAccountId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("NomyServiceProviderId");
+
+                    b.HasIndex("AccountNomyAccountId");
+
+                    b.ToTable("NomyServiceProvider");
+                });
+
             modelBuilder.Entity("O10.Nomy.Models.NomyUser", b =>
                 {
                     b.Property<long>("NomyUserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long?>("AccountNomyAccountId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("BeneficiaryId")
                         .HasColumnType("nvarchar(max)");
@@ -148,9 +189,6 @@ namespace O10.Nomy.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("O10Id")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("SenderId")
                         .HasColumnType("nvarchar(max)");
 
@@ -159,6 +197,8 @@ namespace O10.Nomy.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("NomyUserId");
+
+                    b.HasIndex("AccountNomyAccountId");
 
                     b.ToTable("NomyUsers");
                 });
@@ -339,6 +379,24 @@ namespace O10.Nomy.Data.Migrations
                         .HasForeignKey("UserNomyUserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("O10.Nomy.Models.NomyServiceProvider", b =>
+                {
+                    b.HasOne("O10.Nomy.Models.NomyAccount", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountNomyAccountId");
+
+                    b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("O10.Nomy.Models.NomyUser", b =>
+                {
+                    b.HasOne("O10.Nomy.Models.NomyAccount", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountNomyAccountId");
+
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("O10.Nomy.Models.PaymentRecord", b =>

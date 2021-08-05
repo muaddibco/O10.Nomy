@@ -348,7 +348,7 @@ namespace O10.Nomy.Services
             } 
             else
             {
-                account = await _o10ApiGateway.GetAccount(user.O10Id);
+                account = await _o10ApiGateway.GetAccount(user.Account.O10Id);
             }
 
             _logger.Debug("Authenticate O10 account...");

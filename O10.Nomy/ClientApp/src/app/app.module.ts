@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatGridListModule } from '@angular/material/grid-list'
 import { UserModule } from '../modules/user/user.module';
 import { ExpertsModule } from '../modules/experts/experts.module'
+import { JointPurchasesModule } from '../modules/joint-purchases/joint-purchases.module'
 
 @NgModule({
   declarations: [
@@ -27,7 +28,7 @@ import { ExpertsModule } from '../modules/experts/experts.module'
     HttpClientModule,
     FormsModule,
     MatGridListModule,
-    UserModule, ExpertsModule,
+    UserModule, ExpertsModule, JointPurchasesModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' }
     ]),

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Account} from '../accounts/models/account';
+import { UserDto} from '../accounts/models/account';
 import { InvoiceEntry } from './models/invoice-entry';
 import { User } from './models/user';
 import { UserAttributeScheme } from './models/user-attribute-scheme';
@@ -14,7 +14,7 @@ export class UserAccessService {
   constructor(private http: HttpClient) { }
 
   register(user: User) {
-    return this.http.post<Account>('/api/accounts', user)
+    return this.http.post<UserDto>('/api/accounts', user)
   }
 
   getUserAttributes(accountId: number) {

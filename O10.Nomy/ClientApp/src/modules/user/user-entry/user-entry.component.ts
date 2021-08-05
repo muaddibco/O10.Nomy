@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Account } from '../../accounts/models/account'
+import { UserDto } from '../../accounts/models/account'
 import { Router } from '@angular/router';
 import { AccountsAccessService } from '../../accounts/accounts-access.service';
 
@@ -11,7 +11,7 @@ import { AccountsAccessService } from '../../accounts/accounts-access.service';
 export class UserEntryComponent implements OnInit {
 
   public showUserNotExist = false
-  public userAccount: Account
+  public userAccount: UserDto
   public isLoaded = false
 
   constructor(

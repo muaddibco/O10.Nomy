@@ -48,7 +48,7 @@ namespace O10.Nomy.Controllers
         public async Task<IActionResult> Authenticate(long accountId, [FromBody] AuthenticateAccountDTO authenticateAccount, CancellationToken ct)
         {
             var user = await _dataAccessService.GetUser(accountId, ct);
-            var account = await _apiGateway.Authenticate(user.O10Id, authenticateAccount.Password);
+            var account = await _apiGateway.Authenticate(user.Account.O10Id, authenticateAccount.Password);
 
             return Ok(account);
         }

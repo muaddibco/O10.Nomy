@@ -19,7 +19,7 @@ namespace O10.Nomy.Mappers
             {
                 AccountId = obj.NomyUserId,
                 Email = obj.Email,
-                O10Id = obj.O10Id,
+                O10Id = obj.Account.O10Id,
                 WalletId = obj.WalletId
             };
         }

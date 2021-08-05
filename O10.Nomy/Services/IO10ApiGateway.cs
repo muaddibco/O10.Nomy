@@ -13,6 +13,7 @@ namespace O10.Nomy.Services
         Task<O10AccountDTO?> GetAccount(long accountId);
 
         Task<O10AccountDTO?> RegisterIdp(string alias, string password);
+        Task<O10AccountDTO?> RegisterServiceProvider(string alias, string password);
         Task<O10AccountDTO?> RegisterUser(string email, string password);
 
         Task<O10AccountDTO?> Start(long accountId);
@@ -27,5 +28,7 @@ namespace O10.Nomy.Services
         Task<List<AttributeDefinition>> GetAttributeDefinitions(string issuer);
 
         Task<AttributeDefinitionsResponse> SetAttributeDefinitions(string issuer, List<AttributeDefinition> attributeDefinitions);
+
+        Task<QrCodeDto> GetSessionInfo(long accountId);
     }
 }

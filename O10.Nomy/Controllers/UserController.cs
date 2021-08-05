@@ -38,7 +38,7 @@ namespace O10.Nomy.Controllers
         {
             var user = await _dataAccessService.GetUser(accountId, ct);
 
-            return Ok(await _o10ApiGateway.GetUserAttributes(user.O10Id));
+            return Ok(await _o10ApiGateway.GetUserAttributes(user.Account.O10Id));
         }
 
         [HttpGet("{accountId}")]

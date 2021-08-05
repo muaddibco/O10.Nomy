@@ -17,6 +17,14 @@ namespace O10.Nomy.Services
 
         #endregion Users
 
+        #region Nomy Service Provider
+
+        Task<NomyServiceProvider> CreateServiceProvider(long o10Id, string name, CancellationToken ct);
+        Task<NomyServiceProvider> FindServiceProvider(string name, CancellationToken ct);
+        Task<NomyServiceProvider?> GetServiceProvider(long accountId, CancellationToken ct);
+
+        #endregion Nomy Service Provider
+
         #region Expertise Areas
 
         Task<ExpertiseArea> AddExpertiseArea(string name, string description);

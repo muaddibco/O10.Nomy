@@ -114,7 +114,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId);
+            var user = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(u => u.Account.NomyAccountId == userId);
 
             if(user == null)
             {
@@ -142,9 +142,11 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
+            var account = await GetAccountAsync(o10Id, dbContext, ct);
+
             var res = await dbContext.Users.AddAsync(new NomyUser
             {
-                O10Id = o10Id,
+                Account = account,
                 Email = email,
                 FirstName = firstName,
                 LastName = lastName,
@@ -158,11 +160,28 @@ namespace O10.Nomy.Services
             return res.Entity;
         }
 
+        private static async Task<NomyAccount> GetAccountAsync(long o10Id, ApplicationDbContext? dbContext, CancellationToken ct)
+        {
+            var account = await dbContext.Accounts.FirstOrDefaultAsync(a => a.O10Id == o10Id, ct);
+
+            if (account == null)
+            {
+                account = new NomyAccount
+                {
+                    O10Id = o10Id
+                };
+
+                dbContext.Accounts.Add(account);
+            }
+
+            return account;
+        }
+
         public async Task<NomyUser?> FindUser(string email, CancellationToken ct)
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var res = await dbContext.Users.FirstOrDefaultAsync(c => c.Email == email, ct);
+            var res = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(c => c.Email == email, ct);
 
             return res;
         }
@@ -171,12 +190,51 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var res = await dbContext.Users.FirstOrDefaultAsync(c => c.NomyUserId == userId, ct);
+            var res = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(c => c.Account.NomyAccountId == userId, ct);
 
             return res;
         }
 
         #endregion Users
+
+        #region Nomy Service Provider
+
+        public async Task<NomyServiceProvider> CreateServiceProvider(long o10Id, string name, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var account = await GetAccountAsync(o10Id, dbContext, ct);
+
+            var res = await dbContext.ServiceProviders.AddAsync(new NomyServiceProvider
+            {
+                Account = account,
+                Name = name
+            }, ct);
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return res.Entity;
+        }
+
+        public async Task<NomyServiceProvider> FindServiceProvider(string name, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var res = await dbContext.ServiceProviders.Include(s => s.Account).FirstOrDefaultAsync(c => c.Name == name, ct);
+
+            return res;
+        }
+
+        public async Task<NomyServiceProvider?> GetServiceProvider(long accountId, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var res = await dbContext.ServiceProviders.Include(s => s.Account).FirstOrDefaultAsync(c => c.Account.NomyAccountId == accountId, ct);
+
+            return res;
+        }
+
+        #endregion Nomy Service Provider
 
         #region Invoice Records
 
@@ -184,7 +242,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+            var user = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(u => u.Account.NomyAccountId == userId, ct);
 
             if (user == null)
             {
@@ -209,7 +267,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+            var user = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(u => u.Account.NomyAccountId == userId, ct);
 
             if (user == null)
             {
@@ -230,7 +288,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+            var user = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(u => u.Account.NomyAccountId == userId, ct);
 
             if (user == null)
             {
@@ -255,7 +313,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+            var user = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(u => u.Account.NomyAccountId == userId, ct);
 
             if(user == null)
             {
@@ -287,7 +345,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+            var user = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(u => u.Account.NomyAccountId == userId, ct);
 
             if (user == null)
             {
@@ -308,7 +366,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+            var user = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(u => u.Account.NomyAccountId == userId, ct);
 
             if (user == null)
             {
@@ -333,7 +391,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+            var user = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(u => u.Account.NomyAccountId == userId, ct);
 
             if (user == null)
             {
@@ -378,7 +436,7 @@ namespace O10.Nomy.Services
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NomyUserId == userId, ct);
+            var user = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(u => u.Account.NomyAccountId == userId, ct);
 
             if (user == null)
             {

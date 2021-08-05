@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Account } from '../../accounts/models/account';
+import { UserDto } from '../../accounts/models/account';
 import { UserAccessService } from '../user-access.service';
 import { PasswordConfirmDialog } from '../../password-confirm/password-confirm/password-confirm.dialog'
 import { ActivatedRoute, Router } from '@angular/router';
@@ -32,7 +32,7 @@ import { Observable } from 'rxjs';
 })
 export class UserDetailsComponent implements OnInit {
 
-  public user: Account
+  public user: UserDto
   public isLoaded = false
   private chatHub: HubConnection
   private paymentHub: HubConnection

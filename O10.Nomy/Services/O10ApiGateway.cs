@@ -78,6 +78,25 @@ namespace O10.Nomy.Services
             return account;
         }
 
+        public async Task<O10AccountDTO?> RegisterServiceProvider(string alias, string password)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("accounts", "register");
+            var body = new
+            {
+                accountType = 2,
+                accountInfo = alias,
+                password
+            };
+
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(body, Formatting.Indented)}");
+
+            var account = await req
+                .PostJsonAsync(body)
+                .ReceiveJson<O10AccountDTO>();
+
+            return account;
+        }
+
         public async Task<O10AccountDTO?> RegisterUser(string email, string password)
         {
             var req = _nomyConfig.O10Uri
@@ -174,6 +193,18 @@ namespace O10.Nomy.Services
                 .ReceiveJson<AttributeDefinitionsResponse>();
 
             return resp;
+        }
+
+        public async Task<QrCodeDto> GetSessionInfo(long accountId)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("SpUsers", "GetSessionInfo", accountId);
+
+            _logger.Debug(() => $"Sending O10 request {req}");
+
+            var resp = await req.GetJsonAsync<SessionInfoDTO>();
+            var code = $"spp://{_nomyConfig.O10Uri}SpUsers/Action?t=0&pk={resp.PublicKey}&sk={resp.SessionKey}";
+
+            return new QrCodeDto { Code = code };
         }
     }
 }
