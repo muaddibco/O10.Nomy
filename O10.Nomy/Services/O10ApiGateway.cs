@@ -9,6 +9,8 @@ using O10.Nomy.DTOs;
 using System.Collections.Generic;
 using O10.Core.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Text;
 
 namespace O10.Nomy.Services
 {
@@ -202,7 +204,7 @@ namespace O10.Nomy.Services
             _logger.Debug(() => $"Sending O10 request {req}");
 
             var resp = await req.GetJsonAsync<SessionInfoDTO>();
-            var code = $"spp://{_nomyConfig.O10Uri}SpUsers/Action?t=0&pk={resp.PublicKey}&sk={resp.SessionKey}";
+            var code = Convert.ToBase64String(Encoding.UTF8.GetBytes($"spp://{_nomyConfig.O10Uri}SpUsers/Action?t=0&pk={resp.PublicKey}&sk={resp.SessionKey}"));
 
             return new QrCodeDto { Code = code };
         }

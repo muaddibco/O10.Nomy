@@ -24,6 +24,7 @@
 
     .o10-container-mobile .footer {
       position: fixed;
+      left: 0px;
       bottom: 0px;
       background-color: lightblue;
       width: 100%;

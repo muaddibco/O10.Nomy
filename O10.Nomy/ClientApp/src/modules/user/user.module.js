@@ -44,6 +44,7 @@ var user_registration_component_1 = require("./user-registration/user-registrati
 var user_details_component_1 = require("./user-details/user-details.component");
 var user_signin_component_1 = require("./user-signin/user-signin.component");
 var user_attributes_component_1 = require("../identities/user-attributes/user-attributes.component");
+var qr_scan_component_1 = require("./qr-scan/qr-scan.component");
 var UserModule = /** @class */ (function () {
     function UserModule() {
     }
@@ -53,7 +54,8 @@ var UserModule = /** @class */ (function () {
                 user_entry_component_1.UserEntryComponent,
                 user_registration_component_1.UserRegistrationComponent,
                 user_details_component_1.UserDetailsComponent,
-                user_signin_component_1.UserSigninComponent
+                user_signin_component_1.UserSigninComponent,
+                qr_scan_component_1.QrScanComponent
             ],
             imports: [
                 platform_browser_1.BrowserModule,
@@ -74,7 +76,8 @@ var UserModule = /** @class */ (function () {
                     { path: 'user-register', component: user_registration_component_1.UserRegistrationComponent },
                     { path: 'user-details/:userId', component: user_details_component_1.UserDetailsComponent },
                     { path: 'user-signin', component: user_signin_component_1.UserSigninComponent },
-                    { path: 'user-attributes/:userId', component: user_attributes_component_1.UserAttributesComponent }
+                    { path: 'user-attributes/:userId', component: user_attributes_component_1.UserAttributesComponent },
+                    { path: 'qr-scan/:userId', component: qr_scan_component_1.QrScanComponent }
                 ]),
             ],
             providers: [ngx_cookie_service_1.CookieService]

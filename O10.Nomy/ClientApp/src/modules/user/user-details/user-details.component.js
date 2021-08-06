@@ -141,6 +141,9 @@ var UserDetailsComponent = /** @class */ (function () {
     UserDetailsComponent.prototype.onMyAttributes = function () {
         this.router.navigate(['user-attributes', this.user.accountId]);
     };
+    UserDetailsComponent.prototype.gotoQrScan = function () {
+        this.router.navigate(['qr-scan', this.user.accountId]);
+    };
     UserDetailsComponent = __decorate([
         core_1.Component({
             selector: 'app-user-details',

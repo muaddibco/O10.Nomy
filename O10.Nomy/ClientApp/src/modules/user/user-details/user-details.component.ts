@@ -45,7 +45,7 @@ export class UserDetailsComponent implements OnInit {
   public dataSource = new PaymentsDataSource(this.payments)
 
   public displayedColumns: string[] = ['commitment']
-  public expandedElement: PaymentRecordEntry | null;
+  public expandedElement: PaymentRecordEntry | null
 
   constructor(
     private userAccessService: UserAccessService,
@@ -177,6 +177,10 @@ export class UserDetailsComponent implements OnInit {
 
   onMyAttributes() {
     this.router.navigate(['user-attributes', this.user.accountId])
+  }
+
+  public gotoQrScan() {
+    this.router.navigate(['qr-scan', this.user.accountId])
   }
 }
 

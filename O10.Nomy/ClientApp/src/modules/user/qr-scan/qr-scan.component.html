@@ -1,0 +1,29 @@
+<p *ngIf="!isLoaded"><em>Loading...</em></p>
+<div *ngIf="isLoaded">
+  <div class="main-view">
+    <button mat-button (click)="getDataFromClipBoard($event)" *ngIf="!isQrCodeSet" style="width: 100%">
+      <div style="display: inline-block; text-align: center;">
+        <div style="display: table-cell; text-align: center; vertical-align: middle; height: 256px; width: 256px">
+          <img src="/images/qr-code-80.png" />
+        </div>
+        <p style="font-size:small; text-align:center; color:darkgray">Click to scan</p>
+      </div>
+    </button>
+    <div style="display: inline-block; text-align: center; padding-bottom: 8px; width: 100%" *ngIf="isQrCodeSet">
+      <qrcode [qrdata]="qrContent" [width]="256" [errorCorrectionLevel]="'L'"></qrcode>
+      <p style="font-size: small; text-align: center; color: darkgray; margin-top: 2px" (click)="clearQr()">Click to clear</p>
+    </div>
+    <div class="footer">
+      <table>
+        <tr>
+          <td>
+            <button mat-flat-button color="primary" [disabled]="!isQrCodeSet" (click)="proceed()">Proceed with scanned QR</button>
+          </td>
+          <td>
+            <button mat-flat-button color="accent" (click)="cancel()">Cancel</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
