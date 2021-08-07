@@ -8,8 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QrScanComponent = void 0;
 var core_1 = require("@angular/core");
+var user_action_type_1 = require("../models/user-action-type");
 var QrScanComponent = /** @class */ (function () {
-    function QrScanComponent(route, router) {
+    function QrScanComponent(service, route, router) {
+        this.service = service;
         this.route = route;
         this.router = router;
         this.isLoaded = false;
@@ -31,6 +33,14 @@ var QrScanComponent = /** @class */ (function () {
         this.qrContent = null;
     };
     QrScanComponent.prototype.proceed = function () {
+        var _this = this;
+        this.service.getActionInfo(this.qrContent).subscribe(function (r) {
+            if (r.actionType == user_action_type_1.UserActionType.ServiceProvider) {
+                _this.router.navigate(['service-provider', _this.userId], { queryParams: { actionInfo: r.actionInfoEncoded } });
+            }
+        }, function (e) {
+            console.error("failed to obtain action info", e);
+        });
     };
     QrScanComponent.prototype.cancel = function () {
         this.router.navigate(['user-details', this.userId]);

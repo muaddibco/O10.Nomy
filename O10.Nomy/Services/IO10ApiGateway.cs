@@ -1,4 +1,6 @@
 ﻿using O10.Client.Common.Entities;
+using O10.Client.Web.DataContracts;
+using O10.Client.Web.DataContracts.User;
 using O10.Core.Architecture;
 using O10.Nomy.DTOs;
 using System.Collections.Generic;
@@ -30,5 +32,9 @@ namespace O10.Nomy.Services
         Task<AttributeDefinitionsResponse> SetAttributeDefinitions(string issuer, List<AttributeDefinition> attributeDefinitions);
 
         Task<QrCodeDto> GetSessionInfo(long accountId);
+
+        Task<UserActionInfoDto> GetUserActionInfo(string encodedAction);
+
+        Task<ActionDetailsDto> GetActionDetails(long accountId, string encodedAction, long userAttributeId);
     }
 }

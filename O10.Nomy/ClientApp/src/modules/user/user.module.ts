@@ -39,6 +39,7 @@ import { UserDetailsComponent } from './user-details/user-details.component';
 import { UserSigninComponent } from './user-signin/user-signin.component';
 import { UserAttributesComponent } from '../identities/user-attributes/user-attributes.component';
 import { QrScanComponent } from './qr-scan/qr-scan.component';
+import { ServiceProviderComponent } from './service-provider/service-provider.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { QrScanComponent } from './qr-scan/qr-scan.component';
     UserRegistrationComponent,
     UserDetailsComponent,
     UserSigninComponent,
-    QrScanComponent
+    QrScanComponent,
+    ServiceProviderComponent
   ],
   imports: [
     BrowserModule,
@@ -68,7 +70,8 @@ import { QrScanComponent } from './qr-scan/qr-scan.component';
       { path: 'user-details/:userId', component: UserDetailsComponent },
       { path: 'user-signin', component: UserSigninComponent },
       { path: 'user-attributes/:userId', component: UserAttributesComponent },
-      { path: 'qr-scan/:userId', component: QrScanComponent }
+      { path: 'qr-scan/:userId', component: QrScanComponent },
+      { path: 'service-provider/:userId', component: ServiceProviderComponent }
     ]),
   ],
   providers: [CookieService]

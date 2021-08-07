@@ -11,6 +11,8 @@ using O10.Core.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Text;
+using O10.Client.Web.DataContracts;
+using O10.Client.Web.DataContracts.User;
 
 namespace O10.Nomy.Services
 {
@@ -207,6 +209,31 @@ namespace O10.Nomy.Services
             var code = Convert.ToBase64String(Encoding.UTF8.GetBytes($"spp://{_nomyConfig.O10Uri}SpUsers/Action?t=0&pk={resp.PublicKey}&sk={resp.SessionKey}"));
 
             return new QrCodeDto { Code = code };
+        }
+
+        public async Task<UserActionInfoDto> GetUserActionInfo(string encodedAction)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("User", "ActionInfo");
+            _logger.Debug(() => $"Sending O10 request {req}");
+
+            var resp = await req.GetJsonAsync<UserActionInfoDto>();
+
+            return resp;
+        }
+
+        public async Task<ActionDetailsDto> GetActionDetails(long accountId, string encodedAction, long userAttributeId)
+        {
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("User", "ActionDetails")
+                .SetQueryParam("accountId", accountId)
+                .SetQueryParam("actionInfo", encodedAction)
+                .SetQueryParam("attributeId", userAttributeId);
+
+            _logger.Debug(() => $"Sending O10 request {req}");
+
+            var resp = await req.GetJsonAsync<ActionDetailsDto>();
+
+            return resp;
         }
     }
 }

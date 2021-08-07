@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserActionType } from '../models/user-action-type';
+import { UserAccessService } from '../user-access.service';
 
 @Component({
   selector: 'app-qr-scan',
@@ -14,6 +16,7 @@ export class QrScanComponent implements OnInit {
   public userId: number
 
   constructor(
+    private service: UserAccessService,
     private route: ActivatedRoute,
     private router: Router) { }
 
@@ -35,7 +38,16 @@ export class QrScanComponent implements OnInit {
   }
 
   public proceed() {
-
+    this.service.getActionInfo(this.qrContent).subscribe(
+      r => {
+        if (r.actionType == UserActionType.ServiceProvider) {
+          this.router.navigate(['service-provider', this.userId], { queryParams: { actionInfo: r.actionInfoEncoded }})
+        }
+      },
+      e => {
+        console.error("failed to obtain action info", e)
+      }
+    )
   }
 
   public cancel() {

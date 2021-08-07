@@ -7,6 +7,7 @@ using O10.Nomy.Services;
 using System.Threading;
 using O10.Nomy.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using O10.Client.Web.DataContracts.User;
 
 namespace O10.Nomy.Controllers
 {
@@ -74,6 +75,20 @@ namespace O10.Nomy.Controllers
             var paymentEntry = await _paymentSessionsService.PushPayment(accountId, payInvoice.SessionId, payInvoice.InvoiceCommitment, payInvoice.Currency, payInvoice.Amount, ct);
 
             return Ok(paymentEntry);
+        }
+
+        [HttpGet("ActionInfo")]
+        public async Task<IActionResult> GetUserActionInfo(string actionInfo)
+        {
+            return Ok(await _o10ApiGateway.GetUserActionInfo(actionInfo));
+        }
+
+        [HttpGet("{accountId}/ActionDetails")]
+        public async Task<IActionResult> GetActionDetails(long accountId, string actionInfo, long userAttributeId, CancellationToken ct)
+        {
+            var user = await _dataAccessService.GetUser(accountId, ct);
+
+            return Ok(await _o10ApiGateway.GetActionDetails(user.Account.O10Id, actionInfo, userAttributeId));
         }
     }
 }
