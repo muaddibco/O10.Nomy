@@ -44,6 +44,23 @@
         </mat-radio-group>
         <button mat-button matStepperNext>Next</button>
       </mat-step>
+      <mat-step label="Confirmation" *ngIf="userAttributes.length > 0">
+        <div *ngIf="withValidations">          
+          <p>Service Provider requires following attribute validations</p>
+          <p *ngFor="let validation of actionDetails.requiredValidations.keys"><em>{{validation}}</em></p>
+        </div>
+        <div>
+          <p>Please confirm your consent by entering password and pressing on button "Submit"</p>
+          <mat-form-field>
+            <input matInput type="password" placeholder="Password" [(ngModel)]="password" />
+          </mat-form-field>
+          <div class="form-group">
+            <button mat-raised-button color="primary" [disabled]="submitClick" (click)="onSubmit()" style="margin-right:10px">Submit</button>
+            <button mat-raised-button color="accent" type="reset" (click)="onCancel()">Cancel</button>
+          </div>
+          <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+        </div>
+      </mat-step>
     </mat-vertical-stepper>
   </div>
 </div>

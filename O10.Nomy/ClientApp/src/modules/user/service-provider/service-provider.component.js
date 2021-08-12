@@ -11,17 +11,21 @@ var core_1 = require("@angular/core");
 var ngx_webcam_1 = require("ngx-webcam");
 var rxjs_1 = require("rxjs");
 var attribute_state_1 = require("../models/attribute-state");
+var universal_proofs_mission_1 = require("../models/universal-proofs-mission");
 var ServiceProviderComponent = /** @class */ (function () {
     // <<==============================================================================
-    function ServiceProviderComponent(service, route) {
+    function ServiceProviderComponent(service, route, router) {
         this.service = service;
         this.route = route;
+        this.router = router;
         this.isLoaded = false;
         this.isBusy = false;
         this.userAttributes = [];
         this.selectedAttribute = null;
         this.actionDetails = null;
         this.withValidations = false;
+        this.submitted = false;
+        this.submitClick = false;
         this.isError = false;
         this.errorMsg = '';
         // >>=========== Camera ===========================================================
@@ -139,6 +143,41 @@ var ServiceProviderComponent = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    ServiceProviderComponent.prototype.onSubmit = function () {
+        this.submitted = true;
+        this.submitClick = true;
+        this.processCameraCapture();
+        var req = {
+            mission: universal_proofs_mission_1.UniversalProofsMission.Authentication,
+            rootAttributeId: this.selectedAttribute.userAttributeId,
+            sessionKey: this.actionDetails.sessionKey,
+            target: this.actionDetails.publicKey,
+            serviceProviderInfo: this.actionDetails.accountInfo,
+            identityPools: []
+        };
+        this.service.sendUniversalProofs(this.userId, req).subscribe(function (r) {
+            console.info("sending universal proofs of authentication succeeded");
+        }, function (e) {
+            console.error("sending universal proofs of authentication failed", e);
+        });
+    };
+    ServiceProviderComponent.prototype.onCancel = function () {
+        this.router.navigate(['/user-details', this.userId]);
+    };
+    ServiceProviderComponent.prototype.processCameraCapture = function () {
+        if (this.actionDetails.isBiometryRequired) {
+            if (this.webcamImage == null) {
+                this.errorMsgCam = "No image captured!";
+                this.isErrorCam = true;
+            }
+            else {
+                this.imageContent = this.webcamImage.imageAsBase64;
+            }
+        }
+        else {
+            this.imageContent = null;
+        }
+    };
     ServiceProviderComponent = __decorate([
         core_1.Component({
             selector: 'app-service-provider',

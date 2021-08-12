@@ -8,6 +8,7 @@ using System.Threading;
 using O10.Nomy.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using O10.Client.Web.DataContracts.User;
+using System.Collections.Generic;
 
 namespace O10.Nomy.Controllers
 {
@@ -89,6 +90,24 @@ namespace O10.Nomy.Controllers
             var user = await _dataAccessService.GetUser(accountId, ct);
 
             return Ok(await _o10ApiGateway.GetActionDetails(user.Account.O10Id, actionInfo, userAttributeId));
+        }
+
+        [HttpPost("{accountId}/UniversalProofs")]
+        public async Task<IActionResult> SendUniversalProofs(long accountId, [FromBody] UniversalProofsSendingRequest universalProofs, CancellationToken ct)
+        {
+            var user = await _dataAccessService.GetUser(accountId, ct);
+
+            universalProofs.IdentityPools = new List<UniversalProofsSendingRequest.IdentityPool>
+            {
+                new UniversalProofsSendingRequest.IdentityPool
+                {
+                    RootAttributeId = universalProofs.RootAttributeId
+                }
+            };
+
+            await _o10ApiGateway.SendUniversalProofs(user.Account.O10Id, universalProofs);
+
+            return Ok();
         }
     }
 }

@@ -4,6 +4,7 @@ import { UserDto} from '../accounts/models/account';
 import { ActionDetails } from './models/action-details';
 import { ActionInfo } from './models/action-info';
 import { InvoiceEntry } from './models/invoice-entry';
+import { UniversalProofsRequest } from './models/universal-proofs-request';
 import { User } from './models/user';
 import { UserAttributeScheme } from './models/user-attribute-scheme';
 import { UserDetails } from './models/user-details';
@@ -36,10 +37,14 @@ export class UserAccessService {
   }
 
   getActionInfo(actionInfo: string) {
-    return this.http.get<ActionInfo>('/api/user/', { params: { actionInfo: actionInfo } });
+    return this.http.get<ActionInfo>('/api/user/ActionInfo', { params: { actionInfo: actionInfo } });
   }
 
   getActionDetails(accountId: number, actionInfo: string, attributeId: number) {
     return this.http.get<ActionDetails>('/api/user/' + accountId + '/ActionDetails', { params: { actionInfo: actionInfo, userAttributeId: attributeId } })
+  }
+
+  sendUniversalProofs(accountId: number, universalProofsRequest: UniversalProofsRequest) {
+    return this.http.post('/api/user/' + accountId + '/UniversalProofs', universalProofsRequest);
   }
 }

@@ -213,7 +213,10 @@ namespace O10.Nomy.Services
 
         public async Task<UserActionInfoDto> GetUserActionInfo(string encodedAction)
         {
-            var req = _nomyConfig.O10Uri.AppendPathSegments("User", "ActionInfo");
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("User", "ActionInfo")
+                .SetQueryParam("actionInfo", encodedAction);
+
             _logger.Debug(() => $"Sending O10 request {req}");
 
             var resp = await req.GetJsonAsync<UserActionInfoDto>();
@@ -234,6 +237,15 @@ namespace O10.Nomy.Services
             var resp = await req.GetJsonAsync<ActionDetailsDto>();
 
             return resp;
+        }
+
+        public async Task SendUniversalProofs(long accountId, UniversalProofsSendingRequest universalProofs)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("User", accountId, "UniversalProofs");
+
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(universalProofs, Formatting.Indented)}");
+
+            var resp = await req.PostJsonAsync(universalProofs);
         }
     }
 }

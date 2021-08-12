@@ -28,10 +28,13 @@ var UserAccessService = /** @class */ (function () {
         return this.http.post('/api/user/' + accountId + '/invoice', { sessionId: sessionId, amount: amount, currency: currency });
     };
     UserAccessService.prototype.getActionInfo = function (actionInfo) {
-        return this.http.get('/api/user/', { params: { actionInfo: actionInfo } });
+        return this.http.get('/api/user/ActionInfo', { params: { actionInfo: actionInfo } });
     };
     UserAccessService.prototype.getActionDetails = function (accountId, actionInfo, attributeId) {
         return this.http.get('/api/user/' + accountId + '/ActionDetails', { params: { actionInfo: actionInfo, userAttributeId: attributeId } });
+    };
+    UserAccessService.prototype.sendUniversalProofs = function (accountId, universalProofsRequest) {
+        return this.http.post('/api/user/' + accountId + '/UniversalProofs', universalProofsRequest);
     };
     UserAccessService = __decorate([
         core_1.Injectable({

@@ -14,6 +14,7 @@ using Newtonsoft.Json.Serialization;
 using O10.Core.Configuration;
 using O10.Core.ExtensionMethods;
 using O10.Core.Logging;
+using O10.Core.Serialization;
 using O10.Nomy.Data;
 using O10.Nomy.ExtensionMethods;
 using O10.Nomy.Hubs;
@@ -54,7 +55,12 @@ namespace O10.Nomy
             //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
             //services.AddAuthentication().AddIdentityServerJwt();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson(o => 
+                { 
+                    
+                });
+            
             services.AddRazorPages();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -85,6 +91,8 @@ namespace O10.Nomy
                 };
 
                 jsonSettings.Converters.Add(new StringEnumConverter());
+                jsonSettings.Converters.Add(new KeyJsonConverter());
+                jsonSettings.Converters.Add(new ByteArrayJsonConverter());
                 s.JsonSerializer = new NewtonsoftJsonSerializer(jsonSettings);
             });
         }

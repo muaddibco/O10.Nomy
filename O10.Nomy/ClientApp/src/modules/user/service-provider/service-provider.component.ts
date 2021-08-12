@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatRadioChange } from '@angular/material/radio';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { WebcamImage, WebcamInitError, WebcamUtil } from 'ngx-webcam';
 import { Observable, Subject } from 'rxjs';
 import { ActionDetails } from '../models/action-details';
 import { AttributeState } from '../models/attribute-state';
+import { UniversalProofsMission } from '../models/universal-proofs-mission';
+import { UniversalProofsRequest } from '../models/universal-proofs-request';
 import { UserAttribute } from '../models/user-attribute';
 import { UserAccessService } from '../user-access.service';
 
@@ -24,6 +26,8 @@ export class ServiceProviderComponent implements OnInit {
   public actionDetails: ActionDetails = null;
   public withValidations: boolean = false;
 
+  public submitted = false;
+  public submitClick = false;
   public isError: boolean = false;
   public errorMsg = '';
 
@@ -48,7 +52,8 @@ export class ServiceProviderComponent implements OnInit {
 
   constructor(
     private service: UserAccessService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -158,5 +163,50 @@ export class ServiceProviderComponent implements OnInit {
 
   public get userAttributeState(): typeof AttributeState {
     return AttributeState;
+  }
+
+  onSubmit() {
+    this.submitted = true;
+
+    this.submitClick = true;
+
+    this.processCameraCapture();
+
+    var req: UniversalProofsRequest = {
+      mission: UniversalProofsMission.Authentication,
+      rootAttributeId: this.selectedAttribute.userAttributeId,
+      sessionKey: this.actionDetails.sessionKey,
+      target: this.actionDetails.publicKey,
+      serviceProviderInfo: this.actionDetails.accountInfo,
+      identityPools: []
+    }
+
+    this.service.sendUniversalProofs(this.userId, req).subscribe(
+      r => {
+        console.info("sending universal proofs of authentication succeeded")
+      },
+      e => {
+        console.error("sending universal proofs of authentication failed", e)
+      }
+    )
+  }
+
+  onCancel() {
+    this.router.navigate(['/user-details', this.userId]);
+  }
+
+  private processCameraCapture() {
+    if (this.actionDetails.isBiometryRequired) {
+      if (this.webcamImage == null) {
+        this.errorMsgCam = "No image captured!";
+        this.isErrorCam = true;
+      }
+      else {
+        this.imageContent = this.webcamImage.imageAsBase64;
+      }
+    }
+    else {
+      this.imageContent = null;
+    }
   }
 }

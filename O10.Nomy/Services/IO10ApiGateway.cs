@@ -36,5 +36,7 @@ namespace O10.Nomy.Services
         Task<UserActionInfoDto> GetUserActionInfo(string encodedAction);
 
         Task<ActionDetailsDto> GetActionDetails(long accountId, string encodedAction, long userAttributeId);
+
+        Task SendUniversalProofs(long accountId, UniversalProofsSendingRequest universalProofs);
     }
 }
