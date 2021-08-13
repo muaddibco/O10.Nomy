@@ -17,7 +17,7 @@ namespace O10.Nomy.Mappers
 
             return new UserDetailsDTO
             {
-                AccountId = obj.NomyUserId,
+                AccountId = obj.Account.NomyAccountId,
                 Email = obj.Email,
                 O10Id = obj.Account.O10Id,
                 WalletId = obj.WalletId

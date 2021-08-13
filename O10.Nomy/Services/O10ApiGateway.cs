@@ -45,13 +45,26 @@ namespace O10.Nomy.Services
 
         public async Task<O10AccountDTO?> GetAccount(long accountId)
         {
-            var req = _nomyConfig.O10Uri.AppendPathSegments("accounts", accountId.ToString());
+            try
+            {
+                var req = _nomyConfig.O10Uri.AppendPathSegments("accounts", accountId.ToString());
 
-            _logger.Debug(() => $"Sending O10 request {req}");
+                _logger.Debug(() => $"Sending O10 request {req}");
 
-            var account = await req.GetJsonAsync<O10AccountDTO?>();
+                var account = await req.GetJsonAsync<O10AccountDTO?>();
 
-            return account;
+                return account;
+
+            }
+            catch (FlurlHttpException ex)
+            {
+                if(ex.Call.Response.StatusCode == 404)
+                {
+                    return null;
+                }
+
+                throw;
+            }        
         }
 
         public async Task<List<UserAttributeSchemeDto>?> GetUserAttributes(long accountId)

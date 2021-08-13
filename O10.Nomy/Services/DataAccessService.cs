@@ -138,6 +138,22 @@ namespace O10.Nomy.Services
 
         #region Users
 
+        public async Task<NomyUser?> UpdateO10Id(long userId, long o10Id, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+            
+            var user = await dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(c => c.Account.NomyAccountId == userId, ct);
+
+            if(user != null)
+            {
+                user.Account.O10Id = o10Id;
+
+                await dbContext.SaveChangesAsync(ct);
+            }
+
+            return user;
+        }
+
         public async Task<NomyUser> CreateUser(long o10Id, string email, string firstName, string lastName, string walletId, string? beneficiaryId, string? senderId, CancellationToken ct)
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();

@@ -349,6 +349,13 @@ namespace O10.Nomy.Services
             else
             {
                 account = await _o10ApiGateway.GetAccount(user.Account.O10Id);
+                if (account == null)
+                {
+                    _logger.Debug($"No O10 account found for demo profile {_demoUser.Email}, creating O10 account...");
+                    account = await _o10ApiGateway.RegisterUser(_demoUser.Email, "qqq");
+                    _logger.Debug($"O10 account with id {account.AccountId} was created for {_demoUser.Email}");
+                    user = await _dataAccessService.UpdateO10Id(user.NomyUserId, account.AccountId, cancellationToken);
+                }
             }
 
             _logger.Debug("Authenticate O10 account...");
