@@ -8,24 +8,51 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JointEntryComponent = void 0;
 var core_1 = require("@angular/core");
+var signalr_1 = require("@microsoft/signalr");
 var JointEntryComponent = /** @class */ (function () {
-    function JointEntryComponent(route, serviceAccessor) {
+    function JointEntryComponent(route, router, serviceAccessor) {
         this.route = route;
+        this.router = router;
         this.serviceAccessor = serviceAccessor;
         this.isLoaded = false;
         this.isQrLoaded = false;
     }
     JointEntryComponent.prototype.ngOnInit = function () {
         var that = this;
-        this.serviceAccessor.getJointServiceAccount().subscribe(function (r) {
-            that.accountId = r.accountId;
-            that.serviceAccessor.getQrCode(that.accountId).subscribe(function (r) {
-                that.loginQrCode = r.code;
-                that.isQrLoaded = true;
-                that.isLoaded = true;
-            }, function (e) {
-                console.error("failed to initialize session", e);
+        this.serviceAccessor.getO10HubUri().subscribe(function (r) {
+            console.info("Connecting to O10 Hub with URI " + r["o10HubUri"]);
+            that.o10Hub = new signalr_1.HubConnectionBuilder()
+                .withUrl(r["o10HubUri"])
+                .build();
+            that.o10Hub.on("PushSpAuthorizationSucceeded", function () {
+                that.router.navigate(['joint-main', that.sessionKey]);
             });
+            that.serviceAccessor.getJointServiceAccount().subscribe(function (r) {
+                that.accountId = r.accountId;
+                that.serviceAccessor.getQrCode(that.accountId).subscribe(function (r) {
+                    that.sessionKey = r.sessionKey;
+                    that.initiateO10Hub(that);
+                    that.loginQrCode = r.code;
+                    that.isQrLoaded = true;
+                    that.isLoaded = true;
+                }, function (e) {
+                    console.error("failed to initialize session", e);
+                });
+            });
+        });
+    };
+    JointEntryComponent.prototype.initiateO10Hub = function (that) {
+        var _this = this;
+        this.o10Hub.start().then(function () {
+            console.info("Connected to o10Hub");
+            _this.o10Hub.invoke("AddToGroup", that.sessionKey).then(function () {
+                console.info("Added to o10Hub group " + that.sessionKey);
+            }).catch(function (e) {
+                console.error(e);
+            });
+        }).catch(function (e) {
+            console.error(e);
+            setTimeout(function () { return that.initiateO10Hub(that); }, 1000);
         });
     };
     JointEntryComponent = __decorate([

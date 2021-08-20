@@ -18,5 +18,8 @@ namespace O10.Nomy.Configuration
         public string O10IdentityProvider { get; set; }
         
         public int SessionTimeout { get; set; }
+
+        [Tokenized]
+        public string HubUri { get; set; }
     }
 }

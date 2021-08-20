@@ -13,6 +13,7 @@ using System;
 using System.Text;
 using O10.Client.Web.DataContracts;
 using O10.Client.Web.DataContracts.User;
+using Microsoft.AspNetCore.Http;
 
 namespace O10.Nomy.Services
 {
@@ -23,7 +24,9 @@ namespace O10.Nomy.Services
         private readonly INomyContext _nomyContext;
         private readonly ILogger _logger;
 
-        public O10ApiGateway(IConfigurationService configurationService, INomyContext nomyContext, ILoggerService loggerService)
+        public O10ApiGateway(IConfigurationService configurationService,
+                             INomyContext nomyContext,
+                             ILoggerService loggerService)
         {
             _nomyConfig = configurationService.Get<INomyConfig>();
             _nomyContext = nomyContext;
@@ -214,14 +217,14 @@ namespace O10.Nomy.Services
 
         public async Task<QrCodeDto> GetSessionInfo(long accountId)
         {
-            var req = _nomyConfig.O10Uri.AppendPathSegments("SpUsers", "GetSessionInfo", accountId);
+            var req = _nomyConfig.O10Uri.AppendPathSegments("SpUsers", accountId, "SessionInfo").SetQueryParam("origin", _nomyContext.GetBaseUrl());
 
             _logger.Debug(() => $"Sending O10 request {req}");
 
             var resp = await req.GetJsonAsync<SessionInfoDTO>();
             var code = Convert.ToBase64String(Encoding.UTF8.GetBytes($"spp://{_nomyConfig.O10Uri}SpUsers/Action?t=0&pk={resp.PublicKey}&sk={resp.SessionKey}"));
 
-            return new QrCodeDto { Code = code };
+            return new QrCodeDto { Code = code, SessionKey = resp.SessionKey };
         }
 
         public async Task<UserActionInfoDto> GetUserActionInfo(string encodedAction)

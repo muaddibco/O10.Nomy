@@ -9,12 +9,14 @@ import { CommonModule } from '@angular/common';
 import { QrCodeExModule } from '../qrcode/qrcode.module'
 
 import { JointEntryComponent } from './joint-entry/joint-entry.component';
+import { JointMainComponent } from './joint-main/joint-main.component';
 
 
 
 @NgModule({
   declarations: [
-    JointEntryComponent
+    JointEntryComponent,
+    JointMainComponent
   ],
   imports: [
     BrowserModule,
@@ -25,7 +27,8 @@ import { JointEntryComponent } from './joint-entry/joint-entry.component';
     CommonModule,
     QrCodeExModule,
     RouterModule.forRoot([
-      { path: 'joint-purchases', component: JointEntryComponent }
+      { path: 'joint-purchases', component: JointEntryComponent },
+      { path: 'joint-main/:sessionKey', component: JointMainComponent }
     ])
   ]
 })

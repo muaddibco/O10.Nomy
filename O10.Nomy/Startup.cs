@@ -46,6 +46,7 @@ namespace O10.Nomy
                 options.UseSqlServer(connString);
             });
 
+            services.AddHttpContextAccessor();
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             //services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

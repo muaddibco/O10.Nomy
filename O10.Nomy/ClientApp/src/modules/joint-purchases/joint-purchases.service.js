@@ -18,6 +18,9 @@ var JointPurchasesService = /** @class */ (function () {
     JointPurchasesService.prototype.getQrCode = function (id) {
         return this.http.get('/api/ServiceProviders/SessionInfo', { params: { accountId: id } });
     };
+    JointPurchasesService.prototype.getO10HubUri = function () {
+        return this.http.get('/api/JointService/O10Hub');
+    };
     JointPurchasesService = __decorate([
         core_1.Injectable({
             providedIn: 'root'

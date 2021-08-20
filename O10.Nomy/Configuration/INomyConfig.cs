@@ -7,5 +7,6 @@ namespace O10.Nomy.Configuration
         string O10Uri { get; set; }
         string O10IdentityProvider { get; set; }
         int SessionTimeout { get; set; }
+        string HubUri { get; set; }
     }
 }

@@ -7,5 +7,7 @@ namespace O10.Nomy.Services
     public interface INomyContext
     {
         O10AccountDTO? O10IdentityProvider { get; set; }
+
+        string GetBaseUrl();
     }
 }

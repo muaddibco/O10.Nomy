@@ -16,13 +16,15 @@ var forms_1 = require("@angular/forms");
 var common_1 = require("@angular/common");
 var qrcode_module_1 = require("../qrcode/qrcode.module");
 var joint_entry_component_1 = require("./joint-entry/joint-entry.component");
+var joint_main_component_1 = require("./joint-main/joint-main.component");
 var JointPurchasesModule = /** @class */ (function () {
     function JointPurchasesModule() {
     }
     JointPurchasesModule = __decorate([
         core_1.NgModule({
             declarations: [
-                joint_entry_component_1.JointEntryComponent
+                joint_entry_component_1.JointEntryComponent,
+                joint_main_component_1.JointMainComponent
             ],
             imports: [
                 platform_browser_1.BrowserModule,
@@ -33,7 +35,8 @@ var JointPurchasesModule = /** @class */ (function () {
                 common_1.CommonModule,
                 qrcode_module_1.QrCodeExModule,
                 router_1.RouterModule.forRoot([
-                    { path: 'joint-purchases', component: joint_entry_component_1.JointEntryComponent }
+                    { path: 'joint-purchases', component: joint_entry_component_1.JointEntryComponent },
+                    { path: 'joint-main/:sessionKey', component: joint_main_component_1.JointMainComponent }
                 ])
             ]
         })
