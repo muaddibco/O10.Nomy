@@ -96,5 +96,12 @@ namespace O10.Nomy.Services
         Task<SystemParameter> GetSystemParameter(string name, CancellationToken ct);
 
         #endregion System Parameters
+
+        #region Joint Service
+
+        Task<JointGroup?> AddJointGroup(long o10RegistrationId, string name, string description, CancellationToken ct);
+        Task<IEnumerable<JointGroup>> GetJointGroups(long o10RegistrationId, CancellationToken ct);
+
+        #endregion Joint Service
     }
 }

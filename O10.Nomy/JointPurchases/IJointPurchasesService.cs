@@ -1,4 +1,5 @@
 ﻿using O10.Core.Architecture;
+using O10.Nomy.JointPurchases.Models;
 using O10.Nomy.Models;
 using System;
 using System.Collections.Generic;
@@ -14,5 +15,9 @@ namespace O10.Nomy.JointPurchases
         Task Initialize(CancellationToken ct);
 
         Task<NomyServiceProvider> GetJointServiceRecord();
+
+        Task<JointGroupDTO> AddJointGroup(long o10RegistrationId, string name, string description);
+
+        Task<List<JointGroupDTO>> GetJointGroups(long o10RegistrationId);
     }
 }

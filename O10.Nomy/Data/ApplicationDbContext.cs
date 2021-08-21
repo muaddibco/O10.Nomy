@@ -28,11 +28,15 @@ namespace O10.Nomy.Data
         public DbSet<SystemParameter> SystemParameters { get; set; }
         public DbSet<NomyServiceProvider> ServiceProviders { get; set; }
 
+        public DbSet<JointGroup> JointGroups { get; set; }
+        public DbSet<JointGroupMember> JointGroupMembers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<NomyAccount>().HasIndex(s => s.O10Id);
+            modelBuilder.Entity<JointGroup>().HasIndex(s => s.O10RegistrationId);
         }
     }
 }

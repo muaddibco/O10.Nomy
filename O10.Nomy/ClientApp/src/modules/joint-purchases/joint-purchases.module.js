@@ -14,9 +14,28 @@ var http_1 = require("@angular/common/http");
 var router_1 = require("@angular/router");
 var forms_1 = require("@angular/forms");
 var common_1 = require("@angular/common");
+var bottom_sheet_1 = require("@angular/material/bottom-sheet");
+var button_1 = require("@angular/material/button");
+var button_toggle_1 = require("@angular/material/button-toggle");
+var card_1 = require("@angular/material/card");
+var checkbox_1 = require("@angular/material/checkbox");
+var dialog_1 = require("@angular/material/dialog");
+var divider_1 = require("@angular/material/divider");
+var expansion_1 = require("@angular/material/expansion");
+var form_field_1 = require("@angular/material/form-field");
+var icon_1 = require("@angular/material/icon");
+var input_1 = require("@angular/material/input");
+var list_1 = require("@angular/material/list");
+var progress_bar_1 = require("@angular/material/progress-bar");
+var radio_1 = require("@angular/material/radio");
+var select_1 = require("@angular/material/select");
+var slide_toggle_1 = require("@angular/material/slide-toggle");
+var stepper_1 = require("@angular/material/stepper");
+var table_1 = require("@angular/material/table");
 var qrcode_module_1 = require("../qrcode/qrcode.module");
 var joint_entry_component_1 = require("./joint-entry/joint-entry.component");
 var joint_main_component_1 = require("./joint-main/joint-main.component");
+var add_jointgroup_dialog_1 = require("./add-jointgroup-dialog/add-jointgroup.dialog");
 var JointPurchasesModule = /** @class */ (function () {
     function JointPurchasesModule() {
     }
@@ -24,7 +43,8 @@ var JointPurchasesModule = /** @class */ (function () {
         core_1.NgModule({
             declarations: [
                 joint_entry_component_1.JointEntryComponent,
-                joint_main_component_1.JointMainComponent
+                joint_main_component_1.JointMainComponent,
+                add_jointgroup_dialog_1.AddJointGroupDialog
             ],
             imports: [
                 platform_browser_1.BrowserModule,
@@ -33,10 +53,11 @@ var JointPurchasesModule = /** @class */ (function () {
                 forms_1.FormsModule,
                 forms_1.ReactiveFormsModule,
                 common_1.CommonModule,
+                expansion_1.MatExpansionModule, input_1.MatInputModule, select_1.MatSelectModule, dialog_1.MatDialogModule, button_1.MatButtonModule, bottom_sheet_1.MatBottomSheetModule, card_1.MatCardModule, icon_1.MatIconModule, progress_bar_1.MatProgressBarModule, list_1.MatListModule, button_toggle_1.MatButtonToggleModule, divider_1.MatDividerModule, stepper_1.MatStepperModule, checkbox_1.MatCheckboxModule, radio_1.MatRadioModule, form_field_1.MatFormFieldModule, slide_toggle_1.MatSlideToggleModule, table_1.MatTableModule,
                 qrcode_module_1.QrCodeExModule,
                 router_1.RouterModule.forRoot([
                     { path: 'joint-purchases', component: joint_entry_component_1.JointEntryComponent },
-                    { path: 'joint-main/:sessionKey', component: joint_main_component_1.JointMainComponent }
+                    { path: 'joint-main/:registrationId/:sessionKey', component: joint_main_component_1.JointMainComponent }
                 ])
             ]
         })

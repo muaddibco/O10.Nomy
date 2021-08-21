@@ -4,8 +4,10 @@ using O10.Client.Web.DataContracts.ServiceProvider;
 using O10.Core.Architecture;
 using O10.Core.Configuration;
 using O10.Core.Logging;
+using O10.Core.Translators;
 using O10.Nomy.Configuration;
 using O10.Nomy.DTOs;
+using O10.Nomy.JointPurchases.Models;
 using O10.Nomy.Models;
 using O10.Nomy.Services;
 using System;
@@ -22,6 +24,7 @@ namespace O10.Nomy.JointPurchases
         private readonly INomyConfig _nomyConfig;
         private readonly IJointServiceConfiguration _jointServiceConfiguration;
         private readonly IO10ApiGateway _o10ApiGateway;
+        private readonly ITranslatorsRepository _translatorsRepository;
         private readonly IDataAccessService _dataAccessService;
         private SignalrHubConnection? _hubConnection;
         private readonly ILogger _logger;
@@ -30,12 +33,14 @@ namespace O10.Nomy.JointPurchases
 
         public JointPurchasesService(IConfigurationService configurationService,
                                      IO10ApiGateway o10ApiGateway,
+                                     ITranslatorsRepository translatorsRepository,
                                      IDataAccessService dataAccessService,
                                      ILoggerService loggerService)
         {
             _nomyConfig = configurationService.Get<INomyConfig>();
             _jointServiceConfiguration = configurationService.Get<IJointServiceConfiguration>();
             _o10ApiGateway = o10ApiGateway;
+            _translatorsRepository = translatorsRepository;
             _dataAccessService = dataAccessService;
             _logger = loggerService.GetLogger(nameof(JointPurchasesService));
             _logger.SetContext(nameof(JointPurchasesService));
@@ -70,6 +75,20 @@ namespace O10.Nomy.JointPurchases
         public Task<NomyServiceProvider> GetJointServiceRecord()
         {
             return _dataAccessService.FindServiceProvider(_jointServiceConfiguration.JointServiceName, _cancellationToken);
+        }
+
+        public async Task<JointGroupDTO> AddJointGroup(long o10RegistrationId, string name, string description)
+        {
+            var group = await _dataAccessService.AddJointGroup(o10RegistrationId, name, description, _cancellationToken);
+
+            return _translatorsRepository.GetInstance<JointGroup, JointGroupDTO>().Translate(group);
+        }
+
+        public async Task<List<JointGroupDTO>> GetJointGroups(long o10RegistrationId)
+        {
+            var groups = await _dataAccessService.GetJointGroups(o10RegistrationId, _cancellationToken);
+
+            return groups.Select(group => _translatorsRepository.GetInstance<JointGroup, JointGroupDTO>().Translate(group)).ToList();
         }
 
         private async Task BuildHubConnection()

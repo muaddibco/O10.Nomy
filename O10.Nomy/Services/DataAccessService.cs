@@ -538,5 +538,33 @@ namespace O10.Nomy.Services
         }
 
         #endregion System Parameters
+
+        #region Joint Service
+
+        public async Task<JointGroup?> AddJointGroup(long o10RegistrationId, string name, string description, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var res = dbContext.JointGroups.Add(
+                new JointGroup
+                {
+                    O10RegistrationId = o10RegistrationId,
+                    Name = name, 
+                    Description = description
+                });
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return res.Entity;
+        }
+
+        public async Task<IEnumerable<JointGroup>> GetJointGroups(long o10RegistrationId, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            return await dbContext.JointGroups.Where(s => s.O10RegistrationId == o10RegistrationId).ToListAsync(ct);
+        }
+
+        #endregion Joint Service
     }
 }

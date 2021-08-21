@@ -1,1 +1,10 @@
-<p>joint-main works!</p>
+<p *ngIf="!isLoaded"><em>Loading...</em></p>
+<div *ngIf="isLoaded">
+  <button class="btn btn-primary" (click)="addNewGroup()" style="margin-right:10px">Add new group...</button>
+  <mat-list>
+    <mat-list-item *ngFor="let group of groups">
+      <div mat-line>{{group.name}}</div>
+      <div mat-line>{{group.description}}</div>
+    </mat-list-item>
+  </mat-list>
+</div>

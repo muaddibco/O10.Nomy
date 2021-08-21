@@ -6,42 +6,33 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JointEntryComponent = void 0;
+exports.JointMainComponent = void 0;
 var core_1 = require("@angular/core");
 var signalr_1 = require("@microsoft/signalr");
-var JointEntryComponent = /** @class */ (function () {
-    function JointEntryComponent(route, router, serviceAccessor) {
+var add_jointgroup_dialog_1 = require("../add-jointgroup-dialog/add-jointgroup.dialog");
+var JointMainComponent = /** @class */ (function () {
+    function JointMainComponent(route, router, serviceAccessor, dialog) {
         this.route = route;
         this.router = router;
         this.serviceAccessor = serviceAccessor;
+        this.dialog = dialog;
         this.isLoaded = false;
-        this.isQrLoaded = false;
+        this.groups = [];
     }
-    JointEntryComponent.prototype.ngOnInit = function () {
+    JointMainComponent.prototype.ngOnInit = function () {
+        this.registrationId = Number(this.route.snapshot.paramMap.get('registrationId'));
+        this.sessionKey = this.route.snapshot.paramMap.get('sessionKey');
         var that = this;
         this.serviceAccessor.getO10HubUri().subscribe(function (r) {
             console.info("Connecting to O10 Hub with URI " + r["o10HubUri"]);
             that.o10Hub = new signalr_1.HubConnectionBuilder()
                 .withUrl(r["o10HubUri"])
                 .build();
-            that.o10Hub.on("PushSpAuthorizationSucceeded", function (r) {
-                that.router.navigate(['joint-main', r.registrationId, that.sessionKey]);
-            });
-            that.serviceAccessor.getJointServiceAccount().subscribe(function (r) {
-                that.accountId = r.accountId;
-                that.serviceAccessor.getQrCode(that.accountId).subscribe(function (r) {
-                    that.sessionKey = r.sessionKey;
-                    that.initiateO10Hub(that);
-                    that.loginQrCode = r.code;
-                    that.isQrLoaded = true;
-                    that.isLoaded = true;
-                }, function (e) {
-                    console.error("failed to initialize session", e);
-                });
-            });
+            that.initiateO10Hub(that);
+            that.isLoaded = true;
         });
     };
-    JointEntryComponent.prototype.initiateO10Hub = function (that) {
+    JointMainComponent.prototype.initiateO10Hub = function (that) {
         var _this = this;
         this.o10Hub.start().then(function () {
             console.info("Connected to o10Hub");
@@ -55,14 +46,27 @@ var JointEntryComponent = /** @class */ (function () {
             setTimeout(function () { return that.initiateO10Hub(that); }, 1000);
         });
     };
-    JointEntryComponent = __decorate([
+    JointMainComponent.prototype.addNewGroup = function () {
+        var _this = this;
+        var dialogRef = this.dialog.open(add_jointgroup_dialog_1.AddJointGroupDialog);
+        dialogRef.afterClosed().subscribe(function (r) {
+            if (r) {
+                _this.serviceAccessor.addJointGroup(_this.registrationId, r.name, r.description).subscribe(function (r) {
+                    _this.groups.push(r);
+                }, function (e) {
+                    console.error("Failed to add a joint groups with name " + r.name + " and description " + r.description, e);
+                });
+            }
+        });
+    };
+    JointMainComponent = __decorate([
         core_1.Component({
-            selector: 'app-joint-entry',
-            templateUrl: './joint-entry.component.html',
-            styleUrls: ['./joint-entry.component.css']
+            selector: 'app-joint-main',
+            templateUrl: './joint-main.component.html',
+            styleUrls: ['./joint-main.component.css']
         })
-    ], JointEntryComponent);
-    return JointEntryComponent;
+    ], JointMainComponent);
+    return JointMainComponent;
 }());
-exports.JointEntryComponent = JointEntryComponent;
-//# sourceMappingURL=joint-entry.component.js.map
+exports.JointMainComponent = JointMainComponent;
+//# sourceMappingURL=joint-main.component.js.map

@@ -17,7 +17,10 @@ export class JointEntryComponent implements OnInit {
   public accountId: number
   private o10Hub: HubConnection
 
-  constructor(private route: ActivatedRoute, private router: Router, private serviceAccessor: JointPurchasesService) { }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private serviceAccessor: JointPurchasesService) { }
 
   ngOnInit(): void {
     var that = this
@@ -30,8 +33,8 @@ export class JointEntryComponent implements OnInit {
           .withUrl(r["o10HubUri"])
           .build()
 
-        that.o10Hub.on("PushSpAuthorizationSucceeded", () => {
-          that.router.navigate(['joint-main', that.sessionKey])
+        that.o10Hub.on("PushSpAuthorizationSucceeded", r => {
+          that.router.navigate(['joint-main', r.registrationId, that.sessionKey])
         })
 
         that.serviceAccessor.getJointServiceAccount().subscribe(

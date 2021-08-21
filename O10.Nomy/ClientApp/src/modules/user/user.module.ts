@@ -65,6 +65,7 @@ import { ServiceProviderComponent } from './service-provider/service-provider.co
     ExpertsModule,
     IdentitiesModule,
     RouterModule.forRoot([
+      { path: 'wallet', component: UserEntryComponent },
       { path: 'user-entry', component: UserEntryComponent },
       { path: 'user-register', component: UserRegistrationComponent },
       { path: 'user-details/:userId', component: UserDetailsComponent },

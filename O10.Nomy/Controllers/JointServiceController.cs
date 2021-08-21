@@ -4,6 +4,7 @@ using O10.Core.Configuration;
 using O10.Nomy.Configuration;
 using O10.Nomy.DTOs;
 using O10.Nomy.JointPurchases;
+using O10.Nomy.JointPurchases.Models;
 using O10.Nomy.Services;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,18 @@ namespace O10.Nomy.Controllers
         public IActionResult GetO10HubUri()
         {
             return Ok(new { O10HubUri = _nomyConfig.HubUri });
+        }
+
+        [HttpPost("{o10RegistrationId}/JointGroup")]
+        public async Task<ActionResult<JointGroupDTO>> AddJointGroup(long o10RegistrationId, [FromBody] AddJointGroupRequestDTO addJointGroupRequest)
+        {
+            return await _jointPurchasesService.AddJointGroup(o10RegistrationId, addJointGroupRequest.Name, addJointGroupRequest.Description);
+        }
+
+        [HttpGet("{o10RegistrationId}/JointGroups")]
+        public async Task<ActionResult<List<JointGroupDTO>>> GetJointGroups(long o10RegistrationId)
+        {
+            return await _jointPurchasesService.GetJointGroups(o10RegistrationId);
         }
     }
 }

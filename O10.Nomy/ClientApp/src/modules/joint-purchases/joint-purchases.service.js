@@ -21,6 +21,12 @@ var JointPurchasesService = /** @class */ (function () {
     JointPurchasesService.prototype.getO10HubUri = function () {
         return this.http.get('/api/JointService/O10Hub');
     };
+    JointPurchasesService.prototype.addJointGroup = function (o10RegistrationId, name, description) {
+        return this.http.post('/api/JointService/' + o10RegistrationId + '/JointGroup', { name: name, description: description });
+    };
+    JointPurchasesService.prototype.getJointGroups = function (o10RegistrationId) {
+        return this.http.get('/api/JointService/' + o10RegistrationId + '/JointGroups');
+    };
     JointPurchasesService = __decorate([
         core_1.Injectable({
             providedIn: 'root'

@@ -19,6 +19,14 @@ export class JointPurchasesService {
   getO10HubUri() {
     return this.http.get<Map<string, string>>('/api/JointService/O10Hub');
   }
+
+  addJointGroup(o10RegistrationId: number, name: string, description: string) {
+    return this.http.post<JointGroup>('/api/JointService/' + o10RegistrationId + '/JointGroup', { name, description });
+  }
+
+  getJointGroups(o10RegistrationId: number) {
+    return this.http.get<JointGroup[]>('/api/JointService/' + o10RegistrationId + '/JointGroups');
+  }
 }
 
 export interface QrCodeDto {
@@ -28,4 +36,11 @@ export interface QrCodeDto {
 
 export interface Account {
   accountId: number
+}
+
+export interface JointGroup {
+  jointGroupId: number
+  o10RegistrationId: number
+  name: string
+  description: string
 }
