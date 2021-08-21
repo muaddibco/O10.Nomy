@@ -29,6 +29,13 @@ export class JointMainComponent implements OnInit {
     this.sessionKey = this.route.snapshot.paramMap.get('sessionKey')
 
     var that = this
+
+    this.serviceAccessor.getJointGroups(this.registrationId).subscribe(
+      r => {
+        that.groups = r
+      }
+    )
+
     this.serviceAccessor.getO10HubUri().subscribe(
       r => {
         console.info("Connecting to O10 Hub with URI " + r["o10HubUri"])
@@ -55,6 +62,10 @@ export class JointMainComponent implements OnInit {
       console.error(e);
       setTimeout(() => that.initiateO10Hub(that), 1000);
     });
+  }
+
+  goToGroup(group: JointGroup) {
+    this.router.navigate(['joint-group', group.jointGroupId, group.o10RegistrationId, this.sessionKey])
   }
 
   addNewGroup() {

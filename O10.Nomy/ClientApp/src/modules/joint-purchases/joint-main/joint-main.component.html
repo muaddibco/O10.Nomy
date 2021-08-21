@@ -2,9 +2,16 @@
 <div *ngIf="isLoaded">
   <button class="btn btn-primary" (click)="addNewGroup()" style="margin-right:10px">Add new group...</button>
   <mat-list>
-    <mat-list-item *ngFor="let group of groups">
-      <div mat-line>{{group.name}}</div>
-      <div mat-line>{{group.description}}</div>
+    <mat-list-item class="pn" *ngFor="let group of groups">
+      <div mat-line>
+        <div style="display: table-cell; float: left">
+          <div>{{group.name}}</div>
+          <div>{{group.description}}</div>
+        </div>
+        <div style="display: table-cell; float: right; margin-top: 5px">
+          <button mat-button (click)="goToGroup(group)">Go to...</button>
+        </div>
+      </div>
     </mat-list-item>
   </mat-list>
 </div>

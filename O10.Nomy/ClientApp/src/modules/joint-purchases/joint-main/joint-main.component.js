@@ -23,6 +23,9 @@ var JointMainComponent = /** @class */ (function () {
         this.registrationId = Number(this.route.snapshot.paramMap.get('registrationId'));
         this.sessionKey = this.route.snapshot.paramMap.get('sessionKey');
         var that = this;
+        this.serviceAccessor.getJointGroups(this.registrationId).subscribe(function (r) {
+            that.groups = r;
+        });
         this.serviceAccessor.getO10HubUri().subscribe(function (r) {
             console.info("Connecting to O10 Hub with URI " + r["o10HubUri"]);
             that.o10Hub = new signalr_1.HubConnectionBuilder()
@@ -45,6 +48,9 @@ var JointMainComponent = /** @class */ (function () {
             console.error(e);
             setTimeout(function () { return that.initiateO10Hub(that); }, 1000);
         });
+    };
+    JointMainComponent.prototype.goToGroup = function (group) {
+        this.router.navigate(['joint-group', group.jointGroupId, group.o10RegistrationId, this.sessionKey]);
     };
     JointMainComponent.prototype.addNewGroup = function () {
         var _this = this;

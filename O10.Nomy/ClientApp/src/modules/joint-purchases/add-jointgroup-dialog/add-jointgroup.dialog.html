@@ -1,8 +1,10 @@
 <div mat-dialog-title>Add new joint group</div>
 <div mat-dialog-content>
-  <mat-form-field>
-    <input matInput placeholder="Joint group name" [(ngModel)]="data.name">
-    <input matInput placeholder="Joint group descripiton" [(ngModel)]="data.description">
+  <mat-form-field style="width: 100%" appearance="fill">
+    <input matInput placeholder="Joint group name" [(ngModel)]="data.name" />
+  </mat-form-field>
+  <mat-form-field style="width: 100%" appearance="fill">
+    <textarea matInput placeholder="Joint group descripiton" [(ngModel)]="data.description"></textarea>
   </mat-form-field>
 </div>
 <div mat-dialog-actions>

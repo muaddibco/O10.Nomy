@@ -29,14 +29,16 @@ import { QrCodeExModule } from '../qrcode/qrcode.module'
 
 import { JointEntryComponent } from './joint-entry/joint-entry.component';
 import { JointMainComponent } from './joint-main/joint-main.component';
-import { AddJointGroupDialog } from './add-jointgroup-dialog/add-jointgroup.dialog'
+import { AddJointGroupDialog } from './add-jointgroup-dialog/add-jointgroup.dialog';
+import { JointGroupComponent } from './joint-group/joint-group.component'
 
 
 @NgModule({
   declarations: [
     JointEntryComponent,
     JointMainComponent,
-    AddJointGroupDialog
+    AddJointGroupDialog,
+    JointGroupComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +51,8 @@ import { AddJointGroupDialog } from './add-jointgroup-dialog/add-jointgroup.dial
     QrCodeExModule,
     RouterModule.forRoot([
       { path: 'joint-purchases', component: JointEntryComponent },
-      { path: 'joint-main/:registrationId/:sessionKey', component: JointMainComponent }
+      { path: 'joint-main/:registrationId/:sessionKey', component: JointMainComponent },
+      { path: 'joint-group/:groupId/:registrationId/:sessionKey', component: JointGroupComponent }
     ])
   ]
 })

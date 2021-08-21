@@ -36,6 +36,7 @@ var qrcode_module_1 = require("../qrcode/qrcode.module");
 var joint_entry_component_1 = require("./joint-entry/joint-entry.component");
 var joint_main_component_1 = require("./joint-main/joint-main.component");
 var add_jointgroup_dialog_1 = require("./add-jointgroup-dialog/add-jointgroup.dialog");
+var joint_group_component_1 = require("./joint-group/joint-group.component");
 var JointPurchasesModule = /** @class */ (function () {
     function JointPurchasesModule() {
     }
@@ -44,7 +45,8 @@ var JointPurchasesModule = /** @class */ (function () {
             declarations: [
                 joint_entry_component_1.JointEntryComponent,
                 joint_main_component_1.JointMainComponent,
-                add_jointgroup_dialog_1.AddJointGroupDialog
+                add_jointgroup_dialog_1.AddJointGroupDialog,
+                joint_group_component_1.JointGroupComponent
             ],
             imports: [
                 platform_browser_1.BrowserModule,
@@ -57,7 +59,8 @@ var JointPurchasesModule = /** @class */ (function () {
                 qrcode_module_1.QrCodeExModule,
                 router_1.RouterModule.forRoot([
                     { path: 'joint-purchases', component: joint_entry_component_1.JointEntryComponent },
-                    { path: 'joint-main/:registrationId/:sessionKey', component: joint_main_component_1.JointMainComponent }
+                    { path: 'joint-main/:registrationId/:sessionKey', component: joint_main_component_1.JointMainComponent },
+                    { path: 'joint-group/:groupId/:registrationId/:sessionKey', component: joint_group_component_1.JointGroupComponent }
                 ])
             ]
         })

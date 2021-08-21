@@ -16,6 +16,7 @@ var AddJointGroupDialog = /** @class */ (function () {
     function AddJointGroupDialog(dialogRef, data) {
         this.dialogRef = dialogRef;
         this.data = data;
+        this.data = { name: "", description: "" };
     }
     AddJointGroupDialog.prototype.onCancelClick = function () {
         this.dialogRef.close();
