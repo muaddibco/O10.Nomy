@@ -50,5 +50,17 @@ namespace O10.Nomy.Controllers
         {
             return await _jointPurchasesService.GetJointGroups(o10RegistrationId);
         }
+
+        [HttpPost("JointGroup/{groupId}/Member")]
+        public async Task<ActionResult<JointGroupMemberDTO>> AddJointGroupMember(long groupId, [FromBody] JointGroupMemberDTO jointGroupMember)
+        {
+            return await _jointPurchasesService.AddJointGroupMember(groupId, jointGroupMember.Email, jointGroupMember.Description);
+        }
+
+        [HttpGet("JointGroup/{groupId}/Members")]
+        public async Task<ActionResult<List<JointGroupMemberDTO>>> GetJointGroupMembers(long groupId)
+        {
+            return await _jointPurchasesService.GetJointGroupMembers(groupId);
+        }
     }
 }

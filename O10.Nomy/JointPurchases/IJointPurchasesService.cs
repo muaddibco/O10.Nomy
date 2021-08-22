@@ -19,5 +19,9 @@ namespace O10.Nomy.JointPurchases
         Task<JointGroupDTO> AddJointGroup(long o10RegistrationId, string name, string description);
 
         Task<List<JointGroupDTO>> GetJointGroups(long o10RegistrationId);
+
+        Task<JointGroupMemberDTO> AddJointGroupMember(long groupId, string email, string? description);
+
+        Task<List<JointGroupMemberDTO>> GetJointGroupMembers(long groupId);
     }
 }

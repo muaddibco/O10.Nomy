@@ -1,5 +1,6 @@
 ﻿using O10.Client.Common.Entities;
 using O10.Client.Web.DataContracts;
+using O10.Client.Web.DataContracts.ServiceProvider;
 using O10.Client.Web.DataContracts.User;
 using O10.Core.Architecture;
 using O10.Nomy.DTOs;
@@ -38,5 +39,8 @@ namespace O10.Nomy.Services
         Task<ActionDetailsDto> GetActionDetails(long accountId, string encodedAction, long userAttributeId);
 
         Task SendUniversalProofs(long accountId, UniversalProofsSendingRequest universalProofs);
+
+        Task<RelationGroupDto> AddRelationGroup(long accountId, string groupName);
+        Task<RelationDto> AddRelation(long accountId, long groupId, string rawRootAttributeValue, string description);
     }
 }

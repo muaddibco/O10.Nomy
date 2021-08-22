@@ -541,7 +541,7 @@ namespace O10.Nomy.Services
 
         #region Joint Service
 
-        public async Task<JointGroup?> AddJointGroup(long o10RegistrationId, string name, string description, CancellationToken ct)
+        public async Task<JointGroup?> AddJointGroup(long o10RegistrationId, long o10GroupId, string name, string description, CancellationToken ct)
         {
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
@@ -549,6 +549,7 @@ namespace O10.Nomy.Services
                 new JointGroup
                 {
                     O10RegistrationId = o10RegistrationId,
+                    O10GroupId = o10GroupId,
                     Name = name, 
                     Description = description
                 });
@@ -563,6 +564,52 @@ namespace O10.Nomy.Services
             using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
             return await dbContext.JointGroups.Where(s => s.O10RegistrationId == o10RegistrationId).ToListAsync(ct);
+        }
+
+        public async Task<JointGroup> GetJointGroup(long groupId, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            return await dbContext.JointGroups.FirstOrDefaultAsync(s => s.JointGroupId == groupId, ct);
+        }
+
+        public async Task<JointGroupMember?> AddJointGroupMember(long groupId, string email, string description, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var group = await dbContext.JointGroups.FirstOrDefaultAsync(s => s.JointGroupId == groupId, ct);
+
+            if(group == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(groupId));
+            }
+
+            var res = dbContext.JointGroupMembers.Add(
+                new JointGroupMember
+                {
+                    Group = group,
+                    Email = email,
+                    Description = description,
+                    IsRegistered = false
+                });
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return res.Entity;
+        }
+
+        public async Task<IEnumerable<JointGroupMember>> GetJointGroupMembers(long groupId, CancellationToken ct)
+        {
+            using var dbContext = _serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
+
+            var group = await dbContext.JointGroups.FirstOrDefaultAsync(s => s.JointGroupId == groupId, ct);
+
+            if (group == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(groupId));
+            }
+
+            return await dbContext.JointGroupMembers.Include(s => s.Group).Where(s => s.Group.JointGroupId == groupId).ToListAsync(ct);
         }
 
         #endregion Joint Service

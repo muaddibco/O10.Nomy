@@ -14,6 +14,7 @@ namespace O10.Nomy.JointPurchases
             {
                 JointGroupId = obj.JointGroupId,
                 O10RegistrationId = obj.O10RegistrationId,
+                O10GroupId = obj.O10GroupId,
                 Name = obj.Name,
                 Description = obj.Description
             };

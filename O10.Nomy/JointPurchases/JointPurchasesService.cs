@@ -79,7 +79,9 @@ namespace O10.Nomy.JointPurchases
 
         public async Task<JointGroupDTO> AddJointGroup(long o10RegistrationId, string name, string description)
         {
-            var group = await _dataAccessService.AddJointGroup(o10RegistrationId, name, description, _cancellationToken);
+            var groupDto = await _o10ApiGateway.AddRelationGroup(_o10Account.AccountId, name);
+
+            var group = await _dataAccessService.AddJointGroup(o10RegistrationId, groupDto.GroupId.Value, name, description, _cancellationToken);
 
             return _translatorsRepository.GetInstance<JointGroup, JointGroupDTO>().Translate(group);
         }
@@ -89,6 +91,24 @@ namespace O10.Nomy.JointPurchases
             var groups = await _dataAccessService.GetJointGroups(o10RegistrationId, _cancellationToken);
 
             return groups.Select(group => _translatorsRepository.GetInstance<JointGroup, JointGroupDTO>().Translate(group)).ToList();
+        }
+
+        public async Task<JointGroupMemberDTO> AddJointGroupMember(long groupId, string email, string? description)
+        {
+            var group = await _dataAccessService.GetJointGroup(groupId, _cancellationToken);
+
+            var groupMemberDto = await _o10ApiGateway.AddRelation(_o10Account.AccountId, group.O10GroupId, email, description);
+
+            var groupMember = await _dataAccessService.AddJointGroupMember(groupId, email, description, _cancellationToken);
+
+            return _translatorsRepository.GetInstance<JointGroupMember, JointGroupMemberDTO>().Translate(groupMember);
+        }
+
+        public async Task<List<JointGroupMemberDTO>> GetJointGroupMembers(long groupId)
+        {
+            var groupMembers = await _dataAccessService.GetJointGroupMembers(groupId, _cancellationToken);
+
+            return groupMembers.Select(m => _translatorsRepository.GetInstance<JointGroupMember, JointGroupMemberDTO>().Translate(m)).ToList();
         }
 
         private async Task BuildHubConnection()

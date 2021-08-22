@@ -14,6 +14,7 @@ using System.Text;
 using O10.Client.Web.DataContracts;
 using O10.Client.Web.DataContracts.User;
 using Microsoft.AspNetCore.Http;
+using O10.Client.Web.DataContracts.ServiceProvider;
 
 namespace O10.Nomy.Services
 {
@@ -262,6 +263,30 @@ namespace O10.Nomy.Services
             _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(universalProofs, Formatting.Indented)}");
 
             var resp = await req.PostJsonAsync(universalProofs);
+        }
+
+        public async Task<RelationGroupDto> AddRelationGroup(long accountId, string groupName)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("ServiceProviders", accountId, "RelationGroup");
+
+            var body = new RelationGroupDto { GroupName = groupName };
+            
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(body, Formatting.Indented)}");
+            var resp = await req.PostJsonAsync(body).ReceiveJson<RelationGroupDto>();
+
+            return resp;
+        }
+
+        public async Task<RelationDto> AddRelation(long accountId, long groupId, string rawRootAttributeValue, string description)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("ServiceProviders", accountId, "RelationGroup", groupId, "Relation");
+
+            var body = new RelationDto { RawRootAttribute = rawRootAttributeValue, Description = description };
+
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(body, Formatting.Indented)}");
+            var resp = await req.PostJsonAsync(body).ReceiveJson<RelationDto>();
+
+            return resp;
         }
     }
 }

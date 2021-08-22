@@ -99,8 +99,11 @@ namespace O10.Nomy.Services
 
         #region Joint Service
 
-        Task<JointGroup?> AddJointGroup(long o10RegistrationId, string name, string description, CancellationToken ct);
+        Task<JointGroup?> AddJointGroup(long o10RegistrationId, long o10GroupId, string name, string description, CancellationToken ct);
         Task<IEnumerable<JointGroup>> GetJointGroups(long o10RegistrationId, CancellationToken ct);
+        Task<JointGroup> GetJointGroup(long groupId, CancellationToken ct);
+        Task<JointGroupMember?> AddJointGroupMember(long groupId, string email, string description, CancellationToken ct);
+        Task<IEnumerable<JointGroupMember>> GetJointGroupMembers(long groupId, CancellationToken ct);
 
         #endregion Joint Service
     }
