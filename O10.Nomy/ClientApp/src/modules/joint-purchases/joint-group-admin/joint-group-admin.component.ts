@@ -1,22 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { JointGroup, JointPurchasesService } from '../joint-purchases.service';
+import { JointGroupMember, JointPurchasesService } from '../joint-purchases.service';
+import { AddJointGroupMemberDialog } from '../add-jointgroupmember-dialog/add-jointgroupmember.dialog'
 import { MatDialog } from '@angular/material/dialog';
-import { AddJointGroupDialog } from '../add-jointgroup-dialog/add-jointgroup.dialog';
 
 @Component({
-  selector: 'app-joint-main',
-  templateUrl: './joint-main.component.html',
-  styleUrls: ['./joint-main.component.css']
+  selector: 'app-joint-group-admin',
+  templateUrl: './joint-group-admin.component.html',
+  styleUrls: ['./joint-group-admin.component.css']
 })
-export class JointMainComponent implements OnInit {
+export class JointGroupAdminComponent implements OnInit {
 
   public isLoaded = false
+  public groupId: number
   public registrationId: number
   public sessionKey: string | null
   private o10Hub: HubConnection
-  public groups: JointGroup[] = []
+  public groupMembers: JointGroupMember[] = []
 
   constructor(
     private route: ActivatedRoute,
@@ -25,14 +26,15 @@ export class JointMainComponent implements OnInit {
     public dialog: MatDialog) { }
 
   ngOnInit(): void {
+    this.groupId = Number(this.route.snapshot.paramMap.get('groupId'))
     this.registrationId = Number(this.route.snapshot.paramMap.get('registrationId'))
     this.sessionKey = this.route.snapshot.paramMap.get('sessionKey')
 
     var that = this
 
-    this.serviceAccessor.getJointGroups(this.registrationId).subscribe(
+    this.serviceAccessor.getJointGroupMembers(this.groupId).subscribe(
       r => {
-        that.groups = r
+        that.groupMembers = r
       }
     )
 
@@ -64,21 +66,17 @@ export class JointMainComponent implements OnInit {
     });
   }
 
-  goToGroup(group: JointGroup) {
-    this.router.navigate(['joint-group-admin', group.jointGroupId, group.o10RegistrationId, this.sessionKey])
-  }
-
-  addNewGroup() {
-    var dialogRef = this.dialog.open(AddJointGroupDialog);
+  addNewMember() {
+    var dialogRef = this.dialog.open(AddJointGroupMemberDialog);
     dialogRef.afterClosed().subscribe(
       r => {
         if (r) {
-          this.serviceAccessor.addJointGroup(this.registrationId, r.name, r.description).subscribe(
+          this.serviceAccessor.addJointGroupMember(this.groupId, r.email, r.description).subscribe(
             r => {
-              this.groups.push(r)
+              this.groupMembers.push(r)
             },
             e => {
-              console.error("Failed to add a joint groups with name " + r.name + " and description " + r.description, e);
+              console.error("Failed to add a joint groups member with email " + r.email + " and description " + r.description, e);
             }
           )
         }

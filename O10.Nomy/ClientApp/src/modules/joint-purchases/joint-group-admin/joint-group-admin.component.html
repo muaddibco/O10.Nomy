@@ -1,0 +1,14 @@
+<p *ngIf="!isLoaded"><em>Loading...</em></p>
+<div *ngIf="isLoaded">
+  <button class="btn btn-primary" (click)="addNewMember()" style="margin-right:10px">Add new member...</button>
+  <mat-list>
+    <mat-list-item class="pn" *ngFor="let member of groupMembers">
+      <div mat-line>
+        <div style="display: table-cell; float: left">
+          <div>{{member.email}}</div>
+          <div>{{member.description}}</div>
+        </div>
+      </div>
+    </mat-list-item>
+  </mat-list>
+</div>

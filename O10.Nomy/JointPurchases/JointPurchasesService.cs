@@ -101,6 +101,11 @@ namespace O10.Nomy.JointPurchases
 
             var groupMember = await _dataAccessService.AddJointGroupMember(groupId, email, description, _cancellationToken);
 
+            // here needs to go sending an email signed by the group administrator
+            // how emails will be signed?
+            // from field
+            // to field
+
             return _translatorsRepository.GetInstance<JointGroupMember, JointGroupMemberDTO>().Translate(groupMember);
         }
 

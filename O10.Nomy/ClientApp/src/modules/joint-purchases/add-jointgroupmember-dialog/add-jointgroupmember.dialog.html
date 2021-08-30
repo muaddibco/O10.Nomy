@@ -1,0 +1,13 @@
+<div mat-dialog-title>Add new joint group member</div>
+<div mat-dialog-content>
+  <mat-form-field style="width: 100%" appearance="fill">
+    <input matInput placeholder="Joint group member's email" [(ngModel)]="data.email" />
+  </mat-form-field>
+  <mat-form-field style="width: 100%" appearance="fill">
+    <textarea matInput placeholder="Joint group member's descripiton" [(ngModel)]="data.description"></textarea>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="data">Submit</button>
+  <button mat-button (click)="onCancelClick()">Cancel</button>
+</div>
