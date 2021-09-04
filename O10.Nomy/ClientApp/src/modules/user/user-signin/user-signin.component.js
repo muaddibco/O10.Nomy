@@ -48,10 +48,10 @@ var UserSigninComponent = /** @class */ (function () {
         });
     };
     UserSigninComponent.prototype.onCancel = function () {
-        this.router.navigate(['/']);
+        this.router.navigate(['user-entry']);
     };
     UserSigninComponent = __decorate([
-        core_1.Component({
+        (0, core_1.Component)({
             selector: 'app-user-signin',
             templateUrl: './user-signin.component.html',
             styleUrls: ['./user-signin.component.css']

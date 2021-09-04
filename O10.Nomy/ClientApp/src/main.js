@@ -13,8 +13,8 @@ var providers = [
     { provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] }
 ];
 if (environment_1.environment.production) {
-    core_1.enableProdMode();
+    (0, core_1.enableProdMode)();
 }
-platform_browser_dynamic_1.platformBrowserDynamic(providers).bootstrapModule(app_module_1.AppModule)
+(0, platform_browser_dynamic_1.platformBrowserDynamic)(providers).bootstrapModule(app_module_1.AppModule)
     .catch(function (err) { return console.log(err); });
 //# sourceMappingURL=main.js.map

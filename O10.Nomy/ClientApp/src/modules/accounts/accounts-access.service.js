@@ -19,10 +19,13 @@ var AccountsAccessService = /** @class */ (function () {
         return this.http.get('/api/accounts/find', { params: { "accountAlias": alias } });
     };
     AccountsAccessService.prototype.authenticate = function (accountId, password) {
-        return this.http.post('/api/accounts/' + accountId + '/authenticate', { password: password });
+        return this.http.post('/api/accounts/' + accountId + '/auth', { password: password });
+    };
+    AccountsAccessService.prototype.isAuthenticated = function (accountId) {
+        return this.http.get('/api/accounts/' + accountId + '/auth');
     };
     AccountsAccessService = __decorate([
-        core_1.Injectable({
+        (0, core_1.Injectable)({
             providedIn: 'root'
         })
     ], AccountsAccessService);

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace O10.Nomy.Services
 {
-    [RegisterDefaultImplementation(typeof(IPayoutsService), Lifetime = LifetimeManagement.Singleton)]
+    [RegisterDefaultImplementation(typeof(IPayoutsService), Lifetime = LifetimeManagement.Scoped)]
     public class PayoutsService : IPayoutsService
     {
         private readonly IDataAccessService _dataAccessService;

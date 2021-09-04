@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace O10.Nomy.Services
 {
-    [RegisterDefaultImplementation(typeof(IPaymentSessionsService), Lifetime = LifetimeManagement.Singleton)]
+    [RegisterDefaultImplementation(typeof(IPaymentSessionsService), Lifetime = LifetimeManagement.Scoped)]
     public class PaymentSessionsService : IPaymentSessionsService
     {
         private readonly IHashCalculation _hashCalculation;

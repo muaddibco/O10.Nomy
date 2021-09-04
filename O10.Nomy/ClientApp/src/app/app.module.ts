@@ -11,6 +11,7 @@ import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatGridListModule } from '@angular/material/grid-list'
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { UserModule } from '../modules/user/user.module';
 import { ExpertsModule } from '../modules/experts/experts.module'
 import { JointPurchasesModule } from '../modules/joint-purchases/joint-purchases.module'
@@ -27,7 +28,7 @@ import { JointPurchasesModule } from '../modules/joint-purchases/joint-purchases
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
-    MatGridListModule,
+    MatGridListModule, MatSlideToggleModule,
     UserModule, ExpertsModule, JointPurchasesModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' }

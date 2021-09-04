@@ -53,6 +53,6 @@ export class UserSigninComponent implements OnInit {
   }
 
   onCancel() {
-    this.router.navigate(['/'])
+    this.router.navigate(['user-entry'])
   }
 }

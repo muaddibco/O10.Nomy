@@ -104,6 +104,7 @@ namespace O10.Nomy.Services
         Task<JointGroup> GetJointGroup(long groupId, CancellationToken ct);
         Task<JointGroupMember?> AddJointGroupMember(long groupId, string email, string description, CancellationToken ct);
         Task<IEnumerable<JointGroupMember>> GetJointGroupMembers(long groupId, CancellationToken ct);
+        Task<JointServiceRegistration> GetOrAddJointServiceRegistration(long o10RegistrationId, string registrationCommitment, CancellationToken ct);
 
         #endregion Joint Service
     }

@@ -5,6 +5,7 @@ using O10.Client.Web.DataContracts.User;
 using O10.Core.Architecture;
 using O10.Nomy.DTOs;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace O10.Nomy.Services
@@ -23,6 +24,8 @@ namespace O10.Nomy.Services
         
         Task SetBindingKey(long accountId, string password);
         Task<O10AccountDTO?> Authenticate(long accountId, string password);
+
+        Task<bool> IsAuthenticated(long accountId, CancellationToken ct);
 
         Task<IEnumerable<AttributeValue>> RequestIdentity(long accountId, string password, string email, string firstName, string lastName, string walletId);
 

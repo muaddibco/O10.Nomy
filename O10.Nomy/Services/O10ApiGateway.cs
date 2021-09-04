@@ -15,6 +15,7 @@ using O10.Client.Web.DataContracts;
 using O10.Client.Web.DataContracts.User;
 using Microsoft.AspNetCore.Http;
 using O10.Client.Web.DataContracts.ServiceProvider;
+using System.Threading;
 
 namespace O10.Nomy.Services
 {
@@ -179,12 +180,30 @@ namespace O10.Nomy.Services
                 .ReceiveJson<O10AccountDTO?>();
         }
 
+        public async Task<bool> IsAuthenticated(long accountId, CancellationToken ct)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("Accounts", accountId.ToString(), "BindingKey");
+
+            _logger.Debug(() => $"Sending O10 GET {req}");
+
+            try
+            {
+                var resp = await req.GetAsync(ct);
+
+                return resp.ResponseMessage.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async Task<O10AccountDTO?> Start(long accountId)
         {
             var req = _nomyConfig.O10Uri
                 .AppendPathSegments("Accounts", accountId.ToString(), "Start");
 
-            _logger.Debug(() => $"Sending O10 request {req}");
+            _logger.Debug(() => $"Sending O10 POST {req}");
 
             var account = await req
                 .PostAsync()

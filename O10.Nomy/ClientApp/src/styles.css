@@ -17,3 +17,30 @@ code {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+body.o10-container-mobile {
+}
+
+.container .o10-container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+body.o10-container-mobile .container1 {
+  height: 100%;
+  position: relative;
+  background: #fff url(/images/cellphone.png) no-repeat center center fixed;
+  background-size: contain;
+}
+
+  body.o10-container-mobile .container1 .contained {
+    position: absolute;
+    margin: auto;
+    height: 100%;
+    width: calc(100vh*0.405);
+    left: calc((100vw - 100vh * 0.5) / 2 + 100vh * 0.04);
+    top: calc(100vh*0.08);
+  }

@@ -5,21 +5,21 @@ using System.Threading.Tasks;
 
 namespace O10.Nomy.JointPurchases
 {
-    [RegisterExtension(typeof(IInitializer), Lifetime = LifetimeManagement.Singleton)]
+    [RegisterExtension(typeof(IInitializer), Lifetime = LifetimeManagement.Scoped)]
     public class JointPurchasesServiceInitializer : InitializerBase
     {
-        private readonly IJointPurchasesService _jointPurchasesService;
+        private readonly IJointServiceUpdater _jointServiceUpdater;
 
-        public JointPurchasesServiceInitializer(IJointPurchasesService jointPurchasesService)
+        public JointPurchasesServiceInitializer(IJointServiceUpdater jointServiceUpdater)
         {
-            _jointPurchasesService = jointPurchasesService;
+            _jointServiceUpdater = jointServiceUpdater;
         }
 
         public override ExtensionOrderPriorities Priority => ExtensionOrderPriorities.Lowest;
 
         protected override async Task InitializeInner(CancellationToken cancellationToken)
         {
-            await _jointPurchasesService.Initialize(cancellationToken);
+            await _jointServiceUpdater.Initialize(cancellationToken);
         }
     }
 }

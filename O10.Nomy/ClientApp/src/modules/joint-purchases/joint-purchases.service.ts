@@ -34,7 +34,7 @@ export class JointPurchasesService {
   }
 
   addJointGroupMember(groupId: number, email: string, description: string) {
-    return this.http.post<JointGroupMember>('/api/JointService/JointGroup/' + groupId + '/Members', { email, description });
+    return this.http.post<JointGroupMember>('/api/JointService/JointGroup/' + groupId + '/Member', { email, description });
   }
 }
 

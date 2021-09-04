@@ -18,6 +18,14 @@ export class AccountsAccessService {
   }
 
   authenticate(accountId: number, password: string) {
-    return this.http.post('/api/accounts/' + accountId + '/authenticate', { password })
+    return this.http.post('/api/accounts/' + accountId + '/auth', { password })
   }
+
+  isAuthenticated(accountId: number) {
+    return this.http.get<IsAuthenticated>('/api/accounts/' + accountId + '/auth')
+  }
+}
+
+export interface IsAuthenticated {
+  isAuthenticated: boolean
 }

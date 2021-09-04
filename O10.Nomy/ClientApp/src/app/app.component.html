@@ -1,6 +1,8 @@
-<body>
-  <app-nav-menu *ngIf="showNavMenu"></app-nav-menu>
-  <div [ngClass]="{'container': !isMobile, 'o10-container-mobile': isMobile}">
-    <router-outlet></router-outlet>
+<body [ngClass]="{'o10-container': !isMobile, 'o10-container-mobile': isMobile}">
+  <app-nav-menu *ngIf="showNavMenu" (isMobileChangedEvent)="onIsMobileChangedHandler($event)"></app-nav-menu>
+  <div class="container1">
+    <div class="contained">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </body>

@@ -20,6 +20,42 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserDetailsComponent = void 0;
 var core_1 = require("@angular/core");
@@ -30,10 +66,11 @@ var rxjs_1 = require("rxjs");
 var animations_1 = require("@angular/animations");
 var rxjs_2 = require("rxjs");
 var UserDetailsComponent = /** @class */ (function () {
-    function UserDetailsComponent(userAccessService, accountAccessService, expertAccessService, router, route, dialog) {
+    function UserDetailsComponent(userAccessService, accountAccessService, expertAccessService, appState, router, route, dialog) {
         this.userAccessService = userAccessService;
         this.accountAccessService = accountAccessService;
         this.expertAccessService = expertAccessService;
+        this.appState = appState;
         this.router = router;
         this.route = route;
         this.dialog = dialog;
@@ -46,18 +83,40 @@ var UserDetailsComponent = /** @class */ (function () {
     }
     UserDetailsComponent.prototype.ngOnInit = function () {
         var _this = this;
+        this.appState.setIsMobile(true);
         var userId = Number(this.route.snapshot.paramMap.get('userId'));
         var that = this;
-        this.accountAccessService.getAccountById(userId).subscribe(function (r) {
-            that.user = r;
-            var dialogRef = that.dialog.open(password_confirm_dialog_1.PasswordConfirmDialog, { data: { title: "Start account", confirmButtonText: "Submit" } });
-            dialogRef.afterClosed().subscribe(function (r) {
-                if (r) {
-                    that.authenticateUser(that, r);
+        this.accountAccessService.getAccountById(userId).subscribe(function (r) { return __awaiter(_this, void 0, void 0, function () {
+            var passwordSet, res, dialogRef;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        that.user = r;
+                        passwordSet = false;
+                        if (!(sessionStorage.getItem("passwordSet") === "true")) return [3 /*break*/, 2];
+                        return [4 /*yield*/, that.accountAccessService.isAuthenticated(r.accountId).toPromise()];
+                    case 1:
+                        res = _a.sent();
+                        passwordSet = res.isAuthenticated;
+                        _a.label = 2;
+                    case 2:
+                        if (!passwordSet) {
+                            dialogRef = that.dialog.open(password_confirm_dialog_1.PasswordConfirmDialog, { data: { title: "Start account", confirmButtonText: "Submit" } });
+                            dialogRef.afterClosed().subscribe(function (r) {
+                                if (r) {
+                                    that.authenticateUser(that, r);
+                                }
+                                that.isLoaded = true;
+                            });
+                        }
+                        else {
+                            that.isLoaded = true;
+                            that.initiateChatHub(that);
+                        }
+                        return [2 /*return*/];
                 }
-                that.isLoaded = true;
             });
-        }, function (e) {
+        }); }, function (e) {
         });
         this.paymentHub = new signalr_1.HubConnectionBuilder()
             .withUrl('/payments')
@@ -91,7 +150,7 @@ var UserDetailsComponent = /** @class */ (function () {
             console.info("Started session " + sessionInfo.sessionId + ", launching periodic invoice issuing...");
             _this.isSessionStarted = true;
             _this.issueInvoice();
-            _this.paymentSubscription = rxjs_1.interval(60000).subscribe(function (v) {
+            _this.paymentSubscription = (0, rxjs_1.interval)(60000).subscribe(function (v) {
                 _this.issueInvoice();
             });
         });
@@ -109,6 +168,7 @@ var UserDetailsComponent = /** @class */ (function () {
         that.accountAccessService.authenticate(that.user.accountId, password)
             .subscribe(function (a) {
             console.info("user authenticated successfully");
+            sessionStorage.setItem("passwordSet", "true");
             that.initiateChatHub(that);
         }, function (e) {
             console.error("failed to authenticate user", e);
@@ -145,16 +205,16 @@ var UserDetailsComponent = /** @class */ (function () {
         this.router.navigate(['qr-scan', this.user.accountId]);
     };
     UserDetailsComponent = __decorate([
-        core_1.Component({
+        (0, core_1.Component)({
             selector: 'app-user-details',
             templateUrl: './user-details.component.html',
             styleUrls: ['./user-details.component.css'],
             encapsulation: core_1.ViewEncapsulation.None,
             animations: [
-                animations_1.trigger('detailExpand', [
-                    animations_1.state('collapsed', animations_1.style({ height: '0px', minHeight: '0' })),
-                    animations_1.state('expanded', animations_1.style({ height: '*' })),
-                    animations_1.transition('expanded <=> collapsed', animations_1.animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+                (0, animations_1.trigger)('detailExpand', [
+                    (0, animations_1.state)('collapsed', (0, animations_1.style)({ height: '0px', minHeight: '0' })),
+                    (0, animations_1.state)('expanded', (0, animations_1.style)({ height: '*' })),
+                    (0, animations_1.transition)('expanded <=> collapsed', (0, animations_1.animate)('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
                 ]),
             ]
         })

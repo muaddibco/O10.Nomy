@@ -147,9 +147,14 @@ namespace O10.Nomy.Data.Migrations
                     b.Property<long>("O10RegistrationId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("RegistrationJointServiceRegistrationId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("JointGroupId");
 
                     b.HasIndex("O10RegistrationId");
+
+                    b.HasIndex("RegistrationJointServiceRegistrationId");
 
                     b.ToTable("JointGroups");
                 });
@@ -180,6 +185,31 @@ namespace O10.Nomy.Data.Migrations
                     b.HasIndex("GroupJointGroupId");
 
                     b.ToTable("JointGroupMembers");
+                });
+
+            modelBuilder.Entity("O10.Nomy.Models.JointServiceRegistration", b =>
+                {
+                    b.Property<long>("JointServiceRegistrationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("O10RegistrationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("RegistrationCommitment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("JointServiceRegistrationId");
+
+                    b.HasIndex("O10RegistrationId");
+
+                    b.ToTable("JointServiceRegistrations");
                 });
 
             modelBuilder.Entity("O10.Nomy.Models.NomyAccount", b =>
@@ -435,6 +465,15 @@ namespace O10.Nomy.Data.Migrations
                         .HasForeignKey("UserNomyUserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("O10.Nomy.Models.JointGroup", b =>
+                {
+                    b.HasOne("O10.Nomy.Models.JointServiceRegistration", "Registration")
+                        .WithMany()
+                        .HasForeignKey("RegistrationJointServiceRegistrationId");
+
+                    b.Navigation("Registration");
                 });
 
             modelBuilder.Entity("O10.Nomy.Models.JointGroupMember", b =>

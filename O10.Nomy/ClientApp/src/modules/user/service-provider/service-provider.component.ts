@@ -184,9 +184,11 @@ export class ServiceProviderComponent implements OnInit {
     this.service.sendUniversalProofs(this.userId, req).subscribe(
       r => {
         console.info("sending universal proofs of authentication succeeded")
+        this.router.navigate(['/user-details', this.userId])
       },
       e => {
         console.error("sending universal proofs of authentication failed", e)
+        this.router.navigate(['/user-details', this.userId])
       }
     )
   }

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-nav-menu',
@@ -7,6 +8,7 @@ import { Component } from '@angular/core';
 })
 export class NavMenuComponent {
   isExpanded = false;
+  @Output() isMobileChangedEvent = new EventEmitter<boolean>();
 
   collapse() {
     this.isExpanded = false;
@@ -14,5 +16,9 @@ export class NavMenuComponent {
 
   toggle() {
     this.isExpanded = !this.isExpanded;
+  }
+
+  onMobileChanged(event: MatSlideToggleChange) {
+    this.isMobileChangedEvent.emit(event.checked)
   }
 }

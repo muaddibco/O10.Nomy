@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AppStateService } from '../../../app/app-state.service';
 import { UserActionType } from '../models/user-action-type';
 import { UserAccessService } from '../user-access.service';
 
@@ -16,11 +17,13 @@ export class QrScanComponent implements OnInit {
   public userId: number
 
   constructor(
+    private appState: AppStateService,
     private service: UserAccessService,
     private route: ActivatedRoute,
     private router: Router) { }
 
   ngOnInit(): void {
+    this.appState.setIsMobile(true)
     this.userId = Number(this.route.snapshot.paramMap.get('userId'))
     this.isLoaded = true
   }

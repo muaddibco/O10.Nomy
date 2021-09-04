@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AppStateService } from '../app-state.service';
 
 @Component({
   selector: 'app-home',
@@ -7,8 +8,12 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private router: Router) {
-
+  constructor(private router: Router, private appState: AppStateService) {
+    this.appState.StateChanged.subscribe(s => {
+      if (s.isMobile) {
+        this.router.navigate(['/user-entry'])
+      }
+    })
   }
 
   ngOnInit() {

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace O10.Nomy.Services
 {
-    [RegisterExtension(typeof(IInitializer), Lifetime = LifetimeManagement.Singleton)]
+    [RegisterExtension(typeof(IInitializer), Lifetime = LifetimeManagement.Scoped)]
     public class NomyContextInitializer : InitializerBase
     {
         public readonly UserDTO _demoUser = new()

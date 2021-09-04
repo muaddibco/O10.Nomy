@@ -10,7 +10,8 @@ exports.QrScanComponent = void 0;
 var core_1 = require("@angular/core");
 var user_action_type_1 = require("../models/user-action-type");
 var QrScanComponent = /** @class */ (function () {
-    function QrScanComponent(service, route, router) {
+    function QrScanComponent(appState, service, route, router) {
+        this.appState = appState;
         this.service = service;
         this.route = route;
         this.router = router;
@@ -18,6 +19,7 @@ var QrScanComponent = /** @class */ (function () {
         this.isQrCodeSet = false;
     }
     QrScanComponent.prototype.ngOnInit = function () {
+        this.appState.setIsMobile(true);
         this.userId = Number(this.route.snapshot.paramMap.get('userId'));
         this.isLoaded = true;
     };
@@ -46,7 +48,7 @@ var QrScanComponent = /** @class */ (function () {
         this.router.navigate(['user-details', this.userId]);
     };
     QrScanComponent = __decorate([
-        core_1.Component({
+        (0, core_1.Component)({
             selector: 'app-qr-scan',
             templateUrl: './qr-scan.component.html',
             styleUrls: ['./qr-scan.component.css']

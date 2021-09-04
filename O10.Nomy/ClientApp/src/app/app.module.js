@@ -19,6 +19,7 @@ var counter_component_1 = require("./counter/counter.component");
 var fetch_data_component_1 = require("./fetch-data/fetch-data.component");
 var animations_1 = require("@angular/platform-browser/animations");
 var grid_list_1 = require("@angular/material/grid-list");
+var slide_toggle_1 = require("@angular/material/slide-toggle");
 var user_module_1 = require("../modules/user/user.module");
 var experts_module_1 = require("../modules/experts/experts.module");
 var joint_purchases_module_1 = require("../modules/joint-purchases/joint-purchases.module");
@@ -26,7 +27,7 @@ var AppModule = /** @class */ (function () {
     function AppModule() {
     }
     AppModule = __decorate([
-        core_1.NgModule({
+        (0, core_1.NgModule)({
             declarations: [
                 app_component_1.AppComponent,
                 nav_menu_component_1.NavMenuComponent,
@@ -38,7 +39,7 @@ var AppModule = /** @class */ (function () {
                 platform_browser_1.BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
                 http_1.HttpClientModule,
                 forms_1.FormsModule,
-                grid_list_1.MatGridListModule,
+                grid_list_1.MatGridListModule, slide_toggle_1.MatSlideToggleModule,
                 user_module_1.UserModule, experts_module_1.ExpertsModule, joint_purchases_module_1.JointPurchasesModule,
                 router_1.RouterModule.forRoot([
                     { path: '', component: home_component_1.HomeComponent, pathMatch: 'full' }

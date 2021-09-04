@@ -35,7 +35,7 @@ var IdentitiesModule = /** @class */ (function () {
     function IdentitiesModule() {
     }
     IdentitiesModule = __decorate([
-        core_1.NgModule({
+        (0, core_1.NgModule)({
             declarations: [
                 user_attributes_component_1.UserAttributesComponent
             ],

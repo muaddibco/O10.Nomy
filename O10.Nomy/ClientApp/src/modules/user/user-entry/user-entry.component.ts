@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserDto } from '../../accounts/models/account'
 import { Router } from '@angular/router';
-import { AccountsAccessService } from '../../accounts/accounts-access.service';
+import { AppStateService } from '../../../app/app-state.service';
 
 @Component({
   selector: 'app-user-entry',
@@ -16,10 +16,11 @@ export class UserEntryComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private userAccessService: AccountsAccessService)
+    private appState: AppStateService)
   { }
 
   ngOnInit(): void {
+    this.appState.setIsMobile(true)
     this.isLoaded = true
   }
 

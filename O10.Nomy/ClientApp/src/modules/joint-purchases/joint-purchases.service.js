@@ -31,7 +31,7 @@ var JointPurchasesService = /** @class */ (function () {
         return this.http.get('/api/JointService/JointGroup/' + groupId + '/Members');
     };
     JointPurchasesService.prototype.addJointGroupMember = function (groupId, email, description) {
-        return this.http.post('/api/JointService/JointGroup/' + groupId + '/Members', { email: email, description: description });
+        return this.http.post('/api/JointService/JointGroup/' + groupId + '/Member', { email: email, description: description });
     };
     JointPurchasesService = __decorate([
         core_1.Injectable({

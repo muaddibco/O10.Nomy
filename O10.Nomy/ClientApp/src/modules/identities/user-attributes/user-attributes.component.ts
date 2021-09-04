@@ -5,6 +5,7 @@ import { AttributesAccessService } from '../attributes-access.service';
 import { AttributeScheme } from '../models/attribute-scheme';
 import { DataSource } from '@angular/cdk/collections';
 import { Observable, ReplaySubject } from 'rxjs';
+import { AppStateService } from '../../../app/app-state.service';
 
 @Component({
   selector: 'app-user-attributes',
@@ -21,6 +22,7 @@ import { Observable, ReplaySubject } from 'rxjs';
 })
 export class UserAttributesComponent implements OnInit {
 
+  private userId: number
   public isLoaded = false
   public attributeSchemes: AttributeScheme[] = []
   public dataSource = new AttributeSchemesDataSource(this.attributeSchemes)
@@ -31,12 +33,14 @@ export class UserAttributesComponent implements OnInit {
 
   constructor(
     private attributesService: AttributesAccessService,
+    private appState: AppStateService,
     private router: Router,
     private route: ActivatedRoute ) { }
 
   ngOnInit(): void {
-    var userId = Number(this.route.snapshot.paramMap.get('userId'))
-    this.attributesService.getUserAttributes(userId).subscribe(
+    this.appState.setIsMobile(true)
+    this.userId = Number(this.route.snapshot.paramMap.get('userId'))
+    this.attributesService.getUserAttributes(this.userId).subscribe(
       r => {
         this.attributeSchemes = r
 
@@ -54,6 +58,9 @@ export class UserAttributesComponent implements OnInit {
     )
   }
 
+  onBack() {
+    this.router.navigate(['/user-details', this.userId])
+  }
 }
 
 class AttributeSchemesDataSource extends DataSource<AttributeScheme> {

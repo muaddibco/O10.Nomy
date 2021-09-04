@@ -28,9 +28,9 @@ namespace O10.Nomy.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<NomyAccountDTO>> GetJointServiceAccount()
+        public async Task<ActionResult<NomyAccountDTO>> GetJointServiceAccount(CancellationToken cancellationToken)
         {
-            return Ok(new NomyAccountDTO { AccountId = (await _jointPurchasesService.GetJointServiceRecord()).Account.NomyAccountId });
+            return Ok(new NomyAccountDTO { AccountId = (await _jointPurchasesService.GetJointServiceRecord(cancellationToken)).Account.NomyAccountId });
         }
 
         [HttpGet("O10Hub")]
@@ -40,27 +40,27 @@ namespace O10.Nomy.Controllers
         }
 
         [HttpPost("{o10RegistrationId}/JointGroup")]
-        public async Task<ActionResult<JointGroupDTO>> AddJointGroup(long o10RegistrationId, [FromBody] AddJointGroupRequestDTO addJointGroupRequest)
+        public async Task<ActionResult<JointGroupDTO>> AddJointGroup(long o10RegistrationId, [FromBody] AddJointGroupRequestDTO addJointGroupRequest, CancellationToken cancellationToken)
         {
-            return await _jointPurchasesService.AddJointGroup(o10RegistrationId, addJointGroupRequest.Name, addJointGroupRequest.Description);
+            return await _jointPurchasesService.AddJointGroup(o10RegistrationId, addJointGroupRequest.Name, addJointGroupRequest.Description, cancellationToken);
         }
 
         [HttpGet("{o10RegistrationId}/JointGroups")]
-        public async Task<ActionResult<List<JointGroupDTO>>> GetJointGroups(long o10RegistrationId)
+        public async Task<ActionResult<List<JointGroupDTO>>> GetJointGroups(long o10RegistrationId, CancellationToken cancellationToken)
         {
-            return await _jointPurchasesService.GetJointGroups(o10RegistrationId);
+            return await _jointPurchasesService.GetJointGroups(o10RegistrationId, cancellationToken);
         }
 
         [HttpPost("JointGroup/{groupId}/Member")]
-        public async Task<ActionResult<JointGroupMemberDTO>> AddJointGroupMember(long groupId, [FromBody] JointGroupMemberDTO jointGroupMember)
+        public async Task<ActionResult<JointGroupMemberDTO>> AddJointGroupMember(long groupId, [FromBody] JointGroupMemberDTO jointGroupMember, CancellationToken cancellationToken)
         {
-            return await _jointPurchasesService.AddJointGroupMember(groupId, jointGroupMember.Email, jointGroupMember.Description);
+            return await _jointPurchasesService.AddJointGroupMember(groupId, jointGroupMember.Email, jointGroupMember.Description, cancellationToken);
         }
 
         [HttpGet("JointGroup/{groupId}/Members")]
-        public async Task<ActionResult<List<JointGroupMemberDTO>>> GetJointGroupMembers(long groupId)
+        public async Task<ActionResult<List<JointGroupMemberDTO>>> GetJointGroupMembers(long groupId, CancellationToken cancellationToken)
         {
-            return await _jointPurchasesService.GetJointGroupMembers(groupId);
+            return await _jointPurchasesService.GetJointGroupMembers(groupId, cancellationToken);
         }
     }
 }

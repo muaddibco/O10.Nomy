@@ -1,40 +1,32 @@
-@media (max-width: 767px) {
+/*@media (max-width: 767px) {*/
   /* On small screens, the nav menu spans the full width of the screen. Leave a space for it. */
   .body-content {
     padding-top: 50px;
   }
 
-  .o10-container {
-    width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
-    margin-left: auto;
+  .o10-container-mobile .main-view {
+    max-width: 300px;
+    padding: 5px;
   }
 
-  .o10-container-mobile {
-    width: 100%;
-    margin-right: auto;
-    margin-left: auto;
-  }
-
-    .o10-container-mobile .main-view {
-      max-width: 300px;
-      padding: 5px;
-    }
-
-    .o10-container-mobile .footer {
-      position: fixed;
-      left: 0px;
-      bottom: 0px;
-      background-color: lightblue;
-      width: 100%;
-      text-align: center;
-      font-size: small;
-    }
-
-    .o10-container-mobile .footer td {
-        padding: 15px;
-        width: 50%;
-    }
+.o10-container-mobile .footer {
+  position: absolute;
+  left: 0px;
+  bottom: calc(100vh*0.12);
+  width: 100%;
+  text-align: center;
+  font-size: small;
+  min-height: calc(100vh*0.08)
 }
+
+  .o10-container-mobile .footer div {
+    margin: 0 auto calc(100vh*0.04) auto;
+  }
+
+  .o10-container-mobile .footer div.buttons2 button {
+      width: calc(100vh*0.12)
+  }
+    .o10-container-mobile .footer div.buttons2 button:not(:first-of-type) {
+      margin-left: calc(100vh*0.05)
+    }
+/*}*/

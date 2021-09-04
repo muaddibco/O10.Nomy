@@ -16,6 +16,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { PaymentRecordEntry } from '../../experts/models/payment-record-entry';
 import { ReplaySubject } from 'rxjs';
 import { Observable } from 'rxjs';
+import { AppStateService } from '../../../app/app-state.service';
 
 @Component({
   selector: 'app-user-details',
@@ -51,26 +52,40 @@ export class UserDetailsComponent implements OnInit {
     private userAccessService: UserAccessService,
     private accountAccessService: AccountsAccessService,
     private expertAccessService: ExpertsAccessService,
+    private appState: AppStateService,
     private router: Router,
     private route: ActivatedRoute,
     public dialog: MatDialog ) { }
 
   ngOnInit(): void {
+    this.appState.setIsMobile(true)
     var userId = Number(this.route.snapshot.paramMap.get('userId'))
     let that = this;
     this.accountAccessService.getAccountById(userId).subscribe(
-      r => {
+      async r => {
         that.user = r
-        var dialogRef = that.dialog.open(PasswordConfirmDialog, { data: { title: "Start account", confirmButtonText: "Submit" } });
-        dialogRef.afterClosed().subscribe(
-          r => {
-            if (r) {
-              that.authenticateUser(that, r);
-            }
 
-            that.isLoaded = true
-          }
-        )
+        var passwordSet = false
+        if (sessionStorage.getItem("passwordSet") === "true") {
+          var res = await that.accountAccessService.isAuthenticated(r.accountId).toPromise()
+          passwordSet = res.isAuthenticated
+        }
+
+        if (!passwordSet) {
+          var dialogRef = that.dialog.open(PasswordConfirmDialog, { data: { title: "Start account", confirmButtonText: "Submit" } });
+          dialogRef.afterClosed().subscribe(
+            r => {
+              if (r) {
+                that.authenticateUser(that, r);
+              }
+
+              that.isLoaded = true
+            }
+          )
+        } else {
+          that.isLoaded = true
+          that.initiateChatHub(that);
+        }
       },
       e => {
       })
@@ -142,6 +157,7 @@ export class UserDetailsComponent implements OnInit {
       .subscribe(
         a => {
           console.info("user authenticated successfully")
+          sessionStorage.setItem("passwordSet", "true")
           that.initiateChatHub(that);
         },
         e => {

@@ -14,6 +14,8 @@ namespace O10.Nomy.Models
         public string Name { get; set; }
         public string Description { get; set; }
 
+        public JointServiceRegistration Registration { get; set; }
+
         public virtual Collection<JointGroupMember> Members { get; set; }
     }
 }

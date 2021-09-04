@@ -144,6 +144,7 @@ var ServiceProviderComponent = /** @class */ (function () {
         configurable: true
     });
     ServiceProviderComponent.prototype.onSubmit = function () {
+        var _this = this;
         this.submitted = true;
         this.submitClick = true;
         this.processCameraCapture();
@@ -157,8 +158,10 @@ var ServiceProviderComponent = /** @class */ (function () {
         };
         this.service.sendUniversalProofs(this.userId, req).subscribe(function (r) {
             console.info("sending universal proofs of authentication succeeded");
+            _this.router.navigate(['/user-details', _this.userId]);
         }, function (e) {
             console.error("sending universal proofs of authentication failed", e);
+            _this.router.navigate(['/user-details', _this.userId]);
         });
     };
     ServiceProviderComponent.prototype.onCancel = function () {
@@ -179,7 +182,7 @@ var ServiceProviderComponent = /** @class */ (function () {
         }
     };
     ServiceProviderComponent = __decorate([
-        core_1.Component({
+        (0, core_1.Component)({
             selector: 'app-service-provider',
             templateUrl: './service-provider.component.html',
             styleUrls: ['./service-provider.component.css']

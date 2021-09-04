@@ -14,7 +14,7 @@ var AccountsModule = /** @class */ (function () {
     function AccountsModule() {
     }
     AccountsModule = __decorate([
-        core_1.NgModule({
+        (0, core_1.NgModule)({
             declarations: [],
             imports: [
                 common_1.CommonModule

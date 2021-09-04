@@ -9,13 +9,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserEntryComponent = void 0;
 var core_1 = require("@angular/core");
 var UserEntryComponent = /** @class */ (function () {
-    function UserEntryComponent(router, userAccessService) {
+    function UserEntryComponent(router, appState) {
         this.router = router;
-        this.userAccessService = userAccessService;
+        this.appState = appState;
         this.showUserNotExist = false;
         this.isLoaded = false;
     }
     UserEntryComponent.prototype.ngOnInit = function () {
+        this.appState.setIsMobile(true);
         this.isLoaded = true;
     };
     UserEntryComponent.prototype.onSignIn = function () {
@@ -25,7 +26,7 @@ var UserEntryComponent = /** @class */ (function () {
         this.router.navigate(['user-register']);
     };
     UserEntryComponent = __decorate([
-        core_1.Component({
+        (0, core_1.Component)({
             selector: 'app-user-entry',
             templateUrl: './user-entry.component.html',
             styleUrls: ['./user-entry.component.css']

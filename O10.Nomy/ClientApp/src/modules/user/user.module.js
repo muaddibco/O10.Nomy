@@ -50,7 +50,7 @@ var UserModule = /** @class */ (function () {
     function UserModule() {
     }
     UserModule = __decorate([
-        core_1.NgModule({
+        (0, core_1.NgModule)({
             declarations: [
                 user_entry_component_1.UserEntryComponent,
                 user_registration_component_1.UserRegistrationComponent,

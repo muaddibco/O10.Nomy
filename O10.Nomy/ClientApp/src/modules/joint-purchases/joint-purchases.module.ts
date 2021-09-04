@@ -30,6 +30,7 @@ import { QrCodeExModule } from '../qrcode/qrcode.module'
 import { JointEntryComponent } from './joint-entry/joint-entry.component';
 import { JointMainComponent } from './joint-main/joint-main.component';
 import { AddJointGroupDialog } from './add-jointgroup-dialog/add-jointgroup.dialog';
+import { AddJointGroupMemberDialog } from './add-jointgroupmember-dialog/add-jointgroupmember.dialog';
 import { JointGroupAdminComponent } from './joint-group-admin/joint-group-admin.component';
 import { JointGroupComponent } from './joint-group/joint-group.component'
 
@@ -39,6 +40,7 @@ import { JointGroupComponent } from './joint-group/joint-group.component'
     JointEntryComponent,
     JointMainComponent,
     AddJointGroupDialog,
+    AddJointGroupMemberDialog,
     JointGroupAdminComponent,
     JointGroupComponent
   ],

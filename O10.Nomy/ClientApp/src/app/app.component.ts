@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
+import { AppStateService } from './app-state.service';
 
 @Component({
   selector: 'app-root',
@@ -12,8 +13,12 @@ export class AppComponent implements OnInit {
   public isMobile = false;
   public showNavMenu = false;
 
-  constructor(private router: Router) {
-
+  constructor(private router: Router, private appState: AppStateService, private changeDetector: ChangeDetectorRef) {
+    this.appState.StateChanged.subscribe(s => {
+      this.isMobile = s.isMobile
+      this.showNavMenu = !s.isMobile
+      this.changeDetector.detectChanges()
+    })
   }
 
   ngOnInit() {
@@ -25,6 +30,15 @@ export class AppComponent implements OnInit {
     else {
       this.showNavMenu = true;
       this.isMobile = false;
+    }
+  }
+
+  onIsMobileChangedHandler(isMobile: boolean) {
+    this.isMobile = isMobile
+    this.showNavMenu = !isMobile;
+
+    if (isMobile) {
+      this.appState.setIsMobile(isMobile)
     }
   }
 }

@@ -44,13 +44,20 @@ namespace O10.Nomy.Controllers
             return Ok(_translatorsRepository.GetInstance<NomyUser?, UserDetailsDTO?>().Translate(await _dataAccessService.FindUser(accountAlias, ct)));
         }
 
-        [HttpPost("{accountId}/Authenticate")]
+        [HttpPost("{accountId}/Auth")]
         public async Task<IActionResult> Authenticate(long accountId, [FromBody] AuthenticateAccountDTO authenticateAccount, CancellationToken ct)
         {
             var user = await _dataAccessService.GetUser(accountId, ct);
             var account = await _apiGateway.Authenticate(user.Account.O10Id, authenticateAccount.Password);
 
             return Ok(account);
+        }
+
+        [HttpGet("{accountId}/Auth")]
+        public async Task<IActionResult> IsAuthenticated(long accountId, CancellationToken ct)
+        {
+            var user = await _dataAccessService.GetUser(accountId, ct);
+            return Ok(new { IsAuthenticated = await _apiGateway.IsAuthenticated(user.Account.O10Id, ct)});
         }
 
         [HttpPost]
