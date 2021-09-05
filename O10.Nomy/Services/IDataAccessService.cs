@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace O10.Nomy.Services
 {
     [ServiceContract]
-    public interface IDataAccessService
+    public partial interface IDataAccessService
     {
         #region Users
         Task<NomyUser?> UpdateO10Id(long userId, long o10Id, CancellationToken ct);

@@ -3,7 +3,7 @@ using O10.Nomy.Models;
 
 namespace O10.Nomy.Data
 {
-    public class ApplicationDbContext : DbContext //: ApiAuthorizationDbContext<ApplicationUser>
+    public partial class ApplicationDbContext : DbContext //: ApiAuthorizationDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

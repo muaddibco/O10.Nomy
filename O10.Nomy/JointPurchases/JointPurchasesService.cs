@@ -78,6 +78,16 @@ namespace O10.Nomy.JointPurchases
             //
             // "From" field is a email address of the group admin
 
+            /*
+             * When verifier will need to check the signature she'll scan a QR code
+             * Scanned QR code will cause opening a page where information about the signature will be shown
+             * That page will invoke an endpoint that will bring all required information for showing up a report about the signature
+             * How that page will know what to show?
+             * First of all, the report will be composed out of statements and their status. E.g. Sender was owning the group at the time of sending, Sender owns the group at the present time, etc.
+             * In sake of demo purposes that list will be just a flat list, or, more precisely, two lists, one with expected values and another with list of items to be requested at the time of verification
+             * 
+             */
+
             MailDescriptor mailDescriptor = new MailDescriptor
             {
 

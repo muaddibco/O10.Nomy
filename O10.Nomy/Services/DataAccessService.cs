@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace O10.Nomy.Services
 {
     [RegisterDefaultImplementation(typeof(IDataAccessService), Lifetime = LifetimeManagement.Scoped)]
-    public class DataAccessService : IDataAccessService
+    public partial class DataAccessService : IDataAccessService
     {
         private readonly ApplicationDbContext _dbContext;
 
