@@ -16,8 +16,11 @@ var AppStateService = /** @class */ (function () {
         };
     }
     AppStateService.prototype.setIsMobile = function (isMobile) {
+        var emit = this.state.isMobile !== isMobile;
         this.state.isMobile = isMobile;
-        this.StateChanged.emit(this.state);
+        if (emit) {
+            this.StateChanged.emit(this.state);
+        }
     };
     AppStateService = __decorate([
         (0, core_1.Injectable)({

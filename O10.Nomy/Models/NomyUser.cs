@@ -18,5 +18,7 @@ namespace O10.Nomy.Models
         public string? BeneficiaryId { get; set; }
 
         public string? SenderId { get; set; }
+
+        public long? AdversaryFrom { get; set; }
     }
 }

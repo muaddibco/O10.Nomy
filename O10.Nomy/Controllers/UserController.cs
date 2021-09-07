@@ -9,6 +9,8 @@ using O10.Nomy.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using O10.Client.Web.DataContracts.User;
 using System.Collections.Generic;
+using O10.Nomy.DemoFeatures;
+using O10.Nomy.DemoFeatures.Models;
 
 namespace O10.Nomy.Controllers
 {
@@ -19,18 +21,21 @@ namespace O10.Nomy.Controllers
         private readonly IRapydApi _rapydApi;
         private readonly IO10ApiGateway _o10ApiGateway;
         private readonly IPaymentSessionsService _paymentSessionsService;
+        private readonly ISessionsPool _sessionsPool;
         private readonly IDataAccessService _dataAccessService;
         private readonly IHubContext<ChatSessionHub> _hubContext;
 
         public UserController(IRapydApi rapydApi,
                               IO10ApiGateway o10ApiGateway,
                               IPaymentSessionsService paymentSessionsService,
+                              ISessionsPool sessionsPool,
                               IHubContext<ChatSessionHub> hubContext,
                               IDataAccessService dataAccessService)
         {
             _rapydApi = rapydApi;
             _o10ApiGateway = o10ApiGateway;
             _paymentSessionsService = paymentSessionsService;
+            _sessionsPool = sessionsPool;
             _dataAccessService = dataAccessService;
             _hubContext = hubContext;
         }
@@ -96,6 +101,8 @@ namespace O10.Nomy.Controllers
         public async Task<IActionResult> SendUniversalProofs(long accountId, [FromBody] UniversalProofsSendingRequest universalProofs, CancellationToken ct)
         {
             var user = await _dataAccessService.GetUser(accountId, ct);
+
+            _sessionsPool.Push(new UserSessionInfo { SessionKey = universalProofs.SessionKey, UserId = accountId });
 
             universalProofs.IdentityPools = new List<UniversalProofsSendingRequest.IdentityPool>
             {

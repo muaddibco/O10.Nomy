@@ -70,26 +70,30 @@
   </div>
   <div class="footer">
     <table>
-      <tr>
+      <!--<tr>
         <td>
           <button (click)="gotoExperts()">anonymously find an expert for your needs</button>
         </td>
         <td>
           find confidential communities with anonymous decision making
         </td>
-      </tr>
+      </tr>-->
       <tr>
-        <td colspan="2" style="padding-bottom: 0px">
+        <td style="padding-bottom: 0px">
           <button mat-button (click)="gotoQrScan()">
             <div style="display: inline-block; text-align: center;">
               <img src="/images/qr-code-80.png" />
               <p style="font-size:small; text-align:center; color:darkgray">Click to scan</p>
             </div>
           </button>
-          <!--<div style="display: inline-block; text-align: center; padding-bottom: 8px" *ngIf="isQrCodeSet">
-            <qrcode [qrdata]="qrContent" size="64" errorCorrectionLevel="'L'" scale="2"></qrcode>
-            <p style="font-size: small; text-align: center; color: darkgray; margin-top: 17px" (click)="clearQr()">Click to clear</p>
-          </div>-->
+        </td>
+        <td>
+          <button mat-button (click)="gotoDuplicate()">
+            <div style="display: inline-block; text-align: center;">
+              <img src="/images/clone-50.png" />
+              <p style="font-size:small; text-align:center; color:darkgray">Click to scan</p>
+            </div>
+          </button>
         </td>
       </tr>
     </table>

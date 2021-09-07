@@ -21,6 +21,10 @@ export class AccountsAccessService {
     return this.http.post('/api/accounts/' + accountId + '/auth', { password })
   }
 
+  duplicate(accountId: number, newEmail: string) {
+    return this.http.post('/api/accounts/' + accountId + '/duplicate', { newEmail })
+  }
+
   isAuthenticated(accountId: number) {
     return this.http.get<IsAuthenticated>('/api/accounts/' + accountId + '/auth')
   }

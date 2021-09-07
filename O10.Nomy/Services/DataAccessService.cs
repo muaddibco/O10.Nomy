@@ -144,7 +144,9 @@ namespace O10.Nomy.Services
 
         public async Task<NomyUser> CreateUser(long o10Id, string email, string firstName, string lastName, string walletId, string? beneficiaryId, string? senderId, CancellationToken ct)
         {
-            var account = await GetAccountAsync(o10Id, ct); var res = await _dbContext.Users.AddAsync(new NomyUser
+            var account = await GetOrCreateAccountAsync(o10Id, ct); 
+            
+            var res = await _dbContext.Users.AddAsync(new NomyUser
             {
                 Account = account,
                 Email = email,
@@ -160,7 +162,7 @@ namespace O10.Nomy.Services
             return res.Entity;
         }
 
-        private async Task<NomyAccount> GetAccountAsync(long o10Id, CancellationToken ct)
+        private async Task<NomyAccount> GetOrCreateAccountAsync(long o10Id, CancellationToken ct)
         {
             var account = await _dbContext.Accounts.FirstOrDefaultAsync(a => a.O10Id == o10Id, ct);
 
@@ -191,13 +193,36 @@ namespace O10.Nomy.Services
             return res;
         }
 
+        public async Task<NomyUser?> DuplicateUser(long userId, long newO10AccountId, string newEmail, CancellationToken ct)
+        {
+            var user = await _dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(c => c.Account.NomyAccountId == userId, ct);
+
+            var account = await GetOrCreateAccountAsync(newO10AccountId, ct);
+
+            var res = await _dbContext.Users.AddAsync(new NomyUser
+            {
+                Account = account,
+                Email = newEmail,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                WalletId = user.WalletId,
+                BeneficiaryId = user.BeneficiaryId,
+                SenderId = user.SenderId,
+                AdversaryFrom = user.Account.NomyAccountId
+            }, ct);
+
+            await _dbContext.SaveChangesAsync(ct);
+
+            return res.Entity;
+        }
+
         #endregion Users
 
         #region Nomy Service Provider
 
         public async Task<NomyServiceProvider> CreateServiceProvider(long o10Id, string name, CancellationToken ct)
         {
-            var account = await GetAccountAsync(o10Id, ct); var res = await _dbContext.ServiceProviders.AddAsync(new NomyServiceProvider
+            var account = await GetOrCreateAccountAsync(o10Id, ct); var res = await _dbContext.ServiceProviders.AddAsync(new NomyServiceProvider
             {
                 Account = account,
                 Name = name

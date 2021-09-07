@@ -85,5 +85,17 @@ namespace O10.Nomy.Controllers
 
             return Ok(_translatorsRepository.GetInstance<NomyUser, UserDetailsDTO>().Translate(userPoco));
         }
+
+        [HttpPost("{accountId}/Duplicate")]
+        public async Task<IActionResult> Duplicate(long accountId, [FromBody] DuplicateAccountRequestDTO duplicateAccountRequest, CancellationToken cancellationToken)
+        {
+            var user = await _dataAccessService.GetUser(accountId, cancellationToken);
+
+            var newO10User = await _apiGateway.DuplicateAccount(user.Account.O10Id, duplicateAccountRequest.NewEmail);
+
+            var newUser = await _dataAccessService.DuplicateUser(user.Account.NomyAccountId, newO10User.AccountId, duplicateAccountRequest.NewEmail, cancellationToken);
+            
+            return Ok(_translatorsRepository.GetInstance<NomyUser, UserDetailsDTO>().Translate(newUser));
+        }
     }
 }

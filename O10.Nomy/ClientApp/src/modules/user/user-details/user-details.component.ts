@@ -198,6 +198,10 @@ export class UserDetailsComponent implements OnInit {
   public gotoQrScan() {
     this.router.navigate(['qr-scan', this.user.accountId])
   }
+
+  public gotoDuplicate() {
+    this.router.navigate(['duplicate', this.user.accountId])
+  }
 }
 
 class PaymentsDataSource extends DataSource<PaymentRecordEntry> {

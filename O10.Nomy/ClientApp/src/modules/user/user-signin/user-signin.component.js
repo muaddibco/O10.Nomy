@@ -43,12 +43,12 @@ var UserSigninComponent = /** @class */ (function () {
                 _this.showError = true;
             }
             else {
-                _this.router.navigate(['user-details', a.accountId]);
+                _this.router.navigate(['/user-details', a.accountId]);
             }
         });
     };
     UserSigninComponent.prototype.onCancel = function () {
-        this.router.navigate(['user-entry']);
+        this.router.navigate(['/user-entry']);
     };
     UserSigninComponent = __decorate([
         (0, core_1.Component)({

@@ -16,6 +16,8 @@ using O10.Client.Web.DataContracts.User;
 using Microsoft.AspNetCore.Http;
 using O10.Client.Web.DataContracts.ServiceProvider;
 using System.Threading;
+using Polly;
+using Polly.Fallback;
 
 namespace O10.Nomy.Services
 {
@@ -25,6 +27,7 @@ namespace O10.Nomy.Services
         private readonly INomyConfig _nomyConfig;
         private readonly INomyContext _nomyContext;
         private readonly ILogger _logger;
+        private readonly AsyncFallbackPolicy<IFlurlResponse?> _nullOnExceptionPolicy;
 
         public O10ApiGateway(IConfigurationService configurationService,
                              INomyContext nomyContext,
@@ -33,6 +36,8 @@ namespace O10.Nomy.Services
             _nomyConfig = configurationService.Get<INomyConfig>();
             _nomyContext = nomyContext;
             _logger = loggerService.GetLogger(nameof(O10ApiGateway));
+
+            _nullOnExceptionPolicy = Policy<IFlurlResponse>.Handle<FlurlHttpException>().OrResult(r => !r.ResponseMessage.IsSuccessStatusCode).FallbackAsync(null as IFlurlResponse);
         }
 
         public async Task<O10AccountDTO?> FindAccount(string alias)
@@ -133,9 +138,20 @@ namespace O10.Nomy.Services
                     accountInfo = email,
                     password
                 })
-                .ReceiveJson<O10AccountDTO>();
+                .ReceiveJson<O10AccountDTO?>();
 
             return account;
+        }
+
+        public async Task<O10AccountDTO?> DuplicateAccount(long accountId, string newEmail)
+        {
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("accounts", accountId, "duplicate");
+
+            var body = new UserAccountReplicationRequestDto { AccountInfo = newEmail };
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(body, Formatting.Indented)}");
+
+            return await req.PostJsonAsync(body).ReceiveJson<O10AccountDTO?>();
         }
 
         public async Task<IEnumerable<AttributeValue>> RequestIdentity(long accountId, string password, string email, string firstName, string lastName, string walletId)

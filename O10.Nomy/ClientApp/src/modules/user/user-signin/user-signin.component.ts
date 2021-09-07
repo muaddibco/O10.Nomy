@@ -46,13 +46,13 @@ export class UserSigninComponent implements OnInit {
         if (a == null) {
           this.showError = true
         } else {
-          this.router.navigate(['user-details', a.accountId])
+          this.router.navigate(['/user-details', a.accountId])
         }
       }
     )
   }
 
   onCancel() {
-    this.router.navigate(['user-entry'])
+    this.router.navigate(['/user-entry'])
   }
 }

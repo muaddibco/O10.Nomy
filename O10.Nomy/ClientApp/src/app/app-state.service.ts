@@ -14,8 +14,12 @@ export class AppStateService {
   }
 
   public setIsMobile(isMobile: boolean) {
+    var emit = this.state.isMobile !== isMobile
     this.state.isMobile = isMobile
-    this.StateChanged.emit(this.state)
+
+    if (emit) {
+      this.StateChanged.emit(this.state)
+    }
   }
 }
 

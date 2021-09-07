@@ -14,6 +14,7 @@ namespace O10.Nomy.Services
         Task<NomyUser> CreateUser(long o10Id, string email, string firstName, string lastName, string walletId, string? beneficiaryId, string? senderId, CancellationToken ct);
         Task<NomyUser?> FindUser(string email, CancellationToken ct);
         Task<NomyUser?> GetUser(long userId, CancellationToken ct);
+        Task<NomyUser?> DuplicateUser(long userId, long newO10AccountId, string newEmail, CancellationToken ct);
 
         #endregion Users
 

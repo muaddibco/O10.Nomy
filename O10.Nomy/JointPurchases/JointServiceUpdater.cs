@@ -1,4 +1,5 @@
 ﻿using Flurl;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using O10.Client.Common.Communication;
 using O10.Client.Web.DataContracts.ServiceProvider;
@@ -6,6 +7,7 @@ using O10.Core.Architecture;
 using O10.Core.Configuration;
 using O10.Core.Logging;
 using O10.Nomy.Configuration;
+using O10.Nomy.DemoFeatures;
 using O10.Nomy.DTOs;
 using O10.Nomy.Services;
 using System;
@@ -24,19 +26,25 @@ namespace O10.Nomy.JointPurchases
         private readonly IServiceProvider _serviceProvider;
         private readonly IJointServiceConfiguration _jointServiceConfiguration;
         private readonly IO10ApiGateway _o10ApiGateway;
+        private readonly ISessionsPool _sessionsPool;
+        private readonly IHubContext<NotificationsHub> _notificationsHubContext;
         private CancellationToken _cancellationToken;
 
         public JointServiceUpdater(IConfigurationService configurationService,
                                    IO10ApiGateway o10ApiGateway,
+                                   ISessionsPool sessionsPool,
+                                   IHubContext<NotificationsHub> notificationsHubContext,
                                    ILoggerService loggerService,
                                    IServiceProvider serviceProvider)
         {
+            _notificationsHubContext = notificationsHubContext;
             _nomyConfig = configurationService.Get<INomyConfig>();
             _jointServiceConfiguration = configurationService.Get<IJointServiceConfiguration>();
             _serviceProvider = serviceProvider.CreateScope().ServiceProvider;
             _dataAccessService = _serviceProvider.GetService<IDataAccessService>();
             _logger = loggerService.GetLogger(nameof(JointServiceUpdater));
             _o10ApiGateway = o10ApiGateway;
+            _sessionsPool = sessionsPool;
         }
 
         public O10AccountDTO Account { get; private set; }
@@ -88,6 +96,18 @@ namespace O10.Nomy.JointPurchases
             _hubConnection.On<ServiceProviderRegistrationExDto>("PushAuthorizationSucceeded", async p =>
             {
                 await _dataAccessService.GetOrAddJointServiceRegistration(p.RegistrationId, p.Commitment, _cancellationToken);
+
+                var userSession = _sessionsPool.Pull(p.SessionKey);
+
+                userSession.IfSome(async s =>
+                {
+                    var user = await _dataAccessService.GetUser(s.UserId, _cancellationToken);
+                    if(user?.AdversaryFrom != null)
+                    {
+                        await _notificationsHubContext.Clients.Group(s.SessionKey).SendAsync("Compromized");
+                        await _notificationsHubContext.Clients.Group(user.AdversaryFrom.Value.ToString()).SendAsync("Compromized");
+                    }
+                });
             });
         }
     }

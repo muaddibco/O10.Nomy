@@ -16,6 +16,7 @@ using O10.Core.ExtensionMethods;
 using O10.Core.Logging;
 using O10.Core.Serialization;
 using O10.Nomy.Data;
+using O10.Nomy.DemoFeatures;
 using O10.Nomy.ExtensionMethods;
 using O10.Nomy.Hubs;
 using System.Threading;
@@ -141,6 +142,11 @@ namespace O10.Nomy
                 });
 
                 endpoints.MapHub<ChatSessionHub>("/chat", o =>
+                {
+                    o.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling | Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
+                });
+
+                endpoints.MapHub<NotificationsHub>("/notifications", o =>
                 {
                     o.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling | Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
                 });

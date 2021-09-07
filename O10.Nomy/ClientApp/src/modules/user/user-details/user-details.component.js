@@ -204,6 +204,9 @@ var UserDetailsComponent = /** @class */ (function () {
     UserDetailsComponent.prototype.gotoQrScan = function () {
         this.router.navigate(['qr-scan', this.user.accountId]);
     };
+    UserDetailsComponent.prototype.gotoDuplicate = function () {
+        this.router.navigate(['duplicate', this.user.accountId]);
+    };
     UserDetailsComponent = __decorate([
         (0, core_1.Component)({
             selector: 'app-user-details',

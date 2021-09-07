@@ -19,7 +19,7 @@ namespace O10.Nomy.Services
         Task<O10AccountDTO?> RegisterIdp(string alias, string password);
         Task<O10AccountDTO?> RegisterServiceProvider(string alias, string password);
         Task<O10AccountDTO?> RegisterUser(string email, string password);
-
+        Task<O10AccountDTO?> DuplicateAccount(long accountId, string newEmail);
         Task<O10AccountDTO?> Start(long accountId);
         
         Task SetBindingKey(long accountId, string password);
