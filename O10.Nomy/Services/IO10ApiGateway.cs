@@ -14,12 +14,14 @@ namespace O10.Nomy.Services
     public interface IO10ApiGateway
     {
         Task<O10AccountDTO?> FindAccount(string alias);
+        Task<O10AccountDTO?> FindAccountByKeys(DisclosedSecretsDto disclosedSecrets);
         Task<O10AccountDTO?> GetAccount(long accountId);
 
         Task<O10AccountDTO?> RegisterIdp(string alias, string password);
         Task<O10AccountDTO?> RegisterServiceProvider(string alias, string password);
         Task<O10AccountDTO?> RegisterUser(string email, string password);
-        Task<O10AccountDTO?> DuplicateAccount(long accountId, string newEmail);
+        Task<O10AccountDTO?> DuplicateAccount(long sourceAccountId, long targetAccountId);
+        Task<O10AccountDTO?> OverrideAccount(long accountId, DisclosedSecretsDto disclosedSecrets);
         Task<O10AccountDTO?> Start(long accountId);
         
         Task SetBindingKey(long accountId, string password);
@@ -38,6 +40,8 @@ namespace O10.Nomy.Services
         Task<QrCodeDto> GetSessionInfo(long accountId);
 
         Task<UserActionInfoDto> GetUserActionInfo(string encodedAction);
+
+        Task<UserActionCodeDto> GetDiscloseSecretsCode(long accountId, string password);
 
         Task<ActionDetailsDto> GetActionDetails(long accountId, string encodedAction, long userAttributeId);
 

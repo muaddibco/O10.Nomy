@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using O10.Client.Web.DataContracts.User;
+using O10.Core.ExtensionMethods;
 using O10.Core.Translators;
+using O10.Crypto.ConfidentialAssets;
 using O10.Nomy.DTOs;
 using O10.Nomy.Models;
 using O10.Nomy.Rapyd;
@@ -71,8 +74,11 @@ namespace O10.Nomy.Controllers
             await _rapydSevice.ReplenishFunds(walletId, -1, 1000);
             string beneficiaryId = await _rapydSevice.CreateBenificiary(user);
             string senderId = await _rapydSevice.CreateSender(user);
-            
-            var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, user.Password, user.Email, user.FirstName, user.LastName, walletId);
+
+            if (!user.IsEmptyOnly)
+            {
+                var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, user.Password, user.Email, user.FirstName, user.LastName, walletId);
+            }
 
             var userPoco = await _dataAccessService.CreateUser(account.AccountId,
                                                                user.Email,
@@ -86,16 +92,21 @@ namespace O10.Nomy.Controllers
             return Ok(_translatorsRepository.GetInstance<NomyUser, UserDetailsDTO>().Translate(userPoco));
         }
 
-        [HttpPost("{accountId}/Duplicate")]
-        public async Task<IActionResult> Duplicate(long accountId, [FromBody] DuplicateAccountRequestDTO duplicateAccountRequest, CancellationToken cancellationToken)
+        [HttpPut("{accountId}")]
+        public async Task<IActionResult> OverrideAccount(long accountId, DisclosedSecretsDto disclosedSecrets, CancellationToken cancellationToken)
         {
             var user = await _dataAccessService.GetUser(accountId, cancellationToken);
 
-            var newO10User = await _apiGateway.DuplicateAccount(user.Account.O10Id, duplicateAccountRequest.NewEmail);
+            var sourceO10Account = await _apiGateway.FindAccountByKeys(disclosedSecrets);
+            var sourceNomyAccount = await _dataAccessService.GetUserByO10Id(sourceO10Account.AccountId, cancellationToken);
 
-            var newUser = await _dataAccessService.DuplicateUser(user.Account.NomyAccountId, newO10User.AccountId, duplicateAccountRequest.NewEmail, cancellationToken);
-            
-            return Ok(_translatorsRepository.GetInstance<NomyUser, UserDetailsDTO>().Translate(newUser));
+            await _apiGateway.OverrideAccount(user.Account.O10Id, disclosedSecrets);
+
+            var newO10User = await _apiGateway.DuplicateAccount(sourceO10Account.AccountId, user.Account.O10Id);
+
+            var newUser = await _dataAccessService.DuplicateUser(sourceNomyAccount.Account.NomyAccountId, user.Account.NomyAccountId, cancellationToken);
+
+            return Ok();
         }
     }
 }

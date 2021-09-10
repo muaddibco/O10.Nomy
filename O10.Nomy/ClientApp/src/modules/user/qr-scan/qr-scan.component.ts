@@ -43,8 +43,13 @@ export class QrScanComponent implements OnInit {
   public proceed() {
     this.service.getActionInfo(this.qrContent).subscribe(
       r => {
-        if (r.actionType == UserActionType.ServiceProvider) {
-          this.router.navigate(['service-provider', this.userId], { queryParams: { actionInfo: r.actionInfoEncoded }})
+        switch (r.actionType) {
+          case UserActionType.ServiceProvider:
+            this.router.navigate(['service-provider', this.userId], { queryParams: { actionInfo: r.actionInfoEncoded } })
+            break;
+          case UserActionType.OverrideAccount:
+            this.router.navigate(['override', this.userId], { queryParams: { actionInfo: r.actionInfoEncoded } })
+            break;
         }
       },
       e => {

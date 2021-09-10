@@ -53,6 +53,18 @@ namespace O10.Nomy.Services
             return account;
         }
 
+        public async Task<O10AccountDTO?> FindAccountByKeys(DisclosedSecretsDto disclosedSecrets)
+        {
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("accounts", "bysecrets");
+
+            _logger.Debug(() => $"Sending POST O10 request {req}\r\n{JsonConvert.SerializeObject(disclosedSecrets, Formatting.Indented)}");
+
+            var account = await req.PostJsonAsync(disclosedSecrets).ReceiveJson<O10AccountDTO?>();
+
+            return account;
+        }
+
         public async Task<O10AccountDTO?> GetAccount(long accountId)
         {
             try
@@ -143,15 +155,23 @@ namespace O10.Nomy.Services
             return account;
         }
 
-        public async Task<O10AccountDTO?> DuplicateAccount(long accountId, string newEmail)
+        public async Task<O10AccountDTO?> DuplicateAccount(long sourceAccountId, long targetAccountId)
         {
             var req = _nomyConfig.O10Uri
-                .AppendPathSegments("accounts", accountId, "duplicate");
+                .AppendPathSegments("accounts", sourceAccountId, "duplicate", targetAccountId);
 
-            var body = new UserAccountReplicationRequestDto { AccountInfo = newEmail };
-            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(body, Formatting.Indented)}");
+            _logger.Debug(() => $"Sending O10 request {req}");
 
-            return await req.PostJsonAsync(body).ReceiveJson<O10AccountDTO?>();
+            return await req.PostAsync().ReceiveJson<O10AccountDTO?>();
+        }
+
+        public async Task<O10AccountDTO?> OverrideAccount(long accountId, DisclosedSecretsDto disclosedSecrets)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("accounts", accountId);
+
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(disclosedSecrets, Formatting.Indented)}");
+
+            return await req.PutJsonAsync(disclosedSecrets).ReceiveJson<O10AccountDTO?>();
         }
 
         public async Task<IEnumerable<AttributeValue>> RequestIdentity(long accountId, string password, string email, string firstName, string lastName, string walletId)
@@ -272,6 +292,19 @@ namespace O10.Nomy.Services
             _logger.Debug(() => $"Sending O10 request {req}");
 
             var resp = await req.GetJsonAsync<UserActionInfoDto>();
+
+            return resp;
+        }
+
+        public async Task<UserActionCodeDto> GetDiscloseSecretsCode(long accountId, string password)
+        {
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("User", accountId.ToString(), "Secrets")
+                .SetQueryParam("password", password);
+
+            _logger.Debug(() => $"Sending O10 request {req}");
+
+            var resp = await req.GetJsonAsync<UserActionCodeDto>();
 
             return resp;
         }

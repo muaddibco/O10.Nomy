@@ -10,15 +10,17 @@ exports.UserRegistrationComponent = void 0;
 var core_1 = require("@angular/core");
 var forms_1 = require("@angular/forms");
 var UserRegistrationComponent = /** @class */ (function () {
-    function UserRegistrationComponent(formBuilder, userAccessService, router) {
+    function UserRegistrationComponent(formBuilder, userAccessService, appState, router) {
         this.formBuilder = formBuilder;
         this.userAccessService = userAccessService;
+        this.appState = appState;
         this.router = router;
         this.isLoaded = false;
         this.submitted = false;
         this.submitClick = false;
     }
     UserRegistrationComponent.prototype.ngOnInit = function () {
+        this.appState.setIsMobile(true);
         this.newUserForm = this.formBuilder.group({
             firstName: ['', forms_1.Validators.required],
             lastName: ['', forms_1.Validators.required],
@@ -44,17 +46,18 @@ var UserRegistrationComponent = /** @class */ (function () {
             firstName: this.formData.firstName.value,
             lastName: this.formData.lastName.value,
             email: this.formData.email.value,
-            password: this.formData.password.value
+            password: this.formData.password.value,
+            isEmptyOnly: this.isEmptyOnly
         }).subscribe(function (a) {
             _this.router.navigate(['user-details', a.accountId]);
         }, function (e) {
         });
     };
     UserRegistrationComponent.prototype.onCancel = function () {
-        this.router.navigate(['/']);
+        this.router.navigate(['/user-entry']);
     };
     UserRegistrationComponent = __decorate([
-        core_1.Component({
+        (0, core_1.Component)({
             selector: 'app-user-registration',
             templateUrl: './user-registration.component.html',
             styleUrls: ['./user-registration.component.css']

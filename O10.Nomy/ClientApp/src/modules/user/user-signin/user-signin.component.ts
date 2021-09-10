@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AppStateService } from '../../../app/app-state.service';
 import { AccountsAccessService } from '../../accounts/accounts-access.service';
 
 @Component({
@@ -19,9 +20,11 @@ export class UserSigninComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
+    private appState: AppStateService,
     private userAccessService: AccountsAccessService) { }
 
   ngOnInit(): void {
+    this.appState.setIsMobile(true)
     this.accountNameForm = this.formBuilder.group({
       accountEmail: ['']
     });

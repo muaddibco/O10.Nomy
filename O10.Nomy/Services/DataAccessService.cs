@@ -193,27 +193,23 @@ namespace O10.Nomy.Services
             return res;
         }
 
-        public async Task<NomyUser?> DuplicateUser(long userId, long newO10AccountId, string newEmail, CancellationToken ct)
+        public async Task<NomyUser?> GetUserByO10Id(long o10Id, CancellationToken ct)
         {
-            var user = await _dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(c => c.Account.NomyAccountId == userId, ct);
+            var res = await _dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(c => c.Account.O10Id == o10Id, ct);
 
-            var account = await GetOrCreateAccountAsync(newO10AccountId, ct);
+            return res;
+        }
 
-            var res = await _dbContext.Users.AddAsync(new NomyUser
-            {
-                Account = account,
-                Email = newEmail,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                WalletId = user.WalletId,
-                BeneficiaryId = user.BeneficiaryId,
-                SenderId = user.SenderId,
-                AdversaryFrom = user.Account.NomyAccountId
-            }, ct);
+        public async Task<NomyUser?> DuplicateUser(long sourceAccountId, long targetAccountId, CancellationToken ct)
+        {
+            var userSource = await _dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(c => c.Account.NomyAccountId == sourceAccountId, ct);
+            var userTarget = await _dbContext.Users.Include(s => s.Account).FirstOrDefaultAsync(c => c.Account.NomyAccountId == targetAccountId, ct);
+
+            userTarget.AdversaryFrom = userSource.Account.NomyAccountId;
 
             await _dbContext.SaveChangesAsync(ct);
 
-            return res.Entity;
+            return userTarget;
         }
 
         #endregion Users

@@ -23,33 +23,36 @@ var DuplicateAccountComponent = /** @class */ (function () {
     DuplicateAccountComponent.prototype.ngOnInit = function () {
         this.appState.setIsMobile(true);
         var userId = Number(this.route.snapshot.paramMap.get('userId'));
+        this.disclosedSecrets = JSON.parse(atob(this.route.snapshot.queryParams['actionInfo']));
         var that = this;
         this.accountAccessService.getAccountById(userId).subscribe(function (r) {
             that.user = r;
             that.isLoaded = true;
         });
-        this.duplicationForm = this.formBuilder.group({
-            accountInfo: ['', forms_1.Validators.required]
+        this.overrideForm = this.formBuilder.group({
+            password: ['', forms_1.Validators.required]
         });
     };
     Object.defineProperty(DuplicateAccountComponent.prototype, "formData", {
-        get: function () { return this.duplicationForm.controls; },
+        get: function () { return this.overrideForm.controls; },
         enumerable: false,
         configurable: true
     });
-    DuplicateAccountComponent.prototype.onSubmitDuplicating = function () {
+    DuplicateAccountComponent.prototype.onSubmitOverriding = function () {
         var _this = this;
         this.submitted = true;
         // stop here if form is invalid
-        if (this.duplicationForm.invalid) {
+        if (this.overrideForm.invalid) {
             return;
         }
         this.submitClick = true;
-        this.accountAccessService.duplicate(this.user.accountId, this.formData.accountInfo.value).subscribe(function (r) {
+        this.disclosedSecrets.password = this.formData.password.value;
+        this.accountAccessService.override(this.user.accountId, this.disclosedSecrets).subscribe(function (r) {
+            sessionStorage.removeItem("passwordSet");
             _this.router.navigate(['/user-details', _this.user.accountId]);
         });
     };
-    DuplicateAccountComponent.prototype.onCancelDuplicating = function () {
+    DuplicateAccountComponent.prototype.onCancel = function () {
         this.router.navigate(['/user-details', this.user.accountId]);
     };
     DuplicateAccountComponent = __decorate([

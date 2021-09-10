@@ -39,6 +39,7 @@ var user_entry_component_1 = require("./user-entry/user-entry.component");
 var accounts_module_1 = require("../accounts/accounts.module");
 var experts_module_1 = require("../experts/experts.module");
 var password_confirm_module_1 = require("../password-confirm/password-confirm.module");
+var qrcode_popup_module_1 = require("../qrcode-popup/qrcode-popup.module");
 var identities_module_1 = require("../identities/identities.module");
 var user_registration_component_1 = require("./user-registration/user-registration.component");
 var user_details_component_1 = require("./user-details/user-details.component");
@@ -73,6 +74,7 @@ var UserModule = /** @class */ (function () {
                 expansion_1.MatExpansionModule, input_1.MatInputModule, select_1.MatSelectModule, dialog_1.MatDialogModule, button_1.MatButtonModule, bottom_sheet_1.MatBottomSheetModule, card_1.MatCardModule, icon_1.MatIconModule, progress_bar_1.MatProgressBarModule, list_1.MatListModule, button_toggle_1.MatButtonToggleModule, divider_1.MatDividerModule, stepper_1.MatStepperModule, checkbox_1.MatCheckboxModule, radio_1.MatRadioModule, form_field_1.MatFormFieldModule, slide_toggle_1.MatSlideToggleModule, table_1.MatTableModule,
                 accounts_module_1.AccountsModule,
                 password_confirm_module_1.PasswordConfirmModule,
+                qrcode_popup_module_1.QrCodePopupModule,
                 experts_module_1.ExpertsModule,
                 identities_module_1.IdentitiesModule,
                 router_1.RouterModule.forRoot([
@@ -84,7 +86,7 @@ var UserModule = /** @class */ (function () {
                     { path: 'user-attributes/:userId', component: user_attributes_component_1.UserAttributesComponent },
                     { path: 'qr-scan/:userId', component: qr_scan_component_1.QrScanComponent },
                     { path: 'service-provider/:userId', component: service_provider_component_1.ServiceProviderComponent },
-                    { path: 'duplicate/:userId', component: duplicate_account_component_1.DuplicateAccountComponent }
+                    { path: 'override/:userId', component: duplicate_account_component_1.DuplicateAccountComponent }
                 ]),
             ],
             providers: [ngx_cookie_service_1.CookieService]

@@ -21,8 +21,8 @@ var AccountsAccessService = /** @class */ (function () {
     AccountsAccessService.prototype.authenticate = function (accountId, password) {
         return this.http.post('/api/accounts/' + accountId + '/auth', { password: password });
     };
-    AccountsAccessService.prototype.duplicate = function (accountId, newEmail) {
-        return this.http.post('/api/accounts/' + accountId + '/duplicate', { newEmail: newEmail });
+    AccountsAccessService.prototype.override = function (accountId, disclosedSecrets) {
+        return this.http.put('/api/accounts/' + accountId, disclosedSecrets);
     };
     AccountsAccessService.prototype.isAuthenticated = function (accountId) {
         return this.http.get('/api/accounts/' + accountId + '/auth');

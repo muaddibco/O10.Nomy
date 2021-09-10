@@ -36,8 +36,11 @@ var UserAccessService = /** @class */ (function () {
     UserAccessService.prototype.sendUniversalProofs = function (accountId, universalProofsRequest) {
         return this.http.post('/api/user/' + accountId + '/UniversalProofs', universalProofsRequest);
     };
+    UserAccessService.prototype.getDisclosedSecrets = function (accountId, password) {
+        return this.http.get('/api/user/' + accountId + '/secrets?password=' + password);
+    };
     UserAccessService = __decorate([
-        core_1.Injectable({
+        (0, core_1.Injectable)({
             providedIn: 'root'
         })
     ], UserAccessService);

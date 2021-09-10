@@ -37,8 +37,13 @@ var QrScanComponent = /** @class */ (function () {
     QrScanComponent.prototype.proceed = function () {
         var _this = this;
         this.service.getActionInfo(this.qrContent).subscribe(function (r) {
-            if (r.actionType == user_action_type_1.UserActionType.ServiceProvider) {
-                _this.router.navigate(['service-provider', _this.userId], { queryParams: { actionInfo: r.actionInfoEncoded } });
+            switch (r.actionType) {
+                case user_action_type_1.UserActionType.ServiceProvider:
+                    _this.router.navigate(['service-provider', _this.userId], { queryParams: { actionInfo: r.actionInfoEncoded } });
+                    break;
+                case user_action_type_1.UserActionType.OverrideAccount:
+                    _this.router.navigate(['override', _this.userId], { queryParams: { actionInfo: r.actionInfoEncoded } });
+                    break;
             }
         }, function (e) {
             console.error("failed to obtain action info", e);

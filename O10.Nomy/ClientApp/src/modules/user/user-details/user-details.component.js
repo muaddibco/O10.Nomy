@@ -61,12 +61,13 @@ exports.UserDetailsComponent = void 0;
 var core_1 = require("@angular/core");
 var password_confirm_dialog_1 = require("../../password-confirm/password-confirm/password-confirm.dialog");
 var signalr_1 = require("@microsoft/signalr");
+var qrcode_popup_component_1 = require("../../qrcode-popup/qrcode-popup/qrcode-popup.component");
 var collections_1 = require("@angular/cdk/collections");
 var rxjs_1 = require("rxjs");
 var animations_1 = require("@angular/animations");
 var rxjs_2 = require("rxjs");
 var UserDetailsComponent = /** @class */ (function () {
-    function UserDetailsComponent(userAccessService, accountAccessService, expertAccessService, appState, router, route, dialog) {
+    function UserDetailsComponent(userAccessService, accountAccessService, expertAccessService, appState, router, route, dialog, bottomSheet) {
         this.userAccessService = userAccessService;
         this.accountAccessService = accountAccessService;
         this.expertAccessService = expertAccessService;
@@ -74,12 +75,14 @@ var UserDetailsComponent = /** @class */ (function () {
         this.router = router;
         this.route = route;
         this.dialog = dialog;
+        this.bottomSheet = bottomSheet;
         this.isLoaded = false;
         this.isInSession = false;
         this.isSessionStarted = false;
         this.payments = [];
         this.dataSource = new PaymentsDataSource(this.payments);
         this.displayedColumns = ['commitment'];
+        this.qrCodeSheetRef = null;
     }
     UserDetailsComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -194,6 +197,23 @@ var UserDetailsComponent = /** @class */ (function () {
         if (this.paymentSubscription) {
             this.paymentSubscription.unsubscribe();
         }
+    };
+    UserDetailsComponent.prototype.onDiscloseSecrets = function () {
+        var _this = this;
+        var that = this;
+        var dialogRef = this.dialog.open(password_confirm_dialog_1.PasswordConfirmDialog, { data: { confirmButtonText: "Confirm Disclose" } });
+        dialogRef.afterClosed().subscribe(function (r) {
+            if (r) {
+                that.userAccessService.getDisclosedSecrets(_this.user.accountId, r).subscribe(function (r1) {
+                    that.bottomSheet.open(qrcode_popup_component_1.QrCodePopupComponent, { data: { qrCode: r1.code } });
+                }, function (e) {
+                    //that.dialog.open(MatAlertDialog, {
+                    //  data: { message: 'Failed to disclose secrets', title: 'Disclose Secrets Failure', icon: ' ' }
+                    //});
+                    alert('Failed to disclose secrets');
+                });
+            }
+        });
     };
     UserDetailsComponent.prototype.gotoExperts = function () {
         this.router.navigate(['experts-list', this.user.accountId]);

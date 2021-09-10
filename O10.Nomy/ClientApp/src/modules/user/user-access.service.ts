@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserDto} from '../accounts/models/account';
+import { QrCodeDto } from '../joint-purchases/joint-purchases.service';
 import { ActionDetails } from './models/action-details';
 import { ActionInfo } from './models/action-info';
 import { InvoiceEntry } from './models/invoice-entry';
@@ -46,5 +47,9 @@ export class UserAccessService {
 
   sendUniversalProofs(accountId: number, universalProofsRequest: UniversalProofsRequest) {
     return this.http.post('/api/user/' + accountId + '/UniversalProofs', universalProofsRequest);
+  }
+
+  getDisclosedSecrets(accountId: number, password: string) {
+    return this.http.get<QrCodeDto>('/api/user/' + accountId + '/secrets?password=' + password)
   }
 }

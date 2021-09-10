@@ -5,6 +5,8 @@ import { UserAccessService } from '../user-access.service';
 import { PasswordConfirmDialog } from '../../password-confirm/password-confirm/password-confirm.dialog'
 import { ActivatedRoute, Router } from '@angular/router';
 import { HubConnectionBuilder, HubConnection } from '@microsoft/signalr'
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { QrCodePopupComponent } from '../../qrcode-popup/qrcode-popup/qrcode-popup.component';
 import { SessionExpertInfo } from '../models/session-expert-info';
 import { ExpertsAccessService } from '../../experts/experts-access.service';
 import { ExpertProfile } from '../../experts/models/expert-profile';
@@ -47,6 +49,7 @@ export class UserDetailsComponent implements OnInit {
 
   public displayedColumns: string[] = ['commitment']
   public expandedElement: PaymentRecordEntry | null
+  private qrCodeSheetRef: MatBottomSheetRef<QrCodePopupComponent> = null;
 
   constructor(
     private userAccessService: UserAccessService,
@@ -55,7 +58,8 @@ export class UserDetailsComponent implements OnInit {
     private appState: AppStateService,
     private router: Router,
     private route: ActivatedRoute,
-    public dialog: MatDialog ) { }
+    public dialog: MatDialog,
+    private bottomSheet: MatBottomSheet ) { }
 
   ngOnInit(): void {
     this.appState.setIsMobile(true)
@@ -185,6 +189,25 @@ export class UserDetailsComponent implements OnInit {
     if (this.paymentSubscription) {
       this.paymentSubscription.unsubscribe();
     }
+  }
+
+  onDiscloseSecrets() {
+    let that = this;
+    var dialogRef = this.dialog.open(PasswordConfirmDialog, { data: { confirmButtonText: "Confirm Disclose" } });
+    dialogRef.afterClosed().subscribe(r => {
+      if (r) {
+        that.userAccessService.getDisclosedSecrets(this.user.accountId, r).subscribe(
+          r1 => {
+            that.bottomSheet.open(QrCodePopupComponent, { data: { qrCode: r1.code } });
+          },
+          e => {
+            //that.dialog.open(MatAlertDialog, {
+            //  data: { message: 'Failed to disclose secrets', title: 'Disclose Secrets Failure', icon: ' ' }
+            //});
+            alert('Failed to disclose secrets');
+          });
+      }
+    });
   }
 
   gotoExperts() {

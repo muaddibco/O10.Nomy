@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AppStateService } from '../../../app/app-state.service';
 import { UserAccessService } from '../user-access.service';
 
 @Component({
@@ -14,13 +15,16 @@ export class UserRegistrationComponent implements OnInit {
   public newUserForm: FormGroup
   public submitted = false;
   public submitClick = false;
+  public isEmptyOnly: boolean | false;
 
   constructor(
     private formBuilder: FormBuilder,
     private userAccessService: UserAccessService,
+    private appState: AppStateService,
     private router: Router) { }
 
   ngOnInit(): void {
+    this.appState.setIsMobile(true)
     this.newUserForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -48,7 +52,8 @@ export class UserRegistrationComponent implements OnInit {
       firstName: this.formData.firstName.value,
       lastName: this.formData.lastName.value,
       email: this.formData.email.value,
-      password: this.formData.password.value
+      password: this.formData.password.value,
+      isEmptyOnly: this.isEmptyOnly
     }).subscribe(
       a => {
         this.router.navigate(['user-details', a.accountId])
@@ -58,6 +63,6 @@ export class UserRegistrationComponent implements OnInit {
   }
 
   onCancel() {
-    this.router.navigate(['/'])
+    this.router.navigate(['/user-entry'])
   }
 }

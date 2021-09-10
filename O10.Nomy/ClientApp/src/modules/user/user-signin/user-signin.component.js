@@ -9,9 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserSigninComponent = void 0;
 var core_1 = require("@angular/core");
 var UserSigninComponent = /** @class */ (function () {
-    function UserSigninComponent(formBuilder, router, userAccessService) {
+    function UserSigninComponent(formBuilder, router, appState, userAccessService) {
         this.formBuilder = formBuilder;
         this.router = router;
+        this.appState = appState;
         this.userAccessService = userAccessService;
         this.showError = false;
         this.isLoaded = false;
@@ -19,6 +20,7 @@ var UserSigninComponent = /** @class */ (function () {
         this.submitClick = false;
     }
     UserSigninComponent.prototype.ngOnInit = function () {
+        this.appState.setIsMobile(true);
         this.accountNameForm = this.formBuilder.group({
             accountEmail: ['']
         });

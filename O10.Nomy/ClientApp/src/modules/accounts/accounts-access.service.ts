@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserDto } from './models/account'
+import { DisclosedSecrets } from './models/disclosed-secrets';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +22,8 @@ export class AccountsAccessService {
     return this.http.post('/api/accounts/' + accountId + '/auth', { password })
   }
 
-  duplicate(accountId: number, newEmail: string) {
-    return this.http.post('/api/accounts/' + accountId + '/duplicate', { newEmail })
+  override(accountId: number, disclosedSecrets: DisclosedSecrets) {
+    return this.http.put('/api/accounts/' + accountId, disclosedSecrets)
   }
 
   isAuthenticated(accountId: number) {

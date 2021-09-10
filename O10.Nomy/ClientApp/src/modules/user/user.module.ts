@@ -32,6 +32,7 @@ import { UserEntryComponent } from './user-entry/user-entry.component';
 import { AccountsModule } from '../accounts/accounts.module';
 import { ExpertsModule } from '../experts/experts.module'
 import { PasswordConfirmModule } from '../password-confirm/password-confirm.module'
+import { QrCodePopupModule } from '../qrcode-popup/qrcode-popup.module'
 import { IdentitiesModule } from '../identities/identities.module'
 
 import { UserRegistrationComponent } from './user-registration/user-registration.component';
@@ -64,6 +65,7 @@ import { DuplicateAccountComponent } from './duplicate-account/duplicate-account
     MatExpansionModule, MatInputModule, MatSelectModule, MatDialogModule, MatButtonModule, MatBottomSheetModule, MatCardModule, MatIconModule, MatProgressBarModule, MatListModule, MatButtonToggleModule, MatDividerModule, MatStepperModule, MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatSlideToggleModule, MatTableModule,
     AccountsModule,
     PasswordConfirmModule,
+    QrCodePopupModule,
     ExpertsModule,
     IdentitiesModule,
     RouterModule.forRoot([
@@ -75,7 +77,7 @@ import { DuplicateAccountComponent } from './duplicate-account/duplicate-account
       { path: 'user-attributes/:userId', component: UserAttributesComponent },
       { path: 'qr-scan/:userId', component: QrScanComponent },
       { path: 'service-provider/:userId', component: ServiceProviderComponent },
-      { path: 'duplicate/:userId', component: DuplicateAccountComponent }
+      { path: 'override/:userId', component: DuplicateAccountComponent }
     ]),
   ],
   providers: [CookieService]

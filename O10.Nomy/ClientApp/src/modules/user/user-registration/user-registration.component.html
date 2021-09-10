@@ -1,32 +1,37 @@
 <p *ngIf="!isLoaded"><em>Loading...</em></p>
 <div *ngIf="isLoaded">
-  <form [formGroup]="newUserForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="firstName">First Name</label>
-      <input formControlName="firstName" type="text" class="form-control" [ngClass]="{ 'is-invalid': submitted && formData.firstName.errors }" />
-      <div *ngIf="submitted && formData.firstName.errors" class="invalid-feedback">
-        <div *ngIf="formData.firstName.errors.required">Value is mandatory</div>
+  <div class="main-view">
+    <form [formGroup]="newUserForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input formControlName="firstName" type="text" class="form-control" [ngClass]="{ 'is-invalid': submitted && formData.firstName.errors }" />
+        <div *ngIf="submitted && formData.firstName.errors" class="invalid-feedback">
+          <div *ngIf="formData.firstName.errors.required">Value is mandatory</div>
+        </div>
+        <label for="lastName">Last Name</label>
+        <input formControlName="lastName" type="text" class="form-control" [ngClass]="{ 'is-invalid': submitted && formData.lastName.errors }" />
+        <div *ngIf="submitted && formData.lastName.errors" class="invalid-feedback">
+          <div *ngIf="formData.lastName.errors.required">Value is mandatory</div>
+        </div>
+        <label for="email">Account Email</label>
+        <input formControlName="email" type="text" class="form-control" [ngClass]="{ 'is-invalid': submitted && formData.email.errors }" />
+        <div *ngIf="submitted && formData.email.errors" class="invalid-feedback">
+          <div *ngIf="formData.email.errors.required">Value is mandatory</div>
+          <div *ngIf="formData.email.errors.email">Improper email format</div>
+        </div>
+        <label for="password">Password</label>
+        <input formControlName="password" type="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && formData.lastName.errors }" />
+        <div *ngIf="submitted && formData.password.errors" class="invalid-feedback">
+          <div *ngIf="formData.password.errors.required">Value is mandatory</div>
+        </div>
       </div>
-      <label for="lastName">Last Name</label>
-      <input formControlName="lastName" type="text" class="form-control" [ngClass]="{ 'is-invalid': submitted && formData.lastName.errors }" />
-      <div *ngIf="submitted && formData.lastName.errors" class="invalid-feedback">
-        <div *ngIf="formData.lastName.errors.required">Value is mandatory</div>
+      <mat-slide-toggle [(ngModel)]="isEmptyOnly">Create Empty Wallet</mat-slide-toggle>
+      <div class="form-group">
+        <button [disabled]="submitClick" class="btn btn-primary" type="submit" style="margin-right:10px">Submit</button>
+        <button [disabled]="submitClick" class="btn" (click)="onCancel()" type="reset">Cancel</button>
       </div>
-      <label for="email">Account Email</label>
-      <input formControlName="email" type="text" class="form-control" [ngClass]="{ 'is-invalid': submitted && formData.email.errors }" />
-      <div *ngIf="submitted && formData.email.errors" class="invalid-feedback">
-        <div *ngIf="formData.email.errors.required">Value is mandatory</div>
-        <div *ngIf="formData.email.errors.email">Improper email format</div>
-      </div>
-      <label for="password">Password</label>
-      <input formControlName="password" type="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && formData.lastName.errors }" />
-      <div *ngIf="submitted && formData.password.errors" class="invalid-feedback">
-        <div *ngIf="formData.password.errors.required">Value is mandatory</div>
-      </div>
-    </div>
-    <div class="form-group">
-      <button [disabled]="submitClick" class="btn btn-primary" type="submit" style="margin-right:10px">Submit</button>
-      <button [disabled]="submitClick" class="btn" (click)="onCancel()" type="reset">Cancel</button>
-    </div>
-  </form>
+    </form>
+  </div>
+  <div class="footer">
+  </div>
 </div>

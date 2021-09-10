@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppStateService } from '../../../app/app-state.service';
 import { AccountsAccessService } from '../../accounts/accounts-access.service';
 import { UserDto } from '../../accounts/models/account';
+import { DisclosedSecrets } from '../../accounts/models/disclosed-secrets';
 
 @Component({
   selector: 'app-duplicate-account',
@@ -13,8 +14,9 @@ import { UserDto } from '../../accounts/models/account';
 export class DuplicateAccountComponent implements OnInit {
 
   public user: UserDto
+  private disclosedSecrets: DisclosedSecrets | null
   public isLoaded = false
-  public duplicationForm: FormGroup;
+  public overrideForm: FormGroup;
   submitted = false;
   submitClick = false;
 
@@ -29,6 +31,7 @@ export class DuplicateAccountComponent implements OnInit {
   ngOnInit(): void {
     this.appState.setIsMobile(true)
     var userId = Number(this.route.snapshot.paramMap.get('userId'))
+    this.disclosedSecrets = JSON.parse(atob(this.route.snapshot.queryParams['actionInfo']))
     let that = this;
     this.accountAccessService.getAccountById(userId).subscribe(
       r => {
@@ -37,29 +40,30 @@ export class DuplicateAccountComponent implements OnInit {
       }
     )
 
-    this.duplicationForm = this.formBuilder.group({
-      accountInfo: ['', Validators.required]
+    this.overrideForm = this.formBuilder.group({
+      password: ['', Validators.required]
     });
   }
 
-  get formData() { return this.duplicationForm.controls; }
+  get formData() { return this.overrideForm.controls; }
 
-  onSubmitDuplicating() {
+  onSubmitOverriding() {
     this.submitted = true;
 
     // stop here if form is invalid
-    if (this.duplicationForm.invalid) {
+    if (this.overrideForm.invalid) {
       return;
     }
 
     this.submitClick = true;
-
-    this.accountAccessService.duplicate(this.user.accountId, this.formData.accountInfo.value).subscribe(r => {
+    this.disclosedSecrets.password = this.formData.password.value
+    this.accountAccessService.override(this.user.accountId, this.disclosedSecrets).subscribe(r => {
+      sessionStorage.removeItem("passwordSet")
       this.router.navigate(['/user-details', this.user.accountId]);
     });
   }
 
-  onCancelDuplicating() {
+  onCancel() {
     this.router.navigate(['/user-details', this.user.accountId]);
   }
 }

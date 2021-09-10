@@ -89,6 +89,14 @@ namespace O10.Nomy.Controllers
             return Ok(await _o10ApiGateway.GetUserActionInfo(actionInfo));
         }
 
+        [HttpGet("{accountId}/Secrets")]
+        public async Task<ActionResult<QrCodeDto>> GetDiscloseSecretsCode(long accountId, string password, CancellationToken ct)
+        {
+            var user = await _dataAccessService.GetUser(accountId, ct);
+
+            return Ok(await _o10ApiGateway.GetDiscloseSecretsCode(user.Account.O10Id, password));
+        }
+
         [HttpGet("{accountId}/ActionDetails")]
         public async Task<IActionResult> GetActionDetails(long accountId, string actionInfo, long userAttributeId, CancellationToken ct)
         {
