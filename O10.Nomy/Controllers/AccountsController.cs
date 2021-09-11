@@ -67,8 +67,7 @@ namespace O10.Nomy.Controllers
         public async Task<IActionResult> RegisterUser([FromBody] UserDTO user, CancellationToken cancellationToken)
         {
             var account = await _apiGateway.RegisterUser(user.Email, user.Password);
-            account = await _apiGateway.Start(account.AccountId);
-            await _apiGateway.SetBindingKey(account.AccountId, user.Password);
+            account = await _apiGateway.Authenticate(account.AccountId, user.Password);
 
             string walletId = await _rapydSevice.CreateRapydWallet(user);
             await _rapydSevice.ReplenishFunds(walletId, -1, 1000);
@@ -105,6 +104,9 @@ namespace O10.Nomy.Controllers
             var newO10User = await _apiGateway.DuplicateAccount(sourceO10Account.AccountId, user.Account.O10Id);
 
             var newUser = await _dataAccessService.DuplicateUser(sourceNomyAccount.Account.NomyAccountId, user.Account.NomyAccountId, cancellationToken);
+
+            await _apiGateway.StopAccount(user.Account.O10Id);
+            await _apiGateway.Authenticate(user.Account.O10Id, disclosedSecrets.Password);
 
             return Ok();
         }

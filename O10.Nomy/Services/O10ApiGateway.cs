@@ -194,26 +194,36 @@ namespace O10.Nomy.Services
             return await req.PostJsonAsync(body).ReceiveJson<IEnumerable<AttributeValue>>();
         }
 
-        public async Task SetBindingKey(long accountId, string password)
-        {
-            var req = _nomyConfig.O10Uri
-                .AppendPathSegments("Accounts", accountId.ToString(), "BindingKey");
-            
-            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(new { password }, Formatting.Indented)}");
-
-            await req.PostJsonAsync(new { password });
-        }
-
         public async Task<O10AccountDTO?> Authenticate(long accountId, string password)
         {
             var req = _nomyConfig.O10Uri
-                .AppendPathSegments("Accounts", "Authenticate");
+                .AppendPathSegments("Accounts", accountId, "Authenticate");
 
-            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(new { accountId, password }, Formatting.Indented)}");
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(new { password }, Formatting.Indented)}");
 
             return await req
                 .PostJsonAsync(new { accountId, password })
                 .ReceiveJson<O10AccountDTO?>();
+        }
+
+        public async Task SyncAccount(long accountId)
+        {
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("Accounts", accountId, "Sync");
+
+            _logger.Debug(() => $"Sending O10 request POST {req}");
+
+            await req.PostAsync();
+        }
+
+        public async Task StopAccount(long accountId)
+        {
+            var req = _nomyConfig.O10Uri
+                .AppendPathSegments("Accounts", accountId, "Stop");
+
+            _logger.Debug(() => $"Sending O10 request PUT {req}");
+
+            await req.PutAsync();
         }
 
         public async Task<bool> IsAuthenticated(long accountId, CancellationToken ct)
@@ -232,20 +242,6 @@ namespace O10.Nomy.Services
             {
                 return false;
             }
-        }
-
-        public async Task<O10AccountDTO?> Start(long accountId)
-        {
-            var req = _nomyConfig.O10Uri
-                .AppendPathSegments("Accounts", accountId.ToString(), "Start");
-
-            _logger.Debug(() => $"Sending O10 POST {req}");
-
-            var account = await req
-                .PostAsync()
-                .ReceiveJson<O10AccountDTO>();
-
-            return account;
         }
 
         public async Task<List<AttributeDefinition>> GetAttributeDefinitions(string issuer)
