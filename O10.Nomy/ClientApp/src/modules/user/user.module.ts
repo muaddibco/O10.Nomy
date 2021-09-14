@@ -42,6 +42,7 @@ import { UserAttributesComponent } from '../identities/user-attributes/user-attr
 import { QrScanComponent } from './qr-scan/qr-scan.component';
 import { ServiceProviderComponent } from './service-provider/service-provider.component';
 import { DuplicateAccountComponent } from './duplicate-account/duplicate-account.component';
+import { CompromizedComponent } from './compromized/compromized.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { DuplicateAccountComponent } from './duplicate-account/duplicate-account
     UserSigninComponent,
     QrScanComponent,
     ServiceProviderComponent,
-    DuplicateAccountComponent
+    DuplicateAccountComponent,
+    CompromizedComponent
   ],
   imports: [
     BrowserModule,
@@ -77,7 +79,8 @@ import { DuplicateAccountComponent } from './duplicate-account/duplicate-account
       { path: 'user-attributes/:userId', component: UserAttributesComponent },
       { path: 'qr-scan/:userId', component: QrScanComponent },
       { path: 'service-provider/:userId', component: ServiceProviderComponent },
-      { path: 'override/:userId', component: DuplicateAccountComponent }
+      { path: 'override/:userId', component: DuplicateAccountComponent },
+      { path: 'compromized/:userId', component: CompromizedComponent }
     ]),
   ],
   providers: [CookieService]

@@ -20,6 +20,7 @@ var JointMainComponent = /** @class */ (function () {
         this.groups = [];
     }
     JointMainComponent.prototype.ngOnInit = function () {
+        var _this = this;
         this.registrationId = Number(this.route.snapshot.paramMap.get('registrationId'));
         this.sessionKey = this.route.snapshot.paramMap.get('sessionKey');
         var that = this;
@@ -29,8 +30,20 @@ var JointMainComponent = /** @class */ (function () {
         this.serviceAccessor.getO10HubUri().subscribe(function (r) {
             console.info("Connecting to O10 Hub with URI " + r["o10HubUri"]);
             that.o10Hub = new signalr_1.HubConnectionBuilder()
+                .withAutomaticReconnect()
+                .configureLogging(signalr_1.LogLevel.Debug)
                 .withUrl(r["o10HubUri"])
                 .build();
+            that.o10Hub.onreconnected(function (c) {
+                _this.o10Hub.invoke("AddToGroup", that.sessionKey).then(function () {
+                    console.info("Added to o10Hub group " + that.sessionKey + " for connection " + that.o10Hub.connectionId);
+                }).catch(function (e) {
+                    console.error(e);
+                });
+            });
+            that.o10Hub.on("PushAuthorizationCompromised", function () {
+                that.router.navigate(['unauthorized-use', that.registrationId, that.sessionKey]);
+            });
             that.initiateO10Hub(that);
             that.isLoaded = true;
         });
@@ -40,7 +53,7 @@ var JointMainComponent = /** @class */ (function () {
         this.o10Hub.start().then(function () {
             console.info("Connected to o10Hub");
             _this.o10Hub.invoke("AddToGroup", that.sessionKey).then(function () {
-                console.info("Added to o10Hub group " + that.sessionKey);
+                console.info("Added to o10Hub group " + that.sessionKey + " for connection " + that.o10Hub.connectionId);
             }).catch(function (e) {
                 console.error(e);
             });
@@ -66,7 +79,7 @@ var JointMainComponent = /** @class */ (function () {
         });
     };
     JointMainComponent = __decorate([
-        core_1.Component({
+        (0, core_1.Component)({
             selector: 'app-joint-main',
             templateUrl: './joint-main.component.html',
             styleUrls: ['./joint-main.component.css']

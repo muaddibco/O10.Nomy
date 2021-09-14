@@ -32,7 +32,8 @@ import { JointMainComponent } from './joint-main/joint-main.component';
 import { AddJointGroupDialog } from './add-jointgroup-dialog/add-jointgroup.dialog';
 import { AddJointGroupMemberDialog } from './add-jointgroupmember-dialog/add-jointgroupmember.dialog';
 import { JointGroupAdminComponent } from './joint-group-admin/joint-group-admin.component';
-import { JointGroupComponent } from './joint-group/joint-group.component'
+import { JointGroupComponent } from './joint-group/joint-group.component';
+import { UnauthorizedUseComponent } from './unauthorized-use/unauthorized-use.component'
 
 
 @NgModule({
@@ -42,7 +43,8 @@ import { JointGroupComponent } from './joint-group/joint-group.component'
     AddJointGroupDialog,
     AddJointGroupMemberDialog,
     JointGroupAdminComponent,
-    JointGroupComponent
+    JointGroupComponent,
+    UnauthorizedUseComponent
   ],
   imports: [
     BrowserModule,
@@ -56,7 +58,8 @@ import { JointGroupComponent } from './joint-group/joint-group.component'
     RouterModule.forRoot([
       { path: 'joint-purchases', component: JointEntryComponent },
       { path: 'joint-main/:registrationId/:sessionKey', component: JointMainComponent },
-      { path: 'joint-group-admin/:groupId/:registrationId/:sessionKey', component: JointGroupAdminComponent }
+      { path: 'joint-group-admin/:groupId/:registrationId/:sessionKey', component: JointGroupAdminComponent },
+      { path: 'unauthorized-use/:registrationId/:sessionKey', component: UnauthorizedUseComponent }
     ])
   ]
 })

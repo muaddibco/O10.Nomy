@@ -39,6 +39,7 @@ var add_jointgroup_dialog_1 = require("./add-jointgroup-dialog/add-jointgroup.di
 var add_jointgroupmember_dialog_1 = require("./add-jointgroupmember-dialog/add-jointgroupmember.dialog");
 var joint_group_admin_component_1 = require("./joint-group-admin/joint-group-admin.component");
 var joint_group_component_1 = require("./joint-group/joint-group.component");
+var unauthorized_use_component_1 = require("./unauthorized-use/unauthorized-use.component");
 var JointPurchasesModule = /** @class */ (function () {
     function JointPurchasesModule() {
     }
@@ -50,7 +51,8 @@ var JointPurchasesModule = /** @class */ (function () {
                 add_jointgroup_dialog_1.AddJointGroupDialog,
                 add_jointgroupmember_dialog_1.AddJointGroupMemberDialog,
                 joint_group_admin_component_1.JointGroupAdminComponent,
-                joint_group_component_1.JointGroupComponent
+                joint_group_component_1.JointGroupComponent,
+                unauthorized_use_component_1.UnauthorizedUseComponent
             ],
             imports: [
                 platform_browser_1.BrowserModule,
@@ -64,7 +66,8 @@ var JointPurchasesModule = /** @class */ (function () {
                 router_1.RouterModule.forRoot([
                     { path: 'joint-purchases', component: joint_entry_component_1.JointEntryComponent },
                     { path: 'joint-main/:registrationId/:sessionKey', component: joint_main_component_1.JointMainComponent },
-                    { path: 'joint-group-admin/:groupId/:registrationId/:sessionKey', component: joint_group_admin_component_1.JointGroupAdminComponent }
+                    { path: 'joint-group-admin/:groupId/:registrationId/:sessionKey', component: joint_group_admin_component_1.JointGroupAdminComponent },
+                    { path: 'unauthorized-use/:registrationId/:sessionKey', component: unauthorized_use_component_1.UnauthorizedUseComponent }
                 ])
             ]
         })

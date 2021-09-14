@@ -30,6 +30,8 @@ namespace O10.Nomy.Services
 
         Task<IEnumerable<AttributeValue>> RequestIdentity(long accountId, string password, string email, string firstName, string lastName, string walletId);
 
+        Task<UserAccountDetailsDto> GetUserAccountDetails(long accountId);
+
         Task<List<UserAttributeSchemeDto>?> GetUserAttributes(long accountId);
 
         Task<List<AttributeDefinition>> GetAttributeDefinitions(string issuer);
@@ -48,5 +50,7 @@ namespace O10.Nomy.Services
 
         Task<RelationGroupDto> AddRelationGroup(long accountId, string groupName);
         Task<RelationDto> AddRelation(long accountId, long groupId, string rawRootAttributeValue, string description);
+
+        Task SendCompromizationClaim(long accountId, UnauthorizedUseDto unauthorizedUse);
     }
 }

@@ -12,6 +12,9 @@ var UserAccessService = /** @class */ (function () {
     function UserAccessService(http) {
         this.http = http;
     }
+    UserAccessService.prototype.getO10HubUri = function () {
+        return this.http.get('/api/JointService/O10Hub');
+    };
     UserAccessService.prototype.register = function (user) {
         return this.http.post('/api/accounts', user);
     };
@@ -20,6 +23,12 @@ var UserAccessService = /** @class */ (function () {
     };
     UserAccessService.prototype.getUserDetails = function (accountId) {
         return this.http.get('/api/user/' + accountId);
+    };
+    UserAccessService.prototype.getUserAccountDetails = function (accountId) {
+        return this.http.get('/api/user/' + accountId + '/details');
+    };
+    UserAccessService.prototype.sendCompromizationClaim = function (accountId, unauthorizedUse) {
+        return this.http.post('/api/user/' + accountId + '/compromized', unauthorizedUse);
     };
     UserAccessService.prototype.confirmSession = function (sessionId) {
         return this.http.post('/api/user/session/' + sessionId, null);

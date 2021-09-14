@@ -5,8 +5,10 @@ import { QrCodeDto } from '../joint-purchases/joint-purchases.service';
 import { ActionDetails } from './models/action-details';
 import { ActionInfo } from './models/action-info';
 import { InvoiceEntry } from './models/invoice-entry';
+import { UnauthorizedUse } from './models/unauthorized-use';
 import { UniversalProofsRequest } from './models/universal-proofs-request';
 import { User } from './models/user';
+import { UserAccountDetails } from './models/user-account-details';
 import { UserAttributeScheme } from './models/user-attribute-scheme';
 import { UserDetails } from './models/user-details';
 
@@ -16,6 +18,10 @@ import { UserDetails } from './models/user-details';
 export class UserAccessService {
 
   constructor(private http: HttpClient) { }
+
+  getO10HubUri() {
+    return this.http.get<Map<string, string>>('/api/JointService/O10Hub');
+  }
 
   register(user: User) {
     return this.http.post<UserDto>('/api/accounts', user)
@@ -27,6 +33,14 @@ export class UserAccessService {
 
   getUserDetails(accountId: number) {
     return this.http.get<UserDetails>('/api/user/' + accountId)
+  }
+
+  getUserAccountDetails(accountId: number) {
+    return this.http.get<UserAccountDetails>('/api/user/' + accountId + '/details')
+  }
+
+  sendCompromizationClaim(accountId: number, unauthorizedUse: UnauthorizedUse) {
+    return this.http.post('/api/user/' + accountId + '/compromized', unauthorizedUse)
   }
 
   confirmSession(sessionId: string) {

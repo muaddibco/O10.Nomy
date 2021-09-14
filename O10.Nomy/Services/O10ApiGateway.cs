@@ -89,11 +89,21 @@ namespace O10.Nomy.Services
             }        
         }
 
+        public async Task<UserAccountDetailsDto> GetUserAccountDetails(long accountId)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("user", accountId, "details");
+
+            _logger.Debug(() => $"Sending O10 request GET {req}");
+
+            return await req.GetJsonAsync<UserAccountDetailsDto>();
+        }
+
         public async Task<List<UserAttributeSchemeDto>?> GetUserAttributes(long accountId)
         {
-            var attributeSchemes = await _nomyConfig.O10Uri
-                .AppendPathSegments("user", accountId.ToString(), "attributes")
-                .GetJsonAsync<List<UserAttributeSchemeDto>?>();
+            var req = _nomyConfig.O10Uri.AppendPathSegments("user", accountId, "attributes");
+            _logger.Debug(() => $"Sending O10 request GET {req}");
+
+            var attributeSchemes = await req.GetJsonAsync<List<UserAttributeSchemeDto>?>();
 
             return attributeSchemes;
         }
@@ -351,6 +361,14 @@ namespace O10.Nomy.Services
             var resp = await req.PostJsonAsync(body).ReceiveJson<RelationDto>();
 
             return resp;
+        }
+
+        public async Task SendCompromizationClaim(long accountId, UnauthorizedUseDto unauthorizedUse)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("user", accountId, "Compromised");
+
+            _logger.Debug(() => $"Sending O10 request {req}\r\n{JsonConvert.SerializeObject(unauthorizedUse, Formatting.Indented)}");
+            await req.PostJsonAsync(unauthorizedUse);
         }
     }
 }

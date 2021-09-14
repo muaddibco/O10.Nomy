@@ -48,6 +48,7 @@ var user_attributes_component_1 = require("../identities/user-attributes/user-at
 var qr_scan_component_1 = require("./qr-scan/qr-scan.component");
 var service_provider_component_1 = require("./service-provider/service-provider.component");
 var duplicate_account_component_1 = require("./duplicate-account/duplicate-account.component");
+var compromized_component_1 = require("./compromized/compromized.component");
 var UserModule = /** @class */ (function () {
     function UserModule() {
     }
@@ -60,7 +61,8 @@ var UserModule = /** @class */ (function () {
                 user_signin_component_1.UserSigninComponent,
                 qr_scan_component_1.QrScanComponent,
                 service_provider_component_1.ServiceProviderComponent,
-                duplicate_account_component_1.DuplicateAccountComponent
+                duplicate_account_component_1.DuplicateAccountComponent,
+                compromized_component_1.CompromizedComponent
             ],
             imports: [
                 platform_browser_1.BrowserModule,
@@ -86,7 +88,8 @@ var UserModule = /** @class */ (function () {
                     { path: 'user-attributes/:userId', component: user_attributes_component_1.UserAttributesComponent },
                     { path: 'qr-scan/:userId', component: qr_scan_component_1.QrScanComponent },
                     { path: 'service-provider/:userId', component: service_provider_component_1.ServiceProviderComponent },
-                    { path: 'override/:userId', component: duplicate_account_component_1.DuplicateAccountComponent }
+                    { path: 'override/:userId', component: duplicate_account_component_1.DuplicateAccountComponent },
+                    { path: 'compromized/:userId', component: compromized_component_1.CompromizedComponent }
                 ]),
             ],
             providers: [ngx_cookie_service_1.CookieService]

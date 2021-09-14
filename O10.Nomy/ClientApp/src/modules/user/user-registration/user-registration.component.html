@@ -25,7 +25,6 @@
           <div *ngIf="formData.password.errors.required">Value is mandatory</div>
         </div>
       </div>
-      <mat-slide-toggle [(ngModel)]="isEmptyOnly">Create Empty Wallet</mat-slide-toggle>
       <div class="form-group">
         <button [disabled]="submitClick" class="btn btn-primary" type="submit" style="margin-right:10px">Submit</button>
         <button [disabled]="submitClick" class="btn" (click)="onCancel()" type="reset">Cancel</button>

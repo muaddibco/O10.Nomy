@@ -89,6 +89,24 @@ namespace O10.Nomy.Controllers
             return Ok(await _o10ApiGateway.GetUserActionInfo(actionInfo));
         }
 
+        [HttpGet("{accountId}/Details")]
+        public async Task<ActionResult<UserAccountDetailsDto>> GetUserAccountDetails(long accountId, CancellationToken cancellationToken)
+        {
+            var user = await _dataAccessService.GetUser(accountId, cancellationToken);
+
+            return Ok(await _o10ApiGateway.GetUserAccountDetails(user.Account.O10Id));
+        }
+
+        [HttpPost("{accountId}/Compromized")]
+        public async Task<IActionResult> SendCompromizedClaim(long accountId, UnauthorizedUseDto unauthorizedUse, CancellationToken cancellationToken)
+        {
+            var user = await _dataAccessService.GetUser(accountId, cancellationToken);
+
+            await _o10ApiGateway.SendCompromizationClaim(user.Account.O10Id, unauthorizedUse);
+
+            return Ok();
+        }
+
         [HttpGet("{accountId}/Secrets")]
         public async Task<ActionResult<QrCodeDto>> GetDiscloseSecretsCode(long accountId, string password, CancellationToken ct)
         {

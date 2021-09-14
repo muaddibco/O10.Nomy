@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { JointGroup, JointPurchasesService } from '../joint-purchases.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddJointGroupDialog } from '../add-jointgroup-dialog/add-jointgroup.dialog';
@@ -41,8 +41,22 @@ export class JointMainComponent implements OnInit {
         console.info("Connecting to O10 Hub with URI " + r["o10HubUri"])
 
         that.o10Hub = new HubConnectionBuilder()
+          .withAutomaticReconnect()
+          .configureLogging(LogLevel.Debug)
           .withUrl(r["o10HubUri"])
           .build()
+
+        that.o10Hub.onreconnected(c => {
+          this.o10Hub.invoke("AddToGroup", that.sessionKey).then(() => {
+            console.info("Added to o10Hub group " + that.sessionKey + " for connection " + that.o10Hub.connectionId);
+          }).catch(e => {
+            console.error(e);
+          });
+        });
+
+        that.o10Hub.on("PushAuthorizationCompromised", () => {
+          that.router.navigate(['unauthorized-use', that.registrationId, that.sessionKey])
+        })
 
         that.initiateO10Hub(that)
         that.isLoaded = true
@@ -54,7 +68,7 @@ export class JointMainComponent implements OnInit {
     this.o10Hub.start().then(() => {
       console.info("Connected to o10Hub");
       this.o10Hub.invoke("AddToGroup", that.sessionKey).then(() => {
-        console.info("Added to o10Hub group " + that.sessionKey);
+        console.info("Added to o10Hub group " + that.sessionKey + " for connection " + that.o10Hub.connectionId);
       }).catch(e => {
         console.error(e);
       });

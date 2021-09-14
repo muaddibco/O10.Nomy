@@ -18,13 +18,26 @@ var JointEntryComponent = /** @class */ (function () {
         this.isQrLoaded = false;
     }
     JointEntryComponent.prototype.ngOnInit = function () {
+        var _this = this;
         var that = this;
         this.serviceAccessor.getO10HubUri().subscribe(function (r) {
             console.info("Connecting to O10 Hub with URI " + r["o10HubUri"]);
             that.o10Hub = new signalr_1.HubConnectionBuilder()
+                .withAutomaticReconnect()
+                .configureLogging(signalr_1.LogLevel.Debug)
                 .withUrl(r["o10HubUri"])
                 .build();
+            that.o10Hub.onreconnected(function (c) {
+                _this.o10Hub.invoke("AddToGroup", that.sessionKey).then(function () {
+                    console.info("Added to o10Hub group " + that.sessionKey + " for connection " + that.o10Hub.connectionId);
+                }).catch(function (e) {
+                    console.error(e);
+                });
+            });
             that.o10Hub.on("PushSpAuthorizationSucceeded", function (r) {
+                that.router.navigate(['joint-main', r.registrationId, that.sessionKey]);
+            });
+            that.o10Hub.on("PushUserRegistration", function (r) {
                 that.router.navigate(['joint-main', r.registrationId, that.sessionKey]);
             });
             that.serviceAccessor.getJointServiceAccount().subscribe(function (r) {
@@ -56,7 +69,7 @@ var JointEntryComponent = /** @class */ (function () {
         });
     };
     JointEntryComponent = __decorate([
-        core_1.Component({
+        (0, core_1.Component)({
             selector: 'app-joint-entry',
             templateUrl: './joint-entry.component.html',
             styleUrls: ['./joint-entry.component.css']

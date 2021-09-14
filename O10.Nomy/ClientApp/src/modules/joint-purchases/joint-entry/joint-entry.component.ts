@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JointPurchasesService } from '../joint-purchases.service';
-import { HubConnectionBuilder, HubConnection } from '@microsoft/signalr'
+import { HubConnectionBuilder, HubConnection, LogLevel } from '@microsoft/signalr'
 
 @Component({
   selector: 'app-joint-entry',
@@ -30,10 +30,24 @@ export class JointEntryComponent implements OnInit {
         console.info("Connecting to O10 Hub with URI " + r["o10HubUri"])
 
         that.o10Hub = new HubConnectionBuilder()
+          .withAutomaticReconnect()
+          .configureLogging(LogLevel.Debug)
           .withUrl(r["o10HubUri"])
           .build()
 
+        that.o10Hub.onreconnected(c => {
+          this.o10Hub.invoke("AddToGroup", that.sessionKey).then(() => {
+            console.info("Added to o10Hub group " + that.sessionKey + " for connection " + that.o10Hub.connectionId);
+          }).catch(e => {
+            console.error(e);
+          });
+        });
+
         that.o10Hub.on("PushSpAuthorizationSucceeded", r => {
+          that.router.navigate(['joint-main', r.registrationId, that.sessionKey])
+        })
+
+        that.o10Hub.on("PushUserRegistration", r => {
           that.router.navigate(['joint-main', r.registrationId, that.sessionKey])
         })
 

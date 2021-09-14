@@ -4,7 +4,7 @@ import { UserDto } from '../../accounts/models/account';
 import { UserAccessService } from '../user-access.service';
 import { PasswordConfirmDialog } from '../../password-confirm/password-confirm/password-confirm.dialog'
 import { ActivatedRoute, Router } from '@angular/router';
-import { HubConnectionBuilder, HubConnection } from '@microsoft/signalr'
+import { HubConnectionBuilder, HubConnection, LogLevel } from '@microsoft/signalr'
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { QrCodePopupComponent } from '../../qrcode-popup/qrcode-popup/qrcode-popup.component';
 import { SessionExpertInfo } from '../models/session-expert-info';
@@ -19,6 +19,7 @@ import { PaymentRecordEntry } from '../../experts/models/payment-record-entry';
 import { ReplaySubject } from 'rxjs';
 import { Observable } from 'rxjs';
 import { AppStateService } from '../../../app/app-state.service';
+import { UnauthorizedUse } from '../models/unauthorized-use';
 
 @Component({
   selector: 'app-user-details',
@@ -39,6 +40,7 @@ export class UserDetailsComponent implements OnInit {
   public isLoaded = false
   private chatHub: HubConnection
   private paymentHub: HubConnection
+  private o10Hub: HubConnection
   public isInSession = false
   public isSessionStarted = false
   public sessionInfo: SessionExpertInfo
@@ -64,6 +66,7 @@ export class UserDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.appState.setIsMobile(true)
     var userId = Number(this.route.snapshot.paramMap.get('userId'))
+
     let that = this;
     this.accountAccessService.getAccountById(userId).subscribe(
       async r => {
@@ -83,13 +86,66 @@ export class UserDetailsComponent implements OnInit {
                 that.authenticateUser(that, r);
               }
 
+              that.userAccessService.getUserAccountDetails(that.user.accountId).subscribe(
+                r => {
+                  if (r.isCompromised) {
+                    that.router.navigate(['/compromized', that.user.accountId])
+                  }
+                },
+                e => {}
+              )
+
               that.isLoaded = true
             }
           )
         } else {
           that.isLoaded = true
+
+          that.userAccessService.getUserAccountDetails(that.user.accountId).subscribe(
+            r => {
+              if (r.isCompromised) {
+                that.router.navigate(['/compromized', that.user.accountId])
+              }
+            },
+            e => { }
+          )
+
           that.initiateChatHub(that);
         }
+
+        that.userAccessService.getO10HubUri().subscribe(
+          r => {
+            console.info("Connecting to O10 Hub with URI " + r["o10HubUri"])
+
+            that.o10Hub = new HubConnectionBuilder()
+              .withAutomaticReconnect()
+              .configureLogging(LogLevel.Debug)
+              .withUrl(r["o10HubUri"])
+              .build()
+
+            that.o10Hub.onreconnected(c => {
+              this.o10Hub.invoke("AddToGroup", that.user.o10Id.toString()).then(() => {
+                console.info("Added to o10Hub group " + that.user.o10Id.toString() + " for connection " + that.o10Hub.connectionId);
+              }).catch(e => {
+                console.error(e);
+              });
+            });
+
+            that.o10Hub.on("PushUnauthorizedUse", r => {
+              console.info("Handled PushUnauthorizedUse: " + JSON.stringify(r))
+              that.userAccessService.sendCompromizationClaim(that.user.accountId, r as UnauthorizedUse).subscribe(
+                r => {
+                  that.router.navigate(['compromized', that.user.accountId])
+                },
+                e => {
+                  console.error("Failed to send compromization claim", e)
+                }
+              )
+            })
+
+            that.initiateO10Hub(that)
+          }
+        )
       },
       e => {
       })
@@ -145,16 +201,16 @@ export class UserDetailsComponent implements OnInit {
     })
   }
 
-    private issueInvoice() {
-        console.info("Issue invoice for " + this.expertProfile.fee + " USD");
-        this.userAccessService.sendInvoice(this.user.accountId, this.sessionInfo.sessionId, this.expertProfile.fee, "USD").subscribe(
-            r => {
-                console.info("Invoice " + r.commitment + " for the session " + this.sessionInfo.sessionId + " issued successfully");
-            },
-            e => {
-                console.error("Failed to issue an invoice for the session " + this.sessionInfo.sessionId, e);
-            });
-    }
+  private issueInvoice() {
+      console.info("Issue invoice for " + this.expertProfile.fee + " USD");
+      this.userAccessService.sendInvoice(this.user.accountId, this.sessionInfo.sessionId, this.expertProfile.fee, "USD").subscribe(
+          r => {
+              console.info("Invoice " + r.commitment + " for the session " + this.sessionInfo.sessionId + " issued successfully");
+          },
+          e => {
+              console.error("Failed to issue an invoice for the session " + this.sessionInfo.sessionId, e);
+          });
+  }
 
   private authenticateUser(that: this, password: string) {
     that.accountAccessService.authenticate(that.user.accountId, password)
@@ -207,6 +263,20 @@ export class UserDetailsComponent implements OnInit {
             alert('Failed to disclose secrets');
           });
       }
+    });
+  }
+
+  private initiateO10Hub(that: this) {
+    this.o10Hub.start().then(() => {
+      console.info("Connected to o10Hub");
+      this.o10Hub.invoke("AddToGroup", that.user.o10Id.toString()).then(() => {
+        console.info("Added to o10Hub group " + that.user.o10Id);
+      }).catch(e => {
+        console.error(e);
+      });
+    }).catch(e => {
+      console.error(e);
+      setTimeout(() => that.initiateO10Hub(that), 1000);
     });
   }
 

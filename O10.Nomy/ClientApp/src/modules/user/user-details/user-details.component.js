@@ -91,6 +91,7 @@ var UserDetailsComponent = /** @class */ (function () {
         var that = this;
         this.accountAccessService.getAccountById(userId).subscribe(function (r) { return __awaiter(_this, void 0, void 0, function () {
             var passwordSet, res, dialogRef;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -109,13 +110,47 @@ var UserDetailsComponent = /** @class */ (function () {
                                 if (r) {
                                     that.authenticateUser(that, r);
                                 }
+                                that.userAccessService.getUserAccountDetails(that.user.accountId).subscribe(function (r) {
+                                    if (r.isCompromised) {
+                                        that.router.navigate(['/compromized', that.user.accountId]);
+                                    }
+                                }, function (e) { });
                                 that.isLoaded = true;
                             });
                         }
                         else {
                             that.isLoaded = true;
+                            that.userAccessService.getUserAccountDetails(that.user.accountId).subscribe(function (r) {
+                                if (r.isCompromised) {
+                                    that.router.navigate(['/compromized', that.user.accountId]);
+                                }
+                            }, function (e) { });
                             that.initiateChatHub(that);
                         }
+                        that.userAccessService.getO10HubUri().subscribe(function (r) {
+                            console.info("Connecting to O10 Hub with URI " + r["o10HubUri"]);
+                            that.o10Hub = new signalr_1.HubConnectionBuilder()
+                                .withAutomaticReconnect()
+                                .configureLogging(signalr_1.LogLevel.Debug)
+                                .withUrl(r["o10HubUri"])
+                                .build();
+                            that.o10Hub.onreconnected(function (c) {
+                                _this.o10Hub.invoke("AddToGroup", that.user.o10Id.toString()).then(function () {
+                                    console.info("Added to o10Hub group " + that.user.o10Id.toString() + " for connection " + that.o10Hub.connectionId);
+                                }).catch(function (e) {
+                                    console.error(e);
+                                });
+                            });
+                            that.o10Hub.on("PushUnauthorizedUse", function (r) {
+                                console.info("Handled PushUnauthorizedUse: " + JSON.stringify(r));
+                                that.userAccessService.sendCompromizationClaim(that.user.accountId, r).subscribe(function (r) {
+                                    that.router.navigate(['compromized', that.user.accountId]);
+                                }, function (e) {
+                                    console.error("Failed to send compromization claim", e);
+                                });
+                            });
+                            that.initiateO10Hub(that);
+                        });
                         return [2 /*return*/];
                 }
             });
@@ -213,6 +248,20 @@ var UserDetailsComponent = /** @class */ (function () {
                     alert('Failed to disclose secrets');
                 });
             }
+        });
+    };
+    UserDetailsComponent.prototype.initiateO10Hub = function (that) {
+        var _this = this;
+        this.o10Hub.start().then(function () {
+            console.info("Connected to o10Hub");
+            _this.o10Hub.invoke("AddToGroup", that.user.o10Id.toString()).then(function () {
+                console.info("Added to o10Hub group " + that.user.o10Id);
+            }).catch(function (e) {
+                console.error(e);
+            });
+        }).catch(function (e) {
+            console.error(e);
+            setTimeout(function () { return that.initiateO10Hub(that); }, 1000);
         });
     };
     UserDetailsComponent.prototype.gotoExperts = function () {
