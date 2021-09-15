@@ -20,6 +20,7 @@ using O10.Nomy.DemoFeatures;
 using O10.Nomy.ExtensionMethods;
 using O10.Nomy.Hubs;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace O10.Nomy
 {
@@ -82,7 +83,7 @@ namespace O10.Nomy
                     TypeNameHandling = TypeNameHandling.None,
                     ContractResolver = new DefaultContractResolver
                     {
-                        NamingStrategy = new CamelCaseNamingStrategy
+                        NamingStrategy = new DefaultNamingStrategy
                         {
                             OverrideSpecifiedNames = false
                         }
@@ -96,6 +97,11 @@ namespace O10.Nomy
                 jsonSettings.Converters.Add(new KeyJsonConverter());
                 jsonSettings.Converters.Add(new ByteArrayJsonConverter());
                 s.JsonSerializer = new NewtonsoftJsonSerializer(jsonSettings);
+
+                s.BeforeCall = c =>
+                {
+                    _logger.LogIfDebug(() => $"{c.HttpRequestMessage}\r\n{c.RequestBody}");
+                };
             });
         }
 
