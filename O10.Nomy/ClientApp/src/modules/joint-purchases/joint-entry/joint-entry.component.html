@@ -2,9 +2,24 @@
 <div *ngIf="isLoaded">
   <div style="padding: 20px; text-align: center">
     <h2>Welcome to the home page of Joint Purchases</h2>
-    <h4>For registration or login please scan the QR code with your Identity Wallet</h4>
-    <div style="display: inline-block; height: 300px; width: 300px; margin-top: 50px;">
-      <app-qrcode [stringContent]="loginQrCode" *ngIf="isQrLoaded" level="L"></app-qrcode>
+    <div *ngIf="!isError">
+      <h4>For registration or login please scan the QR code with your Identity Wallet</h4>
+      <div style="display: inline-block; height: 300px; width: 300px; margin-top: 50px;">
+        <app-qrcode [stringContent]="loginQrCode" *ngIf="isQrLoaded" level="L"></app-qrcode>
+      </div>
     </div>
+    <div *ngIf="isError">
+      <div style="width: 100%" *ngIf="isNotEligible">
+        <div class="alert alert-danger" style="vertical-align:middle;">
+          <img src="./images/error-50.png" style="margin-right:10px; margin-top:-8px" /> Provided proofs are not eligible!
+        </div>
+      </div>
+      <div style="width: 100%" *ngIf="isProtectionCheckFailed">
+        <div class="alert alert-danger" style="vertical-align:middle;">
+          <img src="./images/error-50.png" style="margin-right:10px; margin-top:-8px" /> Password protection of the provided proofs violated!
+        </div>
+      </div>
+    </div>
+    <button mat-flat-button color="accent" (click)="reset()">Reset QR</button>
   </div>
 </div>

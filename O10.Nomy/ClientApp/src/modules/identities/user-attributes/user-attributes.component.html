@@ -6,6 +6,11 @@
       <ng-container matColumnDef="{{column}}" *ngFor="let column of displayedColumns">
         <th mat-header-cell *matHeaderCellDef> {{column}} </th>
         <td mat-cell *matCellDef="let element">
+          <span *ngIf="column === 'state'">
+            <img *ngIf="element[column] === attributeState.NotConfirmed" src="./images/id-inquiry-50.png" style="width: calc(100vh*0.03);" />
+            <img *ngIf="element[column] === attributeState.Disabled" src="./images/id-not-verified-50.png" style="width: calc(100vh*0.03);" />
+            <img *ngIf="element[column] === attributeState.Confirmed" src="./images/id-verified-50.png" style="width: calc(100vh*0.03);" />
+          </span>
           <span *ngIf="column === 'schemeName'">{{element[column]}}</span>
           <span *ngIf="column === 'rootAttributeContent'">{{element[column]}}</span>
           <span *ngIf="column === 'issuerName'">from {{element[column]}}</span>

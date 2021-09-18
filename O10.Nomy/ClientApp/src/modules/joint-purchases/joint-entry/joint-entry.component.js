@@ -16,6 +16,9 @@ var JointEntryComponent = /** @class */ (function () {
         this.serviceAccessor = serviceAccessor;
         this.isLoaded = false;
         this.isQrLoaded = false;
+        this.isError = false;
+        this.isNotEligible = false;
+        this.isProtectionCheckFailed = false;
     }
     JointEntryComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -40,32 +43,61 @@ var JointEntryComponent = /** @class */ (function () {
             that.o10Hub.on("PushUserRegistration", function (r) {
                 that.router.navigate(['joint-main', r.registrationId, that.sessionKey]);
             });
-            that.serviceAccessor.getJointServiceAccount().subscribe(function (r) {
-                that.accountId = r.accountId;
-                that.serviceAccessor.getQrCode(that.accountId).subscribe(function (r) {
-                    that.sessionKey = r.sessionKey;
-                    that.initiateO10Hub(that);
-                    that.loginQrCode = r.code;
-                    that.isQrLoaded = true;
-                    that.isLoaded = true;
-                }, function (e) {
-                    console.error("failed to initialize session", e);
-                });
+            that.o10Hub.on("EligibilityCheckFailed", function (r) {
+                that.isNotEligible = true;
+                that.isError = true;
             });
+            that.o10Hub.on("ProtectionCheckFailed", function (r) {
+                that.isProtectionCheckFailed = true;
+                that.isError = true;
+            });
+            that.o10Hub.start().then(function () {
+                console.info("Connected to o10Hub");
+                that.initComponent(that);
+            }).catch(function (e) {
+                console.error(e);
+                setTimeout(function () { return that.initiateO10Hub(that); }, 1000);
+            });
+        });
+    };
+    JointEntryComponent.prototype.initComponent = function (that) {
+        var _this = this;
+        that.serviceAccessor.getJointServiceAccount().subscribe(function (r) {
+            that.accountId = r.accountId;
+            _this.initSessionKey(that);
+        });
+    };
+    JointEntryComponent.prototype.initSessionKey = function (that) {
+        that.serviceAccessor.getQrCode(that.accountId).subscribe(function (r) {
+            that.sessionKey = r.sessionKey;
+            that.initiateO10Hub(that);
+            that.loginQrCode = r.code;
+            that.isError = false;
+            that.isNotEligible = false;
+            that.isProtectionCheckFailed = false;
+            that.isQrLoaded = true;
+            that.isLoaded = true;
+        }, function (e) {
+            console.error("failed to initialize session", e);
         });
     };
     JointEntryComponent.prototype.initiateO10Hub = function (that) {
         var _this = this;
-        this.o10Hub.start().then(function () {
-            console.info("Connected to o10Hub");
-            _this.o10Hub.invoke("AddToGroup", that.sessionKey).then(function () {
-                console.info("Added to o10Hub group " + that.sessionKey);
-            }).catch(function (e) {
-                console.error(e);
-            });
+        that.o10Hub.invoke("AddToGroup", that.sessionKey).then(function () {
+            console.info("Added to o10Hub group " + that.sessionKey + " for connection " + _this.o10Hub.connectionId);
         }).catch(function (e) {
             console.error(e);
-            setTimeout(function () { return that.initiateO10Hub(that); }, 1000);
+        });
+    };
+    JointEntryComponent.prototype.reset = function () {
+        var _this = this;
+        var that = this;
+        this.o10Hub.invoke("RemoveFromGroup", this.sessionKey).then(function () {
+            console.info("Removed from o10Hub group " + _this.sessionKey + " for connection " + _this.o10Hub.connectionId);
+            _this.initSessionKey(that);
+        }).catch(function (e) {
+            console.error("Failed to remove from o10Hub group " + _this.sessionKey + " for connection " + _this.o10Hub.connectionId, e);
+            _this.initSessionKey(that);
         });
     };
     JointEntryComponent = __decorate([

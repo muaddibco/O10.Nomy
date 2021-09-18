@@ -1,5 +1,13 @@
 <p *ngIf="!isLoaded"><em>Loading...</em></p>
 <div *ngIf="isLoaded">
-  <div>Your account was compromised!</div>
-  <button mat-flat-button (click)="onReset()">Reset Account</button>
+  <div class="main-view">
+    <div class="compromised-container">
+      <div class="alert alert-danger" style="vertical-align:middle;">
+        <img src="./images/error-50.png" style="margin-right:10px; margin-top:-8px" /> Your account was compromised!
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+      <button mat-flat-button color="accent" (click)="onReset()" style="width: calc(100vh*0.40); height: calc(100vh*0.05); margin-bottom: calc(100vh*0.05);"><img src="./images/reset-50.png" width="30px" style="margin-right:10px" />Reset Account</button>
+  </div>
 </div>

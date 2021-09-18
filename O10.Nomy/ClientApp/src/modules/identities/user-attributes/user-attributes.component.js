@@ -26,6 +26,7 @@ var animations_1 = require("@angular/animations");
 var core_1 = require("@angular/core");
 var collections_1 = require("@angular/cdk/collections");
 var rxjs_1 = require("rxjs");
+var attribute_state_1 = require("../models/attribute-state");
 var UserAttributesComponent = /** @class */ (function () {
     function UserAttributesComponent(attributesService, appState, router, route) {
         this.attributesService = attributesService;
@@ -35,7 +36,7 @@ var UserAttributesComponent = /** @class */ (function () {
         this.isLoaded = false;
         this.attributeSchemes = [];
         this.dataSource = new AttributeSchemesDataSource(this.attributeSchemes);
-        this.displayedColumns = ['schemeName', 'rootAttributeContent', 'issuerName'];
+        this.displayedColumns = ['state', 'schemeName', 'rootAttributeContent', 'issuerName'];
         this.associatedAttrsDisplayedColumns = ['alias', 'content'];
     }
     UserAttributesComponent.prototype.ngOnInit = function () {
@@ -55,6 +56,13 @@ var UserAttributesComponent = /** @class */ (function () {
             _this.isLoaded = true;
         });
     };
+    Object.defineProperty(UserAttributesComponent.prototype, "attributeState", {
+        get: function () {
+            return attribute_state_1.AttributeState;
+        },
+        enumerable: false,
+        configurable: true
+    });
     UserAttributesComponent.prototype.onBack = function () {
         this.router.navigate(['/user-details', this.userId]);
     };

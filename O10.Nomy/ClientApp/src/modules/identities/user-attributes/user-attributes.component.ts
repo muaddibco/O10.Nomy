@@ -6,6 +6,7 @@ import { AttributeScheme } from '../models/attribute-scheme';
 import { DataSource } from '@angular/cdk/collections';
 import { Observable, ReplaySubject } from 'rxjs';
 import { AppStateService } from '../../../app/app-state.service';
+import { AttributeState } from '../models/attribute-state';
 
 @Component({
   selector: 'app-user-attributes',
@@ -27,7 +28,7 @@ export class UserAttributesComponent implements OnInit {
   public attributeSchemes: AttributeScheme[] = []
   public dataSource = new AttributeSchemesDataSource(this.attributeSchemes)
 
-  public displayedColumns: string[] = ['schemeName', 'rootAttributeContent', 'issuerName']
+  public displayedColumns: string[] = ['state', 'schemeName', 'rootAttributeContent', 'issuerName']
   public associatedAttrsDisplayedColumns: string[] = ['alias', 'content']
   public expandedElement: AttributeScheme | null;
 
@@ -56,6 +57,10 @@ export class UserAttributesComponent implements OnInit {
         this.isLoaded = true
       }
     )
+  }
+
+  public get attributeState(): typeof AttributeState {
+    return AttributeState;
   }
 
   onBack() {
