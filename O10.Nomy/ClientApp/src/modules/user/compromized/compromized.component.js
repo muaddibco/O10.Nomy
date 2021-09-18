@@ -8,15 +8,35 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompromizedComponent = void 0;
 var core_1 = require("@angular/core");
+var password_confirm_dialog_1 = require("../../password-confirm/password-confirm/password-confirm.dialog");
 var CompromizedComponent = /** @class */ (function () {
-    function CompromizedComponent(appState, router, route) {
+    function CompromizedComponent(appState, router, route, dialog, accountsAccessService) {
         this.appState = appState;
         this.router = router;
         this.route = route;
+        this.dialog = dialog;
+        this.accountsAccessService = accountsAccessService;
+        this.isLoaded = false;
     }
     CompromizedComponent.prototype.ngOnInit = function () {
         this.appState.setIsMobile(true);
-        var userId = Number(this.route.snapshot.paramMap.get('userId'));
+        this.userId = Number(this.route.snapshot.paramMap.get('userId'));
+        this.isLoaded = true;
+    };
+    CompromizedComponent.prototype.onReset = function () {
+        var _this = this;
+        var that = this;
+        var dialogRef = this.dialog.open(password_confirm_dialog_1.PasswordConfirmDialog, { data: { title: "Confirm account reset", confirmButtonText: "Confirm Reset" } });
+        dialogRef.afterClosed().subscribe(function (r) {
+            if (r) {
+                that.accountsAccessService.reset(_this.userId, r).subscribe(function (r1) {
+                    console.info('Reset of account passed successfully');
+                    _this.router.navigate(['user-details', _this.userId]);
+                }, function (e) {
+                    console.error('Failed to reset compromised account', e);
+                });
+            }
+        });
     };
     CompromizedComponent = __decorate([
         (0, core_1.Component)({

@@ -27,6 +27,9 @@ var AccountsAccessService = /** @class */ (function () {
     AccountsAccessService.prototype.isAuthenticated = function (accountId) {
         return this.http.get('/api/accounts/' + accountId + '/auth');
     };
+    AccountsAccessService.prototype.reset = function (accountId, password) {
+        return this.http.post('/api/accounts/' + accountId + '/reset', { password: password });
+    };
     AccountsAccessService = __decorate([
         (0, core_1.Injectable)({
             providedIn: 'root'

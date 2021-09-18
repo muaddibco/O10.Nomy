@@ -17,6 +17,8 @@ namespace O10.Nomy.Services
         Task<O10AccountDTO?> FindAccountByKeys(DisclosedSecretsDto disclosedSecrets);
         Task<O10AccountDTO?> GetAccount(long accountId);
 
+        Task<O10AccountDTO?> ResetAccount(long accountId, string password);
+
         Task<O10AccountDTO?> RegisterIdp(string alias, string password);
         Task<O10AccountDTO?> RegisterServiceProvider(string alias, string password);
         Task<O10AccountDTO?> RegisterUser(string email, string password);

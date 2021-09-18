@@ -110,5 +110,20 @@ namespace O10.Nomy.Controllers
 
             return Ok();
         }
+
+
+        [HttpPost("{accountId}/Reset")]
+        public async Task<IActionResult> ResetAccount(long accountId, AuthenticateAccountDTO authenticateAccount, CancellationToken cancellationToken)
+        {
+            var user = await _dataAccessService.GetUser(accountId, cancellationToken);
+
+            var account = await _apiGateway.ResetAccount(accountId, authenticateAccount.Password);
+
+            var userNew = await _dataAccessService.UpdateO10Id(accountId, account.AccountId, cancellationToken);
+
+            var attributeValues = await _apiGateway.RequestIdentity(account.AccountId, authenticateAccount.Password, userNew.Email, userNew.FirstName, userNew.LastName, userNew.WalletId);
+
+            return Ok();
+        }
     }
 }

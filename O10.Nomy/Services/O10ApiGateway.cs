@@ -71,7 +71,7 @@ namespace O10.Nomy.Services
             {
                 var req = _nomyConfig.O10Uri.AppendPathSegments("accounts", accountId.ToString());
 
-                _logger.Debug(() => $"Sending O10 request {req}");
+                _logger.Debug(() => $"Sending O10 request GET {req}");
 
                 var account = await req.GetJsonAsync<O10AccountDTO?>();
 
@@ -87,6 +87,19 @@ namespace O10.Nomy.Services
 
                 throw;
             }        
+        }
+
+        public async Task<O10AccountDTO?> ResetAccount(long accountId, string password)
+        {
+            var req = _nomyConfig.O10Uri.AppendPathSegments("accounts", accountId.ToString(), "reset");
+
+            var body = new AuthenticateAccountDTO { Password = password };
+
+            _logger.Debug(() => $"Sending O10 request POST {req}\r\n{JsonConvert.SerializeObject(body, Formatting.Indented)}");
+
+            var account = await req.PostJsonAsync(body).ReceiveJson<O10AccountDTO?>();
+
+            return account;
         }
 
         public async Task<UserAccountDetailsDto> GetUserAccountDetails(long accountId)

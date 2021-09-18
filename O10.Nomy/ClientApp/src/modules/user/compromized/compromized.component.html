@@ -1,1 +1,5 @@
-<p>compromized works!</p>
+<p *ngIf="!isLoaded"><em>Loading...</em></p>
+<div *ngIf="isLoaded">
+  <div>Your account was compromised!</div>
+  <button mat-flat-button (click)="onReset()">Reset Account</button>
+</div>
