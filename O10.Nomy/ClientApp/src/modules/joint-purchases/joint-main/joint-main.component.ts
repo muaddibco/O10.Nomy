@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { JointGroup, JointPurchasesService } from '../joint-purchases.service';
@@ -8,7 +8,8 @@ import { AddJointGroupDialog } from '../add-jointgroup-dialog/add-jointgroup.dia
 @Component({
   selector: 'app-joint-main',
   templateUrl: './joint-main.component.html',
-  styleUrls: ['./joint-main.component.css']
+  styleUrls: ['./joint-main.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class JointMainComponent implements OnInit {
 
@@ -98,5 +99,9 @@ export class JointMainComponent implements OnInit {
         }
       }
     )
+  }
+
+  onExit() {
+    this.router.navigate(['joint-purchases'])
   }
 }

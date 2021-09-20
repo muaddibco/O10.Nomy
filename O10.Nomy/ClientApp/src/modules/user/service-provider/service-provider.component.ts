@@ -30,6 +30,7 @@ export class ServiceProviderComponent implements OnInit {
   public submitClick = false;
   public isError: boolean = false;
   public errorMsg = '';
+  public password = '';
 
   // >>=========== Camera ===========================================================
   public allowCameraSwitch = true;
@@ -65,12 +66,14 @@ export class ServiceProviderComponent implements OnInit {
         this.userAttributes = []
 
         for (let scheme of r) {
-          if (scheme.state == AttributeState.Confirmed) {
+          var a1 = scheme.rootAttributes.pop();
+          this.userAttributes.push(a1)
+          /*if (scheme.state == AttributeState.Confirmed) {
             var a = scheme.rootAttributes.find(v => v.state == AttributeState.Confirmed)
             if (a) {
               this.userAttributes.push(a)
             }
-          }
+          }*/
         }
 
         if (this.userAttributes.length === 1) {
@@ -176,6 +179,7 @@ export class ServiceProviderComponent implements OnInit {
       mission: UniversalProofsMission.Authentication,
       rootAttributeId: this.selectedAttribute.userAttributeId,
       sessionKey: this.actionDetails.sessionKey,
+      password: this.password,
       target: this.actionDetails.publicKey,
       serviceProviderInfo: this.actionDetails.accountInfo,
       identityPools: []

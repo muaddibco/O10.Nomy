@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using O10.Client.Web.DataContracts;
 using O10.Client.Web.DataContracts.User;
 using O10.Core.ExtensionMethods;
 using O10.Core.Translators;
@@ -117,7 +118,7 @@ namespace O10.Nomy.Controllers
         {
             var user = await _dataAccessService.GetUser(accountId, cancellationToken);
 
-            var account = await _apiGateway.ResetAccount(accountId, authenticateAccount.Password);
+            var account = await _apiGateway.ResetAccount(user.Account.O10Id, authenticateAccount.Password);
 
             var userNew = await _dataAccessService.UpdateO10Id(accountId, account.AccountId, cancellationToken);
 

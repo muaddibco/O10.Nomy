@@ -4,34 +4,57 @@
     padding-top: 50px;
   }
 
+  .o10-container .main-view {
+    /*max-width: 300px;*/
+    padding: 10px;
+  }
+
+    .o10-container .main-view .top-bar {
+      width: 100%;
+      height: 150px;
+    }
+
+      .o10-container .main-view .top-bar .intro {
+        float: left;
+      }
+
+      .o10-container .main-view .top-bar .controls {
+        float: right;
+      }
+
+    .o10-container .main-view .content {
+      /*max-width: 300px;*/
+    }
+
   .o10-container-mobile .main-view {
     /*max-width: 300px;*/
     padding: 5px;
   }
 
-.o10-container-mobile .footer {
-  position: absolute;
-  left: 0px;
-  bottom: calc(100vh*0.12);
-  width: 100%;
-  text-align: center;
-  font-size: small;
-  min-height: calc(100vh*0.08)
-}
-
-  .o10-container-mobile .footer div {
-    margin: 0 auto calc(100vh*0.04) auto;
+  .o10-container-mobile .footer {
+    position: absolute;
+    left: 0px;
+    bottom: calc(100vh*0.12);
+    width: 100%;
+    text-align: center;
+    font-size: small;
+    min-height: calc(100vh*0.08);
   }
 
-  .o10-container-mobile .footer table {
+    .o10-container-mobile .footer div {
+      margin: 0 auto calc(100vh*0.04) auto;
+    }
+
+    .o10-container-mobile .footer table {
       margin-left: auto;
       margin-right: auto;
-  }
-
-  .o10-container-mobile .footer div.buttons2 button {
-      width: calc(100vh*0.12)
-  }
-    .o10-container-mobile .footer div.buttons2 button:not(:first-of-type) {
-      margin-left: calc(100vh*0.05)
     }
+
+    .o10-container-mobile .footer div.buttons2 button {
+      width: calc(100vh*0.12);
+    }
+
+      .o10-container-mobile .footer div.buttons2 button:not(:first-of-type) {
+        margin-left: calc(100vh*0.05);
+      }
 /*}*/

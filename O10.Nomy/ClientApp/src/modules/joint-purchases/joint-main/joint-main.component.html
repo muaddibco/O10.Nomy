@@ -1,17 +1,30 @@
 <p *ngIf="!isLoaded"><em>Loading...</em></p>
 <div *ngIf="isLoaded">
-  <button class="btn btn-primary" (click)="addNewGroup()" style="margin-right:10px">Add new group...</button>
-  <mat-list>
-    <mat-list-item class="pn" *ngFor="let group of groups">
-      <div mat-line>
-        <div style="display: table-cell; float: left">
-          <div>{{group.name}}</div>
-          <div>{{group.description}}</div>
-        </div>
-        <div style="display: table-cell; float: right; margin-top: 5px">
-          <button mat-button (click)="goToGroup(group)">Go to...</button>
-        </div>
+  <div class="main-view">
+    <div class="top-bar">
+      <div class="intro">
+        <h2>O10 Joint Purchases Platform</h2>
+        <h4>Welcome to the platform where you'll able jointly and confidentially perform and manage purchases</h4>
       </div>
-    </mat-list-item>
-  </mat-list>
+      <div class="controls">
+        <button mat-flat-button color="accent" (click)="onExit()">Exit</button>
+      </div>
+    </div>
+    <div class="content">
+      <button class="btn btn-primary" (click)="addNewGroup()" style="margin-right:10px">Add new group...</button>
+      <mat-list>
+        <mat-list-item class="pn" *ngFor="let group of groups">
+          <div mat-line>
+            <div style="display: table-cell; float: left">
+              <div>{{group.name}}</div>
+              <div>{{group.description}}</div>
+            </div>
+            <div style="display: table-cell; float: right; margin-top: 5px">
+              <button mat-button (click)="goToGroup(group)">Go to...</button>
+            </div>
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
 </div>

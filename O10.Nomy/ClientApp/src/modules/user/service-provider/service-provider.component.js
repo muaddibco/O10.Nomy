@@ -28,6 +28,7 @@ var ServiceProviderComponent = /** @class */ (function () {
         this.submitClick = false;
         this.isError = false;
         this.errorMsg = '';
+        this.password = '';
         // >>=========== Camera ===========================================================
         this.allowCameraSwitch = true;
         this.multipleWebcamsAvailable = false;
@@ -48,12 +49,14 @@ var ServiceProviderComponent = /** @class */ (function () {
             _this.userAttributes = [];
             for (var _i = 0, r_1 = r; _i < r_1.length; _i++) {
                 var scheme = r_1[_i];
-                if (scheme.state == attribute_state_1.AttributeState.Confirmed) {
-                    var a = scheme.rootAttributes.find(function (v) { return v.state == attribute_state_1.AttributeState.Confirmed; });
-                    if (a) {
-                        _this.userAttributes.push(a);
-                    }
-                }
+                var a1 = scheme.rootAttributes.pop();
+                _this.userAttributes.push(a1);
+                /*if (scheme.state == AttributeState.Confirmed) {
+                  var a = scheme.rootAttributes.find(v => v.state == AttributeState.Confirmed)
+                  if (a) {
+                    this.userAttributes.push(a)
+                  }
+                }*/
             }
             if (_this.userAttributes.length === 1) {
                 _this.selectedAttribute = _this.userAttributes[0];
@@ -152,6 +155,7 @@ var ServiceProviderComponent = /** @class */ (function () {
             mission: universal_proofs_mission_1.UniversalProofsMission.Authentication,
             rootAttributeId: this.selectedAttribute.userAttributeId,
             sessionKey: this.actionDetails.sessionKey,
+            password: this.password,
             target: this.actionDetails.publicKey,
             serviceProviderInfo: this.actionDetails.accountInfo,
             identityPools: []

@@ -1,1 +1,30 @@
-<p>unauthorized-use works!</p>
+<div class="main-view">
+  <div class="top-bar">
+    <div class="intro">
+      <h2>O10 Joint Purchases Platform</h2>
+      <h4>Welcome to the platform where you'll able jointly and confidentially perform and manage purchases</h4>
+    </div>
+    <div class="controls">
+      <button mat-flat-button color="accent" (click)="onDismiss()">Dismiss</button>
+    </div>
+  </div>
+  <div class="content">
+    <div style="width: 100%">
+      <div class="alert alert-danger" style="vertical-align:middle;">
+        <img src="./images/error-50.png" style="margin-right:10px; margin-top:-8px" /> It was detected that this is unauthorized use!
+      </div>
+    </div>
+
+    <h3> The IP address that unauthorized entry was made from is: </h3>
+    <p>{{ipaddress}}</p>
+
+    <h4>IP Address Info</h4>
+    <p>latitude : {{latitude}}</p>
+    <p>longitude : {{longitude}}</p>
+    <p>currency : {{currency}}</p>
+    <p>currencysymbol : {{currencysymbol}}</p>
+    <p>city : {{city}}</p>
+    <p>country : {{country}}</p>
+    <p>isp : {{isp}}</p>
+  </div>
+</div>

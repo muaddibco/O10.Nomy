@@ -5,6 +5,7 @@ export interface UniversalProofsRequest {
   rootAttributeId: number;
   target: string;
   sessionKey: string;
+  password: string;
   mission: UniversalProofsMission;
   serviceProviderInfo: string;
   identityPools: IdentityPool[];

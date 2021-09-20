@@ -78,11 +78,15 @@ var JointMainComponent = /** @class */ (function () {
             }
         });
     };
+    JointMainComponent.prototype.onExit = function () {
+        this.router.navigate(['joint-purchases']);
+    };
     JointMainComponent = __decorate([
         (0, core_1.Component)({
             selector: 'app-joint-main',
             templateUrl: './joint-main.component.html',
-            styleUrls: ['./joint-main.component.css']
+            styleUrls: ['./joint-main.component.css'],
+            encapsulation: core_1.ViewEncapsulation.None
         })
     ], JointMainComponent);
     return JointMainComponent;
