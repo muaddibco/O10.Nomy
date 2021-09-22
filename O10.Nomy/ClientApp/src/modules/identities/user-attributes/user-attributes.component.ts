@@ -7,6 +7,8 @@ import { DataSource } from '@angular/cdk/collections';
 import { Observable, ReplaySubject } from 'rxjs';
 import { AppStateService } from '../../../app/app-state.service';
 import { AttributeState } from '../models/attribute-state';
+import { MatDialog } from '@angular/material/dialog';
+import { PasswordConfirmDialog } from '../../password-confirm/password-confirm/password-confirm.dialog';
 
 @Component({
   selector: 'app-user-attributes',
@@ -36,7 +38,9 @@ export class UserAttributesComponent implements OnInit {
     private attributesService: AttributesAccessService,
     private appState: AppStateService,
     private router: Router,
-    private route: ActivatedRoute ) { }
+    private route: ActivatedRoute,
+    public dialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
     this.appState.setIsMobile(true)
@@ -49,7 +53,7 @@ export class UserAttributesComponent implements OnInit {
           var rootIdx = attrScheme.associatedSchemes.findIndex(v => v.issuerAddress === attrScheme.issuerAddress);
 
           if (rootIdx >= 0) {
-            attrScheme.rootAssociatedScheme = attrScheme.associatedSchemes.splice(rootIdx, 1)[0];
+            attrScheme.rootAssociatedScheme = attrScheme.associatedSchemes[rootIdx];
           }
         }
 
@@ -65,6 +69,23 @@ export class UserAttributesComponent implements OnInit {
 
   onBack() {
     this.router.navigate(['/user-details', this.userId])
+  }
+
+  onRerequest(attributeScheme: AttributeScheme) {
+    let that = this;
+    var dialogRef = this.dialog.open(PasswordConfirmDialog, { data: { title: "Confirm attribute re-request", confirmButtonText: "Confirm" } });
+    dialogRef.afterClosed().subscribe(r => {
+      if (r) {
+        that.attributesService.requestAttributes(this.userId, r, attributeScheme).subscribe(
+          r1 => {
+            console.info('Rerequest of attributes passed successfully');
+            this.router.navigate(['user-details', this.userId])
+          },
+          e => {
+            console.error('Failed to rerequest attributes', e);
+          });
+      }
+    })
   }
 }
 

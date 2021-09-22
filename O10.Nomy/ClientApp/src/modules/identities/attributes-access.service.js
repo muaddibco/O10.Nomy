@@ -15,8 +15,11 @@ var AttributesAccessService = /** @class */ (function () {
     AttributesAccessService.prototype.getUserAttributes = function (accountId) {
         return this.http.get('/api/user/' + accountId + '/attributes');
     };
+    AttributesAccessService.prototype.requestAttributes = function (accountId, password, attributeScheme) {
+        return this.http.post('/api/user/' + accountId + '/attributes', { password: password, attributeScheme: attributeScheme });
+    };
     AttributesAccessService = __decorate([
-        core_1.Injectable({
+        (0, core_1.Injectable)({
             providedIn: 'root'
         })
     ], AttributesAccessService);

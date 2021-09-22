@@ -12,4 +12,8 @@ export class AttributesAccessService {
   getUserAttributes(accountId: number) {
     return this.http.get<AttributeScheme[]>('/api/user/' + accountId + '/attributes')
   }
+
+  requestAttributes(accountId: number, password: string, attributeScheme: AttributeScheme) {
+    return this.http.post('/api/user/' + accountId + '/attributes', { password, attributeScheme })
+  }
 }

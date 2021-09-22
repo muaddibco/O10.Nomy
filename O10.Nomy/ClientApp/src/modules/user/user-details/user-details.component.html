@@ -1,26 +1,22 @@
 <p *ngIf="!isLoaded"><em>Loading...</em></p>
 <div *ngIf="isLoaded">
   <div class="main-view">
-    <h5>My info:</h5>
+    <div>
+      <h5 style="float: left">My info:</h5>
+      <button mat-button (click)="logout()" style="float: right">
+          <img src="/images/logout-rounded-left-50.png" height="30" width="30"/>
+      </button>
+    </div>
     <table class="myinfo">
       <tr>
         <td class="caption">Email:</td>
         <td class="value">{{user.email}}</td>
       </tr>
       <tr>
-        <td class="caption">First Name:</td>
-        <td class="value">{{user.firstName}}</td>
-      </tr>
-      <tr>
-        <td class="caption">Last Name:</td>
-        <td class="value">{{user.lastName}}</td>
-      </tr>
-      <tr>
         <td class="caption">Wallet ID:</td>
         <td class="value">{{user.walletId}}</td>
       </tr>
     </table>
-    <button mat-flat-button color="primary" (click)="onMyAttributes()">See my attributes...</button>
     <div *ngIf="isInSession">
       <mat-card *ngIf="!isSessionStarted"><em>Waiting for session '{{sessionInfo.sessionId}}' starting...</em></mat-card>
       <mat-card *ngIf="isSessionStarted"><em>Session '{{sessionInfo.sessionId}}' started</em></mat-card>
@@ -69,16 +65,36 @@
     </table>
   </div>
   <div class="footer">
-    <table>
+    <div class="buttons3">
+      <button mat-button (click)="onMyAttributes()">
+        <div style="display: inline-block; text-align: center;">
+          <img src="/images/id-64.png" width="50" height="50" />
+          <p style="font-size:small; text-align:center; color:darkgray">My attributes</p>
+        </div>
+      </button>
+      <button mat-button (click)="gotoQrScan()">
+        <div style="display: inline-block; text-align: center;">
+          <img src="/images/qr-code-80.png" width="50" height="50" />
+          <p style="font-size:small; text-align:center; color:darkgray">Click to scan</p>
+        </div>
+      </button>
+      <button mat-button (click)="onDiscloseSecrets()">
+        <div style="display: inline-block; text-align: center;">
+          <img src="/images/clone-50.png" />
+          <p style="font-size:small; text-align:center; color:darkgray">Reveal secrets</p>
+        </div>
+      </button>
+    </div>
+    <!--<table>-->
       <!--<tr>
-        <td>
-          <button (click)="gotoExperts()">anonymously find an expert for your needs</button>
-        </td>
-        <td>
-          find confidential communities with anonymous decision making
-        </td>
-      </tr>-->
-      <tr>
+      <td>
+        <button (click)="gotoExperts()">anonymously find an expert for your needs</button>
+      </td>
+      <td>
+        find confidential communities with anonymous decision making
+      </td>
+    </tr>-->
+      <!--<tr>
         <td style="padding-bottom: 0px">
           <button mat-button (click)="gotoQrScan()">
             <div style="display: inline-block; text-align: center;">
@@ -96,6 +112,6 @@
           </button>
         </td>
       </tr>
-    </table>
+    </table>-->
   </div>
 </div>

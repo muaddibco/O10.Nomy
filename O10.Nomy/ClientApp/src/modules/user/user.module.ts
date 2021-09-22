@@ -33,6 +33,7 @@ import { AccountsModule } from '../accounts/accounts.module';
 import { ExpertsModule } from '../experts/experts.module'
 import { PasswordConfirmModule } from '../password-confirm/password-confirm.module'
 import { QrCodePopupModule } from '../qrcode-popup/qrcode-popup.module'
+import { QrCodeExModule } from '../qrcode/qrcode.module'
 import { IdentitiesModule } from '../identities/identities.module'
 
 import { UserRegistrationComponent } from './user-registration/user-registration.component';
@@ -43,6 +44,7 @@ import { QrScanComponent } from './qr-scan/qr-scan.component';
 import { ServiceProviderComponent } from './service-provider/service-provider.component';
 import { DuplicateAccountComponent } from './duplicate-account/duplicate-account.component';
 import { CompromizedComponent } from './compromized/compromized.component';
+import { RevealSecretsComponent } from './reveal-secrets/reveal-secrets.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +55,8 @@ import { CompromizedComponent } from './compromized/compromized.component';
     QrScanComponent,
     ServiceProviderComponent,
     DuplicateAccountComponent,
-    CompromizedComponent
+    CompromizedComponent,
+    RevealSecretsComponent
   ],
   imports: [
     BrowserModule,
@@ -70,6 +73,7 @@ import { CompromizedComponent } from './compromized/compromized.component';
     QrCodePopupModule,
     ExpertsModule,
     IdentitiesModule,
+    QrCodeExModule,
     RouterModule.forRoot([
       { path: 'wallet', component: UserEntryComponent },
       { path: 'user-entry', component: UserEntryComponent },
@@ -80,7 +84,8 @@ import { CompromizedComponent } from './compromized/compromized.component';
       { path: 'qr-scan/:userId', component: QrScanComponent },
       { path: 'service-provider/:userId', component: ServiceProviderComponent },
       { path: 'override/:userId', component: DuplicateAccountComponent },
-      { path: 'compromized/:userId', component: CompromizedComponent }
+      { path: 'compromized/:userId', component: CompromizedComponent },
+      { path: 'reveal-secrets/:userId', component: RevealSecretsComponent }
     ]),
   ],
   providers: [CookieService]

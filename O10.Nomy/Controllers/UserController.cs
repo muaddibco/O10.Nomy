@@ -11,6 +11,9 @@ using O10.Client.Web.DataContracts.User;
 using System.Collections.Generic;
 using O10.Nomy.DemoFeatures;
 using O10.Nomy.DemoFeatures.Models;
+using O10.Client.Web.DataContracts;
+using System.Linq;
+using O10.Client.DataLayer.AttributesScheme;
 
 namespace O10.Nomy.Controllers
 {
@@ -19,7 +22,7 @@ namespace O10.Nomy.Controllers
     public class UserController : ControllerBase
     {
         private readonly IRapydApi _rapydApi;
-        private readonly IO10ApiGateway _o10ApiGateway;
+        private readonly IO10ApiGateway _apiGateway;
         private readonly IPaymentSessionsService _paymentSessionsService;
         private readonly ISessionsPool _sessionsPool;
         private readonly IDataAccessService _dataAccessService;
@@ -33,7 +36,7 @@ namespace O10.Nomy.Controllers
                               IDataAccessService dataAccessService)
         {
             _rapydApi = rapydApi;
-            _o10ApiGateway = o10ApiGateway;
+            _apiGateway = o10ApiGateway;
             _paymentSessionsService = paymentSessionsService;
             _sessionsPool = sessionsPool;
             _dataAccessService = dataAccessService;
@@ -45,7 +48,7 @@ namespace O10.Nomy.Controllers
         {
             var user = await _dataAccessService.GetUser(accountId, ct);
 
-            return Ok(await _o10ApiGateway.GetUserAttributes(user.Account.O10Id));
+            return Ok(await _apiGateway.GetUserAttributes(user.Account.O10Id));
         }
 
         [HttpGet("{accountId}")]
@@ -86,7 +89,7 @@ namespace O10.Nomy.Controllers
         [HttpGet("ActionInfo")]
         public async Task<IActionResult> GetUserActionInfo(string actionInfo)
         {
-            return Ok(await _o10ApiGateway.GetUserActionInfo(actionInfo));
+            return Ok(await _apiGateway.GetUserActionInfo(actionInfo));
         }
 
         [HttpGet("{accountId}/Details")]
@@ -94,7 +97,7 @@ namespace O10.Nomy.Controllers
         {
             var user = await _dataAccessService.GetUser(accountId, cancellationToken);
 
-            return Ok(await _o10ApiGateway.GetUserAccountDetails(user.Account.O10Id));
+            return Ok(await _apiGateway.GetUserAccountDetails(user.Account.O10Id));
         }
 
         [HttpPost("{accountId}/Compromized")]
@@ -102,7 +105,7 @@ namespace O10.Nomy.Controllers
         {
             var user = await _dataAccessService.GetUser(accountId, cancellationToken);
 
-            await _o10ApiGateway.SendCompromizationClaim(user.Account.O10Id, unauthorizedUse);
+            await _apiGateway.SendCompromizationClaim(user.Account.O10Id, unauthorizedUse);
 
             return Ok();
         }
@@ -112,7 +115,7 @@ namespace O10.Nomy.Controllers
         {
             var user = await _dataAccessService.GetUser(accountId, ct);
 
-            return Ok(await _o10ApiGateway.GetDiscloseSecretsCode(user.Account.O10Id, password));
+            return Ok(await _apiGateway.GetDiscloseSecretsCode(user.Account.O10Id, password));
         }
 
         [HttpGet("{accountId}/ActionDetails")]
@@ -120,7 +123,7 @@ namespace O10.Nomy.Controllers
         {
             var user = await _dataAccessService.GetUser(accountId, ct);
 
-            return Ok(await _o10ApiGateway.GetActionDetails(user.Account.O10Id, actionInfo, userAttributeId));
+            return Ok(await _apiGateway.GetActionDetails(user.Account.O10Id, actionInfo, userAttributeId));
         }
 
         [HttpPost("{accountId}/UniversalProofs")]
@@ -138,7 +141,22 @@ namespace O10.Nomy.Controllers
                 }
             };
 
-            await _o10ApiGateway.SendUniversalProofs(user.Account.O10Id, universalProofs);
+            await _apiGateway.SendUniversalProofs(user.Account.O10Id, universalProofs);
+
+            return Ok();
+        }
+
+        [HttpPost("{accountId}/attributes")]
+        public async Task<IActionResult> RequestIdentity(long accountId, [FromBody] RequestIdentityDto requestIdentity, CancellationToken cancellationToken)
+        {
+            var user = await _dataAccessService.GetUser(accountId, cancellationToken);
+
+            var attributeValues = await _apiGateway.RequestIdentity(user.Account.O10Id,
+                                                                    requestIdentity.Password,
+                                                                    requestIdentity.AttributeScheme.RootAttributeContent,
+                                                                    requestIdentity.AttributeScheme.AssociatedSchemes.First().Attributes.FirstOrDefault(a => a.SchemeName == AttributesSchemes.ATTR_SCHEME_NAME_FIRSTNAME)?.Content,
+                                                                    requestIdentity.AttributeScheme.AssociatedSchemes.First().Attributes.FirstOrDefault(a => a.SchemeName == AttributesSchemes.ATTR_SCHEME_NAME_LASTNAME)?.Content,
+                                                                    requestIdentity.AttributeScheme.AssociatedSchemes.First().Attributes.FirstOrDefault(a => a.SchemeName == "RapydWalletId")?.Content);
 
             return Ok();
         }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { AppStateService } from '../../../app/app-state.service';
 import { AccountsAccessService } from '../../accounts/accounts-access.service';
 import { PasswordConfirmDialog } from '../../password-confirm/password-confirm/password-confirm.dialog';

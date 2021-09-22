@@ -57,4 +57,12 @@
       .o10-container-mobile .footer div.buttons2 button:not(:first-of-type) {
         margin-left: calc(100vh*0.05);
       }
+
+    .o10-container-mobile .footer div.buttons3 button {
+      width: calc(100vh*0.12);
+    }
+
+      .o10-container-mobile .footer div.buttons2 button:not(:first-of-type) {
+        margin-left: calc(100vh*0.01);
+      }
 /*}*/

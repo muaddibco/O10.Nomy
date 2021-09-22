@@ -23,6 +23,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 
+import { PasswordConfirmModule } from '../password-confirm/password-confirm.module'
+
 import { UserAttributesComponent } from './user-attributes/user-attributes.component';
 
 
@@ -36,7 +38,8 @@ import { UserAttributesComponent } from './user-attributes/user-attributes.compo
     BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MatExpansionModule, MatInputModule, MatSelectModule, MatDialogModule, MatButtonModule, MatBottomSheetModule, MatCardModule, MatIconModule, MatProgressBarModule, MatListModule, MatButtonToggleModule, MatDividerModule, MatStepperModule, MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatSlideToggleModule, MatTableModule
+    MatExpansionModule, MatInputModule, MatSelectModule, MatDialogModule, MatButtonModule, MatBottomSheetModule, MatCardModule, MatIconModule, MatProgressBarModule, MatListModule, MatButtonToggleModule, MatDividerModule, MatStepperModule, MatCheckboxModule, MatRadioModule, MatFormFieldModule, MatSlideToggleModule, MatTableModule,
+    PasswordConfirmModule
   ]
 })
 export class IdentitiesModule { }

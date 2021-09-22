@@ -37,6 +37,7 @@
                 <tr mat-row *matRowDef="let row; columns: associatedAttrsDisplayedColumns;"></tr>
               </table>
 
+              <button mat-flat-button (click)="onRerequest(element)" style="width: calc(100vh*0.30); height: calc(100vh*0.04); margin-top: calc(100vh*0.02);"><img src="./images/synchronize-50.png" width="30px" style="margin-right:10px" />Rerequest</button>
             </div>
           </div>
         </td>

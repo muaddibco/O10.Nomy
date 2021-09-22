@@ -40,6 +40,7 @@ var accounts_module_1 = require("../accounts/accounts.module");
 var experts_module_1 = require("../experts/experts.module");
 var password_confirm_module_1 = require("../password-confirm/password-confirm.module");
 var qrcode_popup_module_1 = require("../qrcode-popup/qrcode-popup.module");
+var qrcode_module_1 = require("../qrcode/qrcode.module");
 var identities_module_1 = require("../identities/identities.module");
 var user_registration_component_1 = require("./user-registration/user-registration.component");
 var user_details_component_1 = require("./user-details/user-details.component");
@@ -49,6 +50,7 @@ var qr_scan_component_1 = require("./qr-scan/qr-scan.component");
 var service_provider_component_1 = require("./service-provider/service-provider.component");
 var duplicate_account_component_1 = require("./duplicate-account/duplicate-account.component");
 var compromized_component_1 = require("./compromized/compromized.component");
+var reveal_secrets_component_1 = require("./reveal-secrets/reveal-secrets.component");
 var UserModule = /** @class */ (function () {
     function UserModule() {
     }
@@ -62,7 +64,8 @@ var UserModule = /** @class */ (function () {
                 qr_scan_component_1.QrScanComponent,
                 service_provider_component_1.ServiceProviderComponent,
                 duplicate_account_component_1.DuplicateAccountComponent,
-                compromized_component_1.CompromizedComponent
+                compromized_component_1.CompromizedComponent,
+                reveal_secrets_component_1.RevealSecretsComponent
             ],
             imports: [
                 platform_browser_1.BrowserModule,
@@ -79,6 +82,7 @@ var UserModule = /** @class */ (function () {
                 qrcode_popup_module_1.QrCodePopupModule,
                 experts_module_1.ExpertsModule,
                 identities_module_1.IdentitiesModule,
+                qrcode_module_1.QrCodeExModule,
                 router_1.RouterModule.forRoot([
                     { path: 'wallet', component: user_entry_component_1.UserEntryComponent },
                     { path: 'user-entry', component: user_entry_component_1.UserEntryComponent },
@@ -89,7 +93,8 @@ var UserModule = /** @class */ (function () {
                     { path: 'qr-scan/:userId', component: qr_scan_component_1.QrScanComponent },
                     { path: 'service-provider/:userId', component: service_provider_component_1.ServiceProviderComponent },
                     { path: 'override/:userId', component: duplicate_account_component_1.DuplicateAccountComponent },
-                    { path: 'compromized/:userId', component: compromized_component_1.CompromizedComponent }
+                    { path: 'compromized/:userId', component: compromized_component_1.CompromizedComponent },
+                    { path: 'reveal-secrets/:userId', component: reveal_secrets_component_1.RevealSecretsComponent }
                 ]),
             ],
             providers: [ngx_cookie_service_1.CookieService]

@@ -60,8 +60,7 @@ export class UserDetailsComponent implements OnInit {
     private appState: AppStateService,
     private router: Router,
     private route: ActivatedRoute,
-    public dialog: MatDialog,
-    private bottomSheet: MatBottomSheet ) { }
+    public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.appState.setIsMobile(true)
@@ -248,22 +247,7 @@ export class UserDetailsComponent implements OnInit {
   }
 
   onDiscloseSecrets() {
-    let that = this;
-    var dialogRef = this.dialog.open(PasswordConfirmDialog, { data: { confirmButtonText: "Confirm Disclose" } });
-    dialogRef.afterClosed().subscribe(r => {
-      if (r) {
-        that.userAccessService.getDisclosedSecrets(this.user.accountId, r).subscribe(
-          r1 => {
-            that.bottomSheet.open(QrCodePopupComponent, { data: { qrCode: r1.code } });
-          },
-          e => {
-            //that.dialog.open(MatAlertDialog, {
-            //  data: { message: 'Failed to disclose secrets', title: 'Disclose Secrets Failure', icon: ' ' }
-            //});
-            alert('Failed to disclose secrets');
-          });
-      }
-    });
+    this.router.navigate(['reveal-secrets', this.user.accountId])
   }
 
   private initiateO10Hub(that: this) {
@@ -294,6 +278,11 @@ export class UserDetailsComponent implements OnInit {
 
   public gotoDuplicate() {
     this.router.navigate(['duplicate', this.user.accountId])
+  }
+
+  logout() {
+    sessionStorage.removeItem("passwordSet")
+    this.router.navigate(['user-entry'])
   }
 }
 

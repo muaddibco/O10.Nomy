@@ -27,12 +27,14 @@ var core_1 = require("@angular/core");
 var collections_1 = require("@angular/cdk/collections");
 var rxjs_1 = require("rxjs");
 var attribute_state_1 = require("../models/attribute-state");
+var password_confirm_dialog_1 = require("../../password-confirm/password-confirm/password-confirm.dialog");
 var UserAttributesComponent = /** @class */ (function () {
-    function UserAttributesComponent(attributesService, appState, router, route) {
+    function UserAttributesComponent(attributesService, appState, router, route, dialog) {
         this.attributesService = attributesService;
         this.appState = appState;
         this.router = router;
         this.route = route;
+        this.dialog = dialog;
         this.isLoaded = false;
         this.attributeSchemes = [];
         this.dataSource = new AttributeSchemesDataSource(this.attributeSchemes);
@@ -49,7 +51,7 @@ var UserAttributesComponent = /** @class */ (function () {
                 var attrScheme = _a[_i];
                 var rootIdx = attrScheme.associatedSchemes.findIndex(function (v) { return v.issuerAddress === attrScheme.issuerAddress; });
                 if (rootIdx >= 0) {
-                    attrScheme.rootAssociatedScheme = attrScheme.associatedSchemes.splice(rootIdx, 1)[0];
+                    attrScheme.rootAssociatedScheme = attrScheme.associatedSchemes[rootIdx];
                 }
             }
             _this.dataSource.setData(_this.attributeSchemes);
@@ -65,6 +67,21 @@ var UserAttributesComponent = /** @class */ (function () {
     });
     UserAttributesComponent.prototype.onBack = function () {
         this.router.navigate(['/user-details', this.userId]);
+    };
+    UserAttributesComponent.prototype.onRerequest = function (attributeScheme) {
+        var _this = this;
+        var that = this;
+        var dialogRef = this.dialog.open(password_confirm_dialog_1.PasswordConfirmDialog, { data: { title: "Confirm attribute re-request", confirmButtonText: "Confirm" } });
+        dialogRef.afterClosed().subscribe(function (r) {
+            if (r) {
+                that.attributesService.requestAttributes(_this.userId, r, attributeScheme).subscribe(function (r1) {
+                    console.info('Rerequest of attributes passed successfully');
+                    _this.router.navigate(['user-details', _this.userId]);
+                }, function (e) {
+                    console.error('Failed to rerequest attributes', e);
+                });
+            }
+        });
     };
     UserAttributesComponent = __decorate([
         (0, core_1.Component)({
