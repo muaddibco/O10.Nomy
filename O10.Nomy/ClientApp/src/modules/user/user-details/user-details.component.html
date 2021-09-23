@@ -21,9 +21,9 @@
       <mat-card *ngIf="!isSessionStarted"><em>Waiting for session '{{sessionInfo.sessionId}}' starting...</em></mat-card>
       <mat-card *ngIf="isSessionStarted"><em>Session '{{sessionInfo.sessionId}}' started</em></mat-card>
     </div>
-    <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8 invoices-table">
+    <!--<table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8 invoices-table">-->
       <!-- Commitment Column -->
-      <ng-container matColumnDef="{{column}}" *ngFor="let column of displayedColumns">
+      <!--<ng-container matColumnDef="{{column}}" *ngFor="let column of displayedColumns">
         <th mat-header-cell *matHeaderCellDef> {{column}} </th>
         <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
       </ng-container>
@@ -62,7 +62,7 @@
           (click)="expandedElement = expandedElement === element ? null : element">
       </tr>
       <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
-    </table>
+    </table>-->
   </div>
   <div class="footer">
     <div class="buttons3">
@@ -85,33 +85,5 @@
         </div>
       </button>
     </div>
-    <!--<table>-->
-      <!--<tr>
-      <td>
-        <button (click)="gotoExperts()">anonymously find an expert for your needs</button>
-      </td>
-      <td>
-        find confidential communities with anonymous decision making
-      </td>
-    </tr>-->
-      <!--<tr>
-        <td style="padding-bottom: 0px">
-          <button mat-button (click)="gotoQrScan()">
-            <div style="display: inline-block; text-align: center;">
-              <img src="/images/qr-code-80.png" />
-              <p style="font-size:small; text-align:center; color:darkgray">Click to scan</p>
-            </div>
-          </button>
-        </td>
-        <td>
-          <button mat-button (click)="onDiscloseSecrets()">
-            <div style="display: inline-block; text-align: center;">
-              <img src="/images/clone-50.png" />
-              <p style="font-size:small; text-align:center; color:darkgray">Click to scan</p>
-            </div>
-          </button>
-        </td>
-      </tr>
-    </table>-->
   </div>
 </div>

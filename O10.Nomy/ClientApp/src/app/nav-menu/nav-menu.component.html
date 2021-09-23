@@ -3,7 +3,7 @@
     class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"
   >
     <div class="container">
-      <a class="navbar-brand" [routerLink]="['/']">O10.Nomy</a>
+      <a class="navbar-brand" [routerLink]="['/']">Wist Network</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -17,7 +17,7 @@
       </button>
       <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end"
            [ngClass]="{ show: isExpanded }">
-        <mat-slide-toggle (change)="onMobileChanged($event)">Wallet Emulation</mat-slide-toggle>
+        <!--<mat-slide-toggle (change)="onMobileChanged($event)">Wallet Emulation</mat-slide-toggle>-->
         <ul class="navbar-nav flex-grow">
           <li class="nav-item"
               [routerLinkActive]="['link-active']"
@@ -25,10 +25,7 @@
             <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
           </li>
           <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/counter']">Counter</a>
-          </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/fetch-data']">Fetch data</a>
+            <a class="nav-link text-dark" [routerLink]="['/user-entry']" target="_blank">Mobile Wallet</a>
           </li>
         </ul>
       </div>
