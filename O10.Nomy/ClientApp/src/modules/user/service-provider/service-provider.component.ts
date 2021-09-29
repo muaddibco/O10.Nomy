@@ -66,7 +66,7 @@ export class ServiceProviderComponent implements OnInit {
         this.userAttributes = []
 
         for (let scheme of r) {
-          var a1 = scheme.rootAttributes.pop();
+          var a1 = scheme.rootAttributes.find(v => v.state === scheme.state);
           this.userAttributes.push(a1)
           /*if (scheme.state == AttributeState.Confirmed) {
             var a = scheme.rootAttributes.find(v => v.state == AttributeState.Confirmed)

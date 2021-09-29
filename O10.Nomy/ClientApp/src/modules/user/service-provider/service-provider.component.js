@@ -47,16 +47,14 @@ var ServiceProviderComponent = /** @class */ (function () {
         this.actionInfo = this.route.snapshot.queryParams['actionInfo'];
         this.service.getUserAttributes(this.userId).subscribe(function (r) {
             _this.userAttributes = [];
+            var _loop_1 = function (scheme) {
+                a1 = scheme.rootAttributes.find(function (v) { return v.state === scheme.state; });
+                _this.userAttributes.push(a1);
+            };
+            var a1;
             for (var _i = 0, r_1 = r; _i < r_1.length; _i++) {
                 var scheme = r_1[_i];
-                var a1 = scheme.rootAttributes.pop();
-                _this.userAttributes.push(a1);
-                /*if (scheme.state == AttributeState.Confirmed) {
-                  var a = scheme.rootAttributes.find(v => v.state == AttributeState.Confirmed)
-                  if (a) {
-                    this.userAttributes.push(a)
-                  }
-                }*/
+                _loop_1(scheme);
             }
             if (_this.userAttributes.length === 1) {
                 _this.selectedAttribute = _this.userAttributes[0];
